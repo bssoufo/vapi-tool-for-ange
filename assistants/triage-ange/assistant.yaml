@@ -1,22 +1,22 @@
 _vapi:
-  current_environment: development
+  current_environment: production
   environments:
     development:
-      deployed_at: '2025-09-16T20:35:29.648442+00:00'
-      deployed_by: sebr5550
-      id: 66e579d6-5fd3-4801-a514-938d7548c7d2
-      version: 2
-    production:
       deployed_at: null
       deployed_by: null
       id: null
       version: 0
+    production:
+      deployed_at: '2025-09-16T21:04:06.214860+00:00'
+      deployed_by: sebr5550
+      id: 58f86cf8-7ef4-4ddf-8553-a5129b9fbb25
+      version: 1
     staging:
       deployed_at: null
       deployed_by: null
       id: null
       version: 0
-  last_sync: '2025-09-16T20:35:29.648442+00:00'
+  last_sync: '2025-09-16T21:04:06.214860+00:00'
 analysisPlan:
   minMessagesThreshold: 2
   structuredDataPlan:
@@ -28,20 +28,24 @@ analysisPlan:
 description: AI assistant for Vicky Dental clinic operations
 environments:
   development:
+    firstMessageMode: assistant-speaks-first
     model:
       model: gpt-3.5-turbo
       temperature: 0.8
   production:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
     model:
       model: gpt-4o-mini
       temperature: 0.4
   staging:
+    firstMessageMode: wait-for-user
     voice:
       voiceId: socialmedia_female_1_v1
 features:
   enableAnalytics: true
   enableRecording: true
   enableTranscription: true
+firstMessageMode: assistant-speaks-first-with-model-generated-message
 metadata:
   author: Vicky Dental Team
   tags:
@@ -54,10 +58,10 @@ model:
   model: gpt-4o-mini
   provider: openai
   temperature: 0.6
-name: scheduler_bot
+name: triage-ange
 server:
   timeoutSeconds: 20
-  url: https://n8n-2-u19609.vm.elestio.app/webhook/scheduler_bot
+  url: ${WEBHOOK_URL}/assistants/triage-ange/webhook
 transcriber:
   language: en
   model: nova-2

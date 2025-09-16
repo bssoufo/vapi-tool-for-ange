@@ -1861,6 +1861,12 @@ def main():
     assistant_init_parser.add_argument("--template", default="vicky_dental_clinic", help="Template to use")
     assistant_init_parser.add_argument("--force", action="store_true", help="Overwrite if assistant exists")
 
+    assistant_create_parser = assistant_subparsers.add_parser("create", help="Create assistant in VAPI and track ID")
+    assistant_create_parser.add_argument("name", help="Assistant name (directory name)")
+    assistant_create_parser.add_argument("--env", default="production", choices=["development", "staging", "production"], help="Environment to deploy to")
+    assistant_create_parser.add_argument("--force", action="store_true", help="Force recreation if already deployed")
+    assistant_create_parser.add_argument("--dir", default="assistants", help="Directory containing assistants")
+
     assistant_delete_parser = assistant_subparsers.add_parser("delete", help="Delete an assistant from VAPI")
     assistant_delete_parser.add_argument("name", help="Assistant name to delete")
     assistant_delete_parser.add_argument("--env", default="development", choices=["development", "staging", "production"], help="Environment to delete from")
@@ -2074,6 +2080,8 @@ def main():
                 asyncio.run(validate_assistant(args.name, args.dir))
             elif args.assistant_command == "init":
                 init_assistant(args.name, args.template, args.force)
+            elif args.assistant_command == "create":
+                asyncio.run(create_assistant(args.name, args.env, args.force, args.dir))
             elif args.assistant_command == "delete":
                 asyncio.run(delete_assistant(args.name, args.env, args.force, args.dir))
             elif args.assistant_command == "update":

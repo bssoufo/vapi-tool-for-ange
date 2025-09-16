@@ -1,0 +1,94 @@
+# Squad Members Configuration
+members:
+  - assistant_name: "triage-ange"
+    role: "triage"
+    priority: 1
+    description: "First point of contact - detects intent and routes to specialists"
+    overrides:
+      model:
+        temperature: 0.5
+    destinations:
+      - type: assistant
+        assistant_name: "scheduler-ange"
+        message: "Let me connect you with our scheduling specialist..."
+        conditions:
+          - intent: "new_appointment"
+          - keywords: ["schedule", "book", "appointment", "available", "opening"]
+      - type: assistant
+        assistant_name: "manager-ange"
+        message: "I'll transfer you to our appointment manager..."
+        conditions:
+          - intent: "modify_appointment"
+          - keywords: ["cancel", "reschedule", "modify", "change", "existing"]
+      - type: number
+        number: "+1-555-0199"  # Dummy emergency number as specified
+        message: "This is an emergency. Transferring you to emergency services..."
+        conditions:
+          - intent: "emergency"
+          - keywords: ["emergency", "urgent", "severe", "911"]
+
+  - assistant_name: "scheduler-ange"
+    role: "scheduler"
+    priority: 2
+    description: "Handles new appointment scheduling"
+    overrides:
+      model:
+        temperature: 0.4
+    destinations:
+      - type: assistant
+        assistant_name: "manager-ange"
+        message: "For existing appointments, let me transfer you to our appointment manager..."
+        conditions:
+          - intent: "modify_existing"
+          - keywords: ["cancel", "reschedule", "change existing", "my appointment"]
+
+  - assistant_name: "manager-ange"
+    role: "manager"
+    priority: 3
+    description: "Handles appointment modifications and cancellations"
+    overrides:
+      model:
+        temperature: 0.4
+    destinations:
+      - type: assistant
+        assistant_name: "scheduler-ange"
+        message: "For new appointments, let me connect you with our scheduler..."
+        conditions:
+          - intent: "new_appointment"
+          - keywords: ["new", "book", "schedule", "first time"]
+
+# Routing Rules
+routing_rules:
+  - name: "emergency_priority"
+    description: "Route medical emergencies immediately"
+    trigger:
+      type: "keyword"
+      keywords: ["emergency", "urgent", "severe pain", "bleeding"]
+    action:
+      destination: "transfer_call"
+      priority: "immediate"
+
+  - name: "new_appointment_routing"
+    description: "Route new appointments to scheduler"
+    trigger:
+      type: "intent"
+      intent: "schedule_new"
+    action:
+      destination: "scheduler-ange"
+      priority: "normal"
+
+  - name: "existing_appointment_routing"
+    description: "Route existing appointments to manager"
+    trigger:
+      type: "intent"
+      intent: "modify_existing"
+    action:
+      destination: "manager-ange"
+      priority: "normal"
+
+# Fallback Configuration
+fallback:
+  default_assistant: "triage-ange"
+  max_retries: 3
+  escalation_number: "+1-555-0199"
+  escalation_message: "I'm having trouble understanding your request. Let me transfer you to a human agent..."

@@ -1,0 +1,93 @@
+# Vicky Dental Clinic Assistant Configuration
+name: "{{assistant_name}}"
+description: "AI assistant for Vicky Dental clinic operations"
+
+# Voice Configuration
+voice:
+  provider: minimax
+  voiceId: socialmedia_female_1_v1
+
+# Model Configuration
+model:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.6
+
+# First Message Configuration
+firstMessageMode: "assistant-speaks-first-with-model-generated-message"
+
+# Transcriber Configuration
+transcriber:
+  provider: deepgram
+  model: nova-2
+  language: en
+
+# Environment-specific overrides
+environments:
+  development:
+    model:
+      model: gpt-3.5-turbo
+      temperature: 0.8
+    firstMessageMode: "assistant-speaks-first"
+  staging:
+    voice:
+      voiceId: socialmedia_female_1_v1
+    firstMessageMode: "wait-for-user"
+  production:
+    model:
+      model: gpt-4o-mini
+      temperature: 0.4
+    firstMessageMode: "assistant-speaks-first-with-model-generated-message"
+
+# Server configuration
+server:
+  url: "${WEBHOOK_URL}/assistants/{{assistant_name}}/webhook"
+  timeoutSeconds: 20
+
+# Analysis configuration
+analysisPlan:
+  minMessagesThreshold: 2
+  summaryPlan:
+    enabled: true
+    timeoutSeconds: 15
+  structuredDataPlan:
+    enabled: true
+    timeoutSeconds: 15
+
+# Feature flags
+features:
+  enableAnalytics: true
+  enableRecording: true
+  enableTranscription: true
+
+# Metadata
+metadata:
+  version: "1.0.0"
+  template: "vicky_dental_clinic"
+  author: "Vicky Dental Team"
+  tags:
+    - dental-clinic
+    - customer-service
+    - healthcare
+
+# VAPI Deployment State - Managed by vapi-manager
+# WARNING: Do not edit this section manually - changes will be overwritten
+_vapi:
+  environments:
+    development:
+      id: null
+      deployed_at: null
+      deployed_by: null
+      version: 0
+    staging:
+      id: null
+      deployed_at: null
+      deployed_by: null
+      version: 0
+    production:
+      id: null
+      deployed_at: null
+      deployed_by: null
+      version: 0
+  current_environment: null
+  last_sync: null

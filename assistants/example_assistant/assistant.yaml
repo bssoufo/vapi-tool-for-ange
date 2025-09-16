@@ -1,0 +1,60 @@
+# Assistant Configuration
+# This file defines the main configuration and can override any default values
+
+name: "Customer Service Assistant"
+description: "An intelligent assistant for handling customer inquiries"
+
+# Voice Configuration
+voice:
+  provider: minimax
+  voiceId: socialmedia_female_1_v1
+  speed: 1.0
+  stability: 0.8
+
+# Model Configuration
+model:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.6
+  maxTokens: 500
+
+# Transcriber Configuration
+transcriber:
+  provider: deepgram
+  model: nova-2
+  language: en
+
+# Environment-specific overrides
+environments:
+  development:
+    model:
+      model: gpt-3.5-turbo  # Use cheaper model in dev
+      temperature: 0.8
+  staging:
+    voice:
+      speed: 1.1
+  production:
+    model:
+      model: gpt-4o
+      temperature: 0.4
+
+# Server configuration
+server:
+  url: "${WEBHOOK_URL}/assistants/webhook"
+  secret: "${WEBHOOK_SECRET}"
+  timeoutSeconds: 20
+
+# Feature flags
+features:
+  enableAnalytics: true
+  enableRecording: false
+  enableTranscription: true
+
+# Metadata
+metadata:
+  version: "1.0.0"
+  author: "Team Name"
+  lastUpdated: "2024-01-15"
+  tags:
+    - customer-service
+    - tier-1-support

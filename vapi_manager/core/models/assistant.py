@@ -42,7 +42,7 @@ class FirstMessageMode(str, Enum):
 class Voice(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    voice_id: str = Field(..., alias="voiceId")
+    voice_id: Optional[str] = Field(None, alias="voiceId")
     provider: str
 
 

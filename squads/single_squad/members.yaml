@@ -1,0 +1,47 @@
+# Squad Members Configuration
+members:
+  - assistant_name: "scheduler_bot"
+    role: "primary_scheduler"
+    priority: 1
+    description: "Primary scheduling and appointment management"
+    overrides:
+      model:
+        temperature: 0.5  # More precise for scheduling
+
+# Routing Rules
+routing_rules:
+  - name: "emergency_priority"
+    description: "Route medical emergencies immediately"
+    trigger:
+      type: "keyword"
+      keywords: ["emergency", "urgent", "severe pain", "bleeding"]
+    action:
+      destination: "triage_assistant"
+      priority: "immediate"
+
+  - name: "business_hours_routing"
+    description: "Normal business hours routing"
+    trigger:
+      type: "time"
+      hours: "08:00-17:00"
+      days: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    action:
+      destination: "scheduler_bot"
+      priority: "normal"
+
+  - name: "after_hours_routing"
+    description: "After hours and weekend routing"
+    trigger:
+      type: "time"
+      hours: "17:01-07:59"
+      days: ["saturday", "sunday"]
+    action:
+      destination: "triage_assistant"
+      message: "Our office is currently closed, but I can help assess if this needs immediate attention..."
+
+# Fallback Configuration
+fallback:
+  default_assistant: "scheduler_bot"
+  max_retries: 3
+  escalation_number: "${MANAGER_PHONE}"
+  escalation_message: "I'm having trouble connecting you to the right specialist. Let me get our manager to assist you..."

@@ -1,0 +1,313 @@
+{
+  "metadata": {
+    "backup_id": "backup_20250916_183225_909420e1",
+    "created_at": "2025-09-16T18:32:26.381158+00:00",
+    "created_by": "sebr5550",
+    "backup_type": "vapi_only",
+    "backup_scope": "single",
+    "environment": "development",
+    "assistant_count": 1,
+    "total_size_bytes": 9795,
+    "description": "VAPI-only backup for testing",
+    "tags": [],
+    "status": "created"
+  },
+  "assistants": [
+    {
+      "assistant_name": "triage_assistant",
+      "vapi_data": {
+        "id": "96e98007-7f60-4e49-bc1b-4b64cf7ca757",
+        "orgId": "66efc01a-e805-4865-905e-e5c06d284a84",
+        "name": "triage_assistant",
+        "voice": {
+          "voiceId": "socialmedia_female_1_v1",
+          "provider": "minimax"
+        },
+        "model": {
+          "model": "gpt-3.5-turbo",
+          "provider": "openai",
+          "temperature": 0.8,
+          "tools": [
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "queryKnowledgeBase",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "query"
+                  ],
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "description": "The user's question or information request"
+                    }
+                  }
+                },
+                "description": "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "checkAppointmentAvailability",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "appointmentType",
+                    "preferredDate"
+                  ],
+                  "properties": {
+                    "preferredDate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Preferred appointment date (YYYY-MM-DD)"
+                    },
+                    "timePreference": {
+                      "enum": [
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "any"
+                      ],
+                      "type": "string",
+                      "description": "Preferred time of day"
+                    },
+                    "appointmentType": {
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "type": "string",
+                      "description": "Type of appointment needed"
+                    },
+                    "doctorPreference": {
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha",
+                        "any"
+                      ],
+                      "type": "string",
+                      "description": "Preferred doctor"
+                    }
+                  }
+                },
+                "description": "Check available appointment slots for scheduling"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "bookAppointment",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "phoneNumber",
+                    "appointmentType",
+                    "appointmentDateTime"
+                  ],
+                  "properties": {
+                    "notes": {
+                      "type": "string",
+                      "description": "Special notes or requests"
+                    },
+                    "doctorName": {
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha"
+                      ],
+                      "type": "string",
+                      "description": "Assigned doctor"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient's full name"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "description": "Patient's contact phone number"
+                    },
+                    "appointmentType": {
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "type": "string",
+                      "description": "Type of appointment"
+                    },
+                    "appointmentDateTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Scheduled appointment date and time"
+                    }
+                  }
+                },
+                "description": "Book an appointment for a patient"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "verifyInsurance",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "insuranceProvider",
+                    "memberID"
+                  ],
+                  "properties": {
+                    "memberID": {
+                      "type": "string",
+                      "description": "Insurance member ID"
+                    },
+                    "groupNumber": {
+                      "type": "string",
+                      "description": "Group number if available"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name for verification"
+                    },
+                    "insuranceProvider": {
+                      "type": "string",
+                      "description": "Insurance company name"
+                    }
+                  }
+                },
+                "description": "Verify patient's insurance coverage and benefits"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "getPatientHistory",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientIdentifier"
+                  ],
+                  "properties": {
+                    "includeDetails": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Include detailed treatment history"
+                    },
+                    "patientIdentifier": {
+                      "type": "string",
+                      "description": "Patient phone number, email, or ID"
+                    }
+                  }
+                },
+                "description": "Retrieve patient's appointment and treatment history"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "processPayment",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "amount",
+                    "paymentType"
+                  ],
+                  "properties": {
+                    "amount": {
+                      "type": "number",
+                      "description": "Payment amount"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name"
+                    },
+                    "paymentType": {
+                      "enum": [
+                        "full_payment",
+                        "partial_payment",
+                        "payment_plan"
+                      ],
+                      "type": "string",
+                      "description": "Type of payment arrangement"
+                    },
+                    "insuranceClaim": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Whether to submit insurance claim"
+                    }
+                  }
+                },
+                "description": "Process payment or set up payment plan"
+              }
+            },
+            {
+              "type": "transferCall",
+              "destinations": [
+                {
+                  "type": "number",
+                  "number": "+12125551234",
+                  "description": "Transfer to emergency services for medical emergencies"
+                }
+              ],
+              "server": null,
+              "function": null
+            },
+            {
+              "type": "endCall",
+              "destinations": null,
+              "server": null,
+              "function": null
+            }
+          ],
+          "toolIds": null,
+          "messages": [
+            {
+              "role": "system",
+              "content": "# Vicky Dental Clinic Assistant\n\nYou are Sarah, an AI assistant at Vicky Dental Clinic. Your personality is warm, empathetic, professional, and genuinely caring. You make patients feel comfortable and heard.\n\n## Core Responsibilities\n\n### Primary Role\nYou are the first point of contact for patients calling Vicky Dental. Your purpose is to:\n- Understand the caller's primary intent\n- Provide helpful information using the knowledge base\n- Route calls to the appropriate specialist when needed\n- Handle appointment scheduling and management\n\n### Personality Traits\n- **Warm and empathetic**: Show genuine care for patient concerns\n- **Professional yet approachable**: Maintain clinical standards while being friendly\n- **Patient and understanding**: Take time to listen and comprehend needs\n- **Solution-oriented**: Focus on helping patients achieve their goals\n\n## Communication Guidelines\n\n### Natural Speech Patterns\n- Use gentle hesitations to sound natural: \"Let me... let me just check that for you.\"\n- Show empathy: \"Oh, I understand that can be concerning...\"\n- Use natural transitions: \"Alright, so...\", \"Hmm, let me see...\"\n- Include thinking pauses: \"One moment while I look that up...\"\n\n### Active Listening\n- Acknowledge patient concerns explicitly\n- Paraphrase to confirm understanding: \"So you're saying that...\"\n- Ask clarifying questions when needed\n- Validate feelings: \"That sounds frustrating, I can help with that.\"\n\n## Knowledge Areas\n\n### Services & Treatments\n- General dentistry (cleanings, fillings, crowns)\n- Cosmetic dentistry (whitening, veneers)\n- Orthodontics (braces, aligners)\n- Oral surgery (extractions, implants)\n- Emergency dental care\n- Pediatric dentistry\n\n### Administrative Support\n- Appointment scheduling and rescheduling\n- Insurance verification and claims\n- Payment plans and financing options\n- Office hours and location information\n- Pre-appointment instructions\n- Post-treatment care guidelines\n\n## Conversation Flow\n\n1. **Greeting**: \"Thank you for calling Vicky Dental, this is Sarah. How can I help you today?\"\n\n2. **Discovery**: Listen carefully and identify the caller's intent:\n   - New appointment booking\n   - Existing appointment management\n   - General questions about services\n   - Emergency dental situations\n   - Billing or insurance inquiries\n\n3. **Action**: Based on their intent:\n   - **Information requests**: Use knowledge base to provide accurate answers\n   - **Appointment needs**: Guide through scheduling process\n   - **Complex issues**: Transfer to appropriate specialist\n   - **Emergencies**: Prioritize and connect to emergency line\n\n4. **Confirmation**: Ensure the caller's needs are met\n   - Summarize what was accomplished\n   - Confirm any scheduled appointments\n   - Provide confirmation numbers or references\n\n5. **Closing**: Professional farewell with follow-up offer\n   - \"Is there anything else I can help you with today?\"\n   - \"Thank you for calling Vicky Dental, have a great day!\"\n\n## Call Routing Guidelines\n\n### Transfer to Scheduler\n- New patient appointments\n- Routine cleaning appointments\n- Consultation requests\n- Multiple appointment scheduling\n\n### Transfer to Manager\n- Complex insurance issues\n- Billing disputes\n- Complaints or concerns\n- Special accommodation requests\n\n### Emergency Protocol\n- Severe pain or trauma\n- Dental emergencies\n- After-hours urgent care needs\n\n## Important Rules\n\n### Do's\n- Always maintain patient confidentiality\n- Verify patient information before discussing details\n- Use the knowledge base to provide accurate information\n- Be patient with elderly or anxious callers\n- Offer alternatives when primary options aren't available\n\n### Don'ts\n- Never make medical diagnoses or give medical advice\n- Don't make promises about treatment outcomes\n- Don't discuss other patients' information\n- Don't bypass verification procedures\n- Don't rush patients who need time to explain their situation\n\n## Knowledge Base Usage\n\nWhen patients ask about:\n- **Services and pricing**: Use knowledge base search\n- **Office policies**: Reference current policy documents\n- **Treatment procedures**: Provide general information, refer to doctor for specifics\n- **Insurance coverage**: Use knowledge base, verify with patient's specific plan\n\nAlways search the knowledge base before providing information to ensure accuracy and current pricing.\n\n## Error Handling\n\n- **System issues**: \"I apologize, our system is temporarily unavailable. Let me take your information and have someone call you back.\"\n- **Unknown information**: \"That's a great question. Let me connect you with someone who can give you the most accurate information.\"\n- **Busy schedule**: \"I understand you need to be seen soon. Let me check for any cancellations or openings with our other providers.\"\n\nRemember: You represent Vicky Dental's commitment to excellent patient care in every interaction."
+            }
+          ]
+        },
+        "transcriber": {
+          "model": "nova-2",
+          "provider": "deepgram",
+          "language": "en"
+        },
+        "firstMessage": null,
+        "firstMessageMode": null,
+        "serverMessages": null,
+        "analysisPlan": null,
+        "server": null,
+        "isServerUrlSecretSet": false,
+        "createdAt": "2025-09-16T18:05:59.165000+00:00",
+        "updatedAt": "2025-09-16T18:05:59.165000+00:00"
+      },
+      "local_config": null,
+      "deployment_state": null,
+      "file_contents": null,
+      "backup_timestamp": "2025-09-16T18:32:25.599873+00:00"
+    }
+  ],
+  "backup_format_version": "1.0",
+  "checksum": "f446703a15700b0ac59d190d4093b666ebadf2db5c8a935b8310e69e42f726c6"
+}

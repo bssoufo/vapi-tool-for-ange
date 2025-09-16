@@ -1,0 +1,83 @@
+# Vicky Dental Clinic Transfer Destinations
+
+transfers:
+  - id: scheduler
+    type: assistant
+    assistantId: "${SCHEDULER_ASSISTANT_ID}"
+    description: "Transfer to scheduler for appointment booking and management"
+    message: "Of course! I'd be happy to help you with that. One moment."
+
+  - id: manager
+    type: assistant
+    assistantId: "${MANAGER_ASSISTANT_ID}"
+    description: "Transfer to manager for complex issues, complaints, or special requests"
+    message: "Certainly! Let me pull up your appointment details for you. One moment."
+
+  - id: emergency_line
+    type: number
+    number: "+12125551234"
+    description: "Transfer to emergency services for medical emergencies"
+    message: "Oh my, that sounds serious. Please hold while I connect you to our emergency line immediately."
+
+  - id: billing_department
+    type: number
+    number: "${BILLING_PHONE_NUMBER}"
+    description: "Transfer to billing department for payment and insurance issues"
+    message: "I'll connect you with our billing specialist who can help with that right away."
+
+  - id: technical_support
+    type: number
+    number: "${TECH_SUPPORT_NUMBER}"
+    description: "Transfer to technical support for system issues"
+    message: "Let me connect you with our technical support team to resolve this issue."
+
+# Transfer Rules and Conditions
+rules:
+  - trigger: "intent"
+    intent: "booking"
+    destination: "scheduler"
+    description: "Route booking requests to scheduler"
+
+  - trigger: "intent"
+    intent: "management"
+    destination: "manager"
+    description: "Route appointment management to manager"
+
+  - trigger: "intent"
+    intent: "emergency"
+    destination: "emergency_line"
+    description: "Route emergencies to emergency line"
+
+  - trigger: "keyword"
+    keywords:
+      - "speak to manager"
+      - "supervisor"
+      - "complaint"
+      - "escalate"
+    destination: "manager"
+    description: "Escalate to manager on request"
+
+  - trigger: "sentiment"
+    condition: "sentiment < -0.5"
+    destination: "manager"
+    description: "Auto-escalate when patient is very upset"
+
+  - trigger: "keyword"
+    keywords:
+      - "severe pain"
+      - "emergency"
+      - "urgent"
+      - "bleeding"
+      - "accident"
+    destination: "emergency_line"
+    description: "Route urgent dental emergencies"
+
+  - trigger: "keyword"
+    keywords:
+      - "billing"
+      - "insurance"
+      - "payment"
+      - "claim"
+      - "coverage"
+    destination: "billing_department"
+    description: "Route billing and insurance questions"

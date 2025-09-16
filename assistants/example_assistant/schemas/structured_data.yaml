@@ -1,0 +1,124 @@
+# Structured Data Extraction Schema
+# Defines what data to extract from conversations
+
+type: object
+required:
+  - customerIntent
+  - sentimentScore
+  - issueResolved
+
+properties:
+  # Customer Information
+  customerInfo:
+    type: object
+    properties:
+      firstName:
+        type: string
+        description: "Customer's first name if provided"
+      lastName:
+        type: string
+        description: "Customer's last name if provided"
+      email:
+        type: string
+        format: email
+        description: "Customer's email if provided"
+      phone:
+        type: string
+        description: "Customer's phone number if provided"
+      customerId:
+        type: string
+        description: "Customer ID if mentioned"
+
+  # Conversation Analysis
+  customerIntent:
+    type: string
+    enum:
+      - purchase_inquiry
+      - technical_support
+      - billing_issue
+      - return_exchange
+      - general_question
+      - complaint
+      - feedback
+    description: "Primary reason for the call"
+
+  sentimentScore:
+    type: number
+    minimum: -1
+    maximum: 1
+    description: "Customer sentiment (-1 very negative to 1 very positive)"
+
+  emotionalState:
+    type: string
+    enum:
+      - calm
+      - frustrated
+      - angry
+      - happy
+      - confused
+      - anxious
+    description: "Customer's emotional state during the call"
+
+  # Issue Details
+  issueDetails:
+    type: object
+    properties:
+      category:
+        type: string
+        description: "Issue category"
+      description:
+        type: string
+        description: "Detailed description of the issue"
+      priority:
+        type: string
+        enum: [low, medium, high, urgent]
+        description: "Issue priority level"
+
+  # Resolution
+  issueResolved:
+    type: boolean
+    description: "Whether the issue was resolved during the call"
+
+  resolutionDetails:
+    type: string
+    description: "How the issue was resolved"
+
+  followUpRequired:
+    type: boolean
+    description: "Whether follow-up is needed"
+
+  # Metrics
+  callMetrics:
+    type: object
+    properties:
+      callDuration:
+        type: number
+        description: "Call duration in seconds"
+      numberOfTransfers:
+        type: integer
+        description: "Number of times call was transferred"
+      holdTime:
+        type: number
+        description: "Total hold time in seconds"
+
+  # Action Items
+  actionItems:
+    type: array
+    items:
+      type: object
+      properties:
+        action:
+          type: string
+          description: "Action to be taken"
+        assignedTo:
+          type: string
+          description: "Team or person responsible"
+        deadline:
+          type: string
+          format: date-time
+          description: "Deadline for the action"
+
+  # Additional Notes
+  notes:
+    type: string
+    description: "Additional notes or observations from the call"

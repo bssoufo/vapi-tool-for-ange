@@ -1,0 +1,170 @@
+# Routing Rules Configuration
+# Define intelligent routing logic for the squad
+
+# Priority-based routing rules
+priority_rules:
+  emergency_override:
+    priority: 1  # Highest priority
+    description: "Override all routing for medical emergencies"
+    triggers:
+      - type: keyword
+        keywords: ["emergency", "911", "unconscious", "severe bleeding", "chest pain"]
+      - type: sentiment
+        threshold: -0.8  # Very distressed caller
+      - type: urgency_detection
+        level: "critical"
+    action:
+      destination: "emergency_services"
+      bypass_queue: true
+      immediate_transfer: true
+
+  dental_emergency:
+    priority: 2
+    description: "Route urgent dental issues to emergency line or triage"
+    triggers:
+      - type: keyword
+        keywords: ["tooth knocked out", "severe tooth pain", "dental trauma", "broken jaw"]
+      - type: intent
+        intent: "dental_emergency"
+    action:
+      destination: "triage_assistant"
+      escalation_path: "dentist_emergency"
+      max_wait_time: 30  # seconds
+
+  medical_triage:
+    priority: 3
+    description: "Route medical questions to triage specialist"
+    triggers:
+      - type: keyword
+        keywords: ["pain", "symptoms", "medication", "allergic reaction"]
+      - type: intent
+        intent: "medical_question"
+    action:
+      destination: "triage_assistant"
+      context_transfer: true
+
+# Time-based routing rules
+time_based_rules:
+  business_hours:
+    description: "Normal business hours routing"
+    schedule:
+      days: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      hours: "08:00-17:00"
+      timezone: "America/New_York"
+    routing:
+      default: "scheduler_bot"
+      medical: "triage_assistant"
+      billing: "billing_assistant"
+
+  after_hours:
+    description: "After hours emergency screening"
+    schedule:
+      days: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      hours: "17:01-07:59"
+      timezone: "America/New_York"
+    routing:
+      default: "triage_assistant"  # Screen for emergencies
+      emergency: "emergency_services"
+      non_urgent: "after_hours_voicemail"
+
+  weekends:
+    description: "Weekend emergency-only service"
+    schedule:
+      days: ["saturday", "sunday"]
+      hours: "00:00-23:59"
+    routing:
+      default: "triage_assistant"
+      emergency: "emergency_services"
+      non_urgent: "weekend_voicemail"
+
+# Intent-based routing rules
+intent_rules:
+  appointment_scheduling:
+    description: "Route appointment requests to scheduler"
+    triggers:
+      - type: intent
+        intents: ["schedule_appointment", "reschedule", "cancel_appointment"]
+      - type: keyword
+        keywords: ["appointment", "schedule", "booking", "available times"]
+    action:
+      destination: "scheduler_bot"
+      context_required: ["patient_name", "preferred_time", "appointment_type"]
+
+  billing_inquiries:
+    description: "Route billing questions to billing specialist"
+    triggers:
+      - type: intent
+        intents: ["billing_question", "insurance_inquiry", "payment_issue"]
+      - type: keyword
+        keywords: ["bill", "payment", "insurance", "cost", "coverage"]
+    action:
+      destination: "billing_assistant"
+      context_required: ["patient_name", "account_number"]
+
+  medical_consultation:
+    description: "Route medical questions to triage"
+    triggers:
+      - type: intent
+        intents: ["medical_question", "symptom_assessment", "medication_inquiry"]
+      - type: keyword
+        keywords: ["pain", "symptoms", "medication", "treatment"]
+    action:
+      destination: "triage_assistant"
+      context_required: ["symptom_description", "urgency_level"]
+
+# Load balancing rules
+load_balancing:
+  strategy: "skill_based"  # Options: round_robin, skill_based, least_busy
+
+  skill_based_routing:
+    scheduler_bot:
+      skills: ["appointment_scheduling", "calendar_management", "patient_coordination"]
+      capacity: 5  # Max concurrent calls
+
+    triage_assistant:
+      skills: ["medical_assessment", "emergency_detection", "symptom_evaluation"]
+      capacity: 3  # Lower capacity for more complex interactions
+
+    billing_assistant:
+      skills: ["billing_inquiry", "insurance_processing", "payment_collection"]
+      capacity: 4
+
+  fallback_strategy:
+    primary: "least_busy"  # If skill-based fails
+    secondary: "round_robin"  # If least_busy fails
+    ultimate: "queue_callback"  # If all assistants busy
+
+# Escalation rules
+escalation_rules:
+  customer_dissatisfaction:
+    triggers:
+      - type: sentiment
+        threshold: -0.6  # Negative sentiment
+      - type: keyword
+        keywords: ["angry", "frustrated", "manager", "complaint"]
+      - type: call_duration
+        threshold: 600  # 10 minutes without resolution
+    action:
+      destination: "office_manager"
+      context_transfer: true
+      priority_boost: true
+
+  technical_difficulties:
+    triggers:
+      - type: system_error
+        error_types: ["connection_failure", "assistant_unavailable"]
+      - type: retry_limit
+        max_retries: 3
+    action:
+      destination: "human_backup"
+      message: "I'm experiencing technical difficulties. Let me connect you with a human representative..."
+
+  complex_medical:
+    triggers:
+      - type: keyword
+        keywords: ["complex case", "multiple conditions", "specialist referral"]
+      - type: confidence
+        threshold: 0.3  # Low AI confidence
+    action:
+      destination: "office_manager"
+      message: "This seems like a complex situation that would benefit from direct human attention..."

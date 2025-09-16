@@ -1,0 +1,3047 @@
+{
+  "metadata": {
+    "backup_id": "backup_20250916_183143_490e5152",
+    "created_at": "2025-09-16T18:31:45.619610+00:00",
+    "created_by": "sebr5550",
+    "backup_type": "full",
+    "backup_scope": "all",
+    "environment": "development",
+    "assistant_count": 4,
+    "total_size_bytes": 134232,
+    "description": "Full backup of all assistants",
+    "tags": [
+      "full",
+      "auto"
+    ],
+    "status": "created"
+  },
+  "assistants": [
+    {
+      "assistant_name": "billing_assistant",
+      "vapi_data": {
+        "id": "01400b87-bc4f-4587-9bb7-9238cc48393f",
+        "orgId": "66efc01a-e805-4865-905e-e5c06d284a84",
+        "name": "billing_assistant",
+        "voice": {
+          "voiceId": "socialmedia_female_1_v1",
+          "provider": "minimax"
+        },
+        "model": {
+          "model": "gpt-3.5-turbo",
+          "provider": "openai",
+          "temperature": 0.8,
+          "tools": [
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "queryKnowledgeBase",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "query"
+                  ],
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "description": "The user's question or information request"
+                    }
+                  }
+                },
+                "description": "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "checkAppointmentAvailability",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "appointmentType",
+                    "preferredDate"
+                  ],
+                  "properties": {
+                    "preferredDate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Preferred appointment date (YYYY-MM-DD)"
+                    },
+                    "timePreference": {
+                      "enum": [
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "any"
+                      ],
+                      "type": "string",
+                      "description": "Preferred time of day"
+                    },
+                    "appointmentType": {
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "type": "string",
+                      "description": "Type of appointment needed"
+                    },
+                    "doctorPreference": {
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha",
+                        "any"
+                      ],
+                      "type": "string",
+                      "description": "Preferred doctor"
+                    }
+                  }
+                },
+                "description": "Check available appointment slots for scheduling"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "bookAppointment",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "phoneNumber",
+                    "appointmentType",
+                    "appointmentDateTime"
+                  ],
+                  "properties": {
+                    "notes": {
+                      "type": "string",
+                      "description": "Special notes or requests"
+                    },
+                    "doctorName": {
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha"
+                      ],
+                      "type": "string",
+                      "description": "Assigned doctor"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient's full name"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "description": "Patient's contact phone number"
+                    },
+                    "appointmentType": {
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "type": "string",
+                      "description": "Type of appointment"
+                    },
+                    "appointmentDateTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Scheduled appointment date and time"
+                    }
+                  }
+                },
+                "description": "Book an appointment for a patient"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "verifyInsurance",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "insuranceProvider",
+                    "memberID"
+                  ],
+                  "properties": {
+                    "memberID": {
+                      "type": "string",
+                      "description": "Insurance member ID"
+                    },
+                    "groupNumber": {
+                      "type": "string",
+                      "description": "Group number if available"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name for verification"
+                    },
+                    "insuranceProvider": {
+                      "type": "string",
+                      "description": "Insurance company name"
+                    }
+                  }
+                },
+                "description": "Verify patient's insurance coverage and benefits"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "getPatientHistory",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientIdentifier"
+                  ],
+                  "properties": {
+                    "includeDetails": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Include detailed treatment history"
+                    },
+                    "patientIdentifier": {
+                      "type": "string",
+                      "description": "Patient phone number, email, or ID"
+                    }
+                  }
+                },
+                "description": "Retrieve patient's appointment and treatment history"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "processPayment",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "amount",
+                    "paymentType"
+                  ],
+                  "properties": {
+                    "amount": {
+                      "type": "number",
+                      "description": "Payment amount"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name"
+                    },
+                    "paymentType": {
+                      "enum": [
+                        "full_payment",
+                        "partial_payment",
+                        "payment_plan"
+                      ],
+                      "type": "string",
+                      "description": "Type of payment arrangement"
+                    },
+                    "insuranceClaim": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Whether to submit insurance claim"
+                    }
+                  }
+                },
+                "description": "Process payment or set up payment plan"
+              }
+            },
+            {
+              "type": "transferCall",
+              "destinations": [
+                {
+                  "type": "number",
+                  "number": "+12125551234",
+                  "description": "Transfer to emergency services for medical emergencies"
+                }
+              ],
+              "server": null,
+              "function": null
+            },
+            {
+              "type": "endCall",
+              "destinations": null,
+              "server": null,
+              "function": null
+            }
+          ],
+          "toolIds": null,
+          "messages": [
+            {
+              "role": "system",
+              "content": "# Vicky Dental Clinic Assistant\n\nYou are Sarah, an AI assistant at Vicky Dental Clinic. Your personality is warm, empathetic, professional, and genuinely caring. You make patients feel comfortable and heard.\n\n## Core Responsibilities\n\n### Primary Role\nYou are the first point of contact for patients calling Vicky Dental. Your purpose is to:\n- Understand the caller's primary intent\n- Provide helpful information using the knowledge base\n- Route calls to the appropriate specialist when needed\n- Handle appointment scheduling and management\n\n### Personality Traits\n- **Warm and empathetic**: Show genuine care for patient concerns\n- **Professional yet approachable**: Maintain clinical standards while being friendly\n- **Patient and understanding**: Take time to listen and comprehend needs\n- **Solution-oriented**: Focus on helping patients achieve their goals\n\n## Communication Guidelines\n\n### Natural Speech Patterns\n- Use gentle hesitations to sound natural: \"Let me... let me just check that for you.\"\n- Show empathy: \"Oh, I understand that can be concerning...\"\n- Use natural transitions: \"Alright, so...\", \"Hmm, let me see...\"\n- Include thinking pauses: \"One moment while I look that up...\"\n\n### Active Listening\n- Acknowledge patient concerns explicitly\n- Paraphrase to confirm understanding: \"So you're saying that...\"\n- Ask clarifying questions when needed\n- Validate feelings: \"That sounds frustrating, I can help with that.\"\n\n## Knowledge Areas\n\n### Services & Treatments\n- General dentistry (cleanings, fillings, crowns)\n- Cosmetic dentistry (whitening, veneers)\n- Orthodontics (braces, aligners)\n- Oral surgery (extractions, implants)\n- Emergency dental care\n- Pediatric dentistry\n\n### Administrative Support\n- Appointment scheduling and rescheduling\n- Insurance verification and claims\n- Payment plans and financing options\n- Office hours and location information\n- Pre-appointment instructions\n- Post-treatment care guidelines\n\n## Conversation Flow\n\n1. **Greeting**: \"Thank you for calling Vicky Dental, this is Sarah. How can I help you today?\"\n\n2. **Discovery**: Listen carefully and identify the caller's intent:\n   - New appointment booking\n   - Existing appointment management\n   - General questions about services\n   - Emergency dental situations\n   - Billing or insurance inquiries\n\n3. **Action**: Based on their intent:\n   - **Information requests**: Use knowledge base to provide accurate answers\n   - **Appointment needs**: Guide through scheduling process\n   - **Complex issues**: Transfer to appropriate specialist\n   - **Emergencies**: Prioritize and connect to emergency line\n\n4. **Confirmation**: Ensure the caller's needs are met\n   - Summarize what was accomplished\n   - Confirm any scheduled appointments\n   - Provide confirmation numbers or references\n\n5. **Closing**: Professional farewell with follow-up offer\n   - \"Is there anything else I can help you with today?\"\n   - \"Thank you for calling Vicky Dental, have a great day!\"\n\n## Call Routing Guidelines\n\n### Transfer to Scheduler\n- New patient appointments\n- Routine cleaning appointments\n- Consultation requests\n- Multiple appointment scheduling\n\n### Transfer to Manager\n- Complex insurance issues\n- Billing disputes\n- Complaints or concerns\n- Special accommodation requests\n\n### Emergency Protocol\n- Severe pain or trauma\n- Dental emergencies\n- After-hours urgent care needs\n\n## Important Rules\n\n### Do's\n- Always maintain patient confidentiality\n- Verify patient information before discussing details\n- Use the knowledge base to provide accurate information\n- Be patient with elderly or anxious callers\n- Offer alternatives when primary options aren't available\n\n### Don'ts\n- Never make medical diagnoses or give medical advice\n- Don't make promises about treatment outcomes\n- Don't discuss other patients' information\n- Don't bypass verification procedures\n- Don't rush patients who need time to explain their situation\n\n## Knowledge Base Usage\n\nWhen patients ask about:\n- **Services and pricing**: Use knowledge base search\n- **Office policies**: Reference current policy documents\n- **Treatment procedures**: Provide general information, refer to doctor for specifics\n- **Insurance coverage**: Use knowledge base, verify with patient's specific plan\n\nAlways search the knowledge base before providing information to ensure accuracy and current pricing.\n\n## Error Handling\n\n- **System issues**: \"I apologize, our system is temporarily unavailable. Let me take your information and have someone call you back.\"\n- **Unknown information**: \"That's a great question. Let me connect you with someone who can give you the most accurate information.\"\n- **Busy schedule**: \"I understand you need to be seen soon. Let me check for any cancellations or openings with our other providers.\"\n\nRemember: You represent Vicky Dental's commitment to excellent patient care in every interaction."
+            }
+          ]
+        },
+        "transcriber": {
+          "model": "nova-2",
+          "provider": "deepgram",
+          "language": "en"
+        },
+        "firstMessage": null,
+        "firstMessageMode": null,
+        "serverMessages": null,
+        "analysisPlan": null,
+        "server": null,
+        "isServerUrlSecretSet": false,
+        "createdAt": "2025-09-16T18:06:33.667000+00:00",
+        "updatedAt": "2025-09-16T18:06:33.667000+00:00"
+      },
+      "local_config": {
+        "config": {
+          "_vapi": {
+            "current_environment": "development",
+            "environments": {
+              "development": {
+                "deployed_at": "2025-09-16T18:06:33.757601+00:00",
+                "deployed_by": "sebr5550",
+                "id": "01400b87-bc4f-4587-9bb7-9238cc48393f",
+                "version": 1
+              },
+              "production": {
+                "deployed_at": null,
+                "deployed_by": null,
+                "id": null,
+                "version": 0
+              },
+              "staging": {
+                "deployed_at": null,
+                "deployed_by": null,
+                "id": null,
+                "version": 0
+              }
+            },
+            "last_sync": "2025-09-16T18:06:33.757601+00:00"
+          },
+          "analysisPlan": {
+            "minMessagesThreshold": 2,
+            "structuredDataPlan": {
+              "enabled": true,
+              "timeoutSeconds": 15
+            },
+            "summaryPlan": {
+              "enabled": true,
+              "timeoutSeconds": 15
+            }
+          },
+          "description": "AI assistant for Vicky Dental clinic operations",
+          "features": {
+            "enableAnalytics": true,
+            "enableRecording": true,
+            "enableTranscription": true
+          },
+          "firstMessageMode": "assistant-speaks-first",
+          "metadata": {
+            "author": "Vicky Dental Team",
+            "tags": [
+              "dental-clinic",
+              "customer-service",
+              "healthcare"
+            ],
+            "template": "vicky_dental_clinic",
+            "version": "1.0.0"
+          },
+          "model": {
+            "model": "gpt-3.5-turbo",
+            "provider": "openai",
+            "temperature": 0.8
+          },
+          "name": "billing_assistant",
+          "server": {
+            "timeoutSeconds": 20,
+            "url": "${WEBHOOK_URL}/assistants/billing_assistant/webhook"
+          },
+          "transcriber": {
+            "language": "en",
+            "model": "nova-2",
+            "provider": "deepgram"
+          },
+          "voice": {
+            "provider": "minimax",
+            "voiceId": "socialmedia_female_1_v1"
+          }
+        },
+        "schemas": {
+          "structured_data": {
+            "type": "object",
+            "required": [
+              "call_type",
+              "transferred_to",
+              "sentimentAnalysis",
+              "leadScoring"
+            ],
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "description": "Patient's first name if collected"
+              },
+              "lastName": {
+                "type": "string",
+                "description": "Patient's last name if collected"
+              },
+              "phoneNumber": {
+                "type": "string",
+                "description": "Patient's phone number if collected"
+              },
+              "call_type": {
+                "type": "string",
+                "enum": [
+                  "emergency",
+                  "informational",
+                  "booking",
+                  "management"
+                ],
+                "description": "Primary purpose of the call"
+              },
+              "transferred_to": {
+                "type": "string",
+                "enum": [
+                  "emergency_line",
+                  "scheduler",
+                  "manager",
+                  "none"
+                ],
+                "description": "Where the call was transferred"
+              },
+              "appointmentType": {
+                "type": "string",
+                "enum": [
+                  "cleaning",
+                  "checkup",
+                  "consultation",
+                  "procedure",
+                  "emergency",
+                  "not_specified"
+                ],
+                "description": "Type of appointment discussed"
+              },
+              "appointmentDateTime": {
+                "type": "string",
+                "description": "Appointment date/time if discussed (format: YYYY-MM-DD HH:MM)"
+              },
+              "doctorName": {
+                "type": "string",
+                "enum": [
+                  "Daniel",
+                  "James",
+                  "Metha",
+                  "not_specified"
+                ],
+                "description": "Doctor preference mentioned or suggested"
+              },
+              "sentimentAnalysis": {
+                "type": "object",
+                "required": [
+                  "urgency",
+                  "hesitation",
+                  "positivity"
+                ],
+                "properties": {
+                  "urgency": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "emergency"
+                    ],
+                    "description": "Level of urgency expressed by patient"
+                  },
+                  "hesitation": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "slight",
+                      "moderate",
+                      "significant"
+                    ],
+                    "description": "Patient's hesitation level about booking"
+                  },
+                  "positivity": {
+                    "type": "string",
+                    "enum": [
+                      "negative",
+                      "neutral",
+                      "positive",
+                      "very_positive"
+                    ],
+                    "description": "Overall emotional tone of the patient"
+                  }
+                }
+              },
+              "leadScoring": {
+                "type": "string",
+                "enum": [
+                  "hot",
+                  "warm",
+                  "cold"
+                ],
+                "description": "Lead quality: hot=booked, warm=rescheduled/interested, cold=not_booked"
+              },
+              "dentalConcern": {
+                "type": "string",
+                "description": "Primary dental concern or reason for calling"
+              },
+              "painLevel": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10,
+                "description": "Pain level on scale of 0-10 if mentioned"
+              },
+              "insuranceProvider": {
+                "type": "string",
+                "description": "Insurance provider if mentioned"
+              },
+              "lastVisit": {
+                "type": "string",
+                "description": "When patient last visited the clinic"
+              },
+              "callSuccessful": {
+                "type": "boolean",
+                "description": "Whether the call achieved the desired outcome"
+              },
+              "followUpRequired": {
+                "type": "boolean",
+                "description": "Whether follow-up is needed"
+              },
+              "notes": {
+                "type": "string",
+                "description": "Additional notes about the call"
+              }
+            }
+          }
+        },
+        "tools": {
+          "functions": {
+            "functions": [
+              {
+                "name": "queryKnowledgeBase",
+                "description": "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "query"
+                  ],
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "description": "The user's question or information request"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "checkAppointmentAvailability",
+                "description": "Check available appointment slots for scheduling",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "appointmentType",
+                    "preferredDate"
+                  ],
+                  "properties": {
+                    "appointmentType": {
+                      "type": "string",
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "description": "Type of appointment needed"
+                    },
+                    "preferredDate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Preferred appointment date (YYYY-MM-DD)"
+                    },
+                    "doctorPreference": {
+                      "type": "string",
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha",
+                        "any"
+                      ],
+                      "description": "Preferred doctor"
+                    },
+                    "timePreference": {
+                      "type": "string",
+                      "enum": [
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "any"
+                      ],
+                      "description": "Preferred time of day"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "bookAppointment",
+                "description": "Book an appointment for a patient",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "phoneNumber",
+                    "appointmentType",
+                    "appointmentDateTime"
+                  ],
+                  "properties": {
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient's full name"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "description": "Patient's contact phone number"
+                    },
+                    "appointmentType": {
+                      "type": "string",
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "description": "Type of appointment"
+                    },
+                    "appointmentDateTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Scheduled appointment date and time"
+                    },
+                    "doctorName": {
+                      "type": "string",
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha"
+                      ],
+                      "description": "Assigned doctor"
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Special notes or requests"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "verifyInsurance",
+                "description": "Verify patient's insurance coverage and benefits",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "insuranceProvider",
+                    "memberID"
+                  ],
+                  "properties": {
+                    "insuranceProvider": {
+                      "type": "string",
+                      "description": "Insurance company name"
+                    },
+                    "memberID": {
+                      "type": "string",
+                      "description": "Insurance member ID"
+                    },
+                    "groupNumber": {
+                      "type": "string",
+                      "description": "Group number if available"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name for verification"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "getPatientHistory",
+                "description": "Retrieve patient's appointment and treatment history",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientIdentifier"
+                  ],
+                  "properties": {
+                    "patientIdentifier": {
+                      "type": "string",
+                      "description": "Patient phone number, email, or ID"
+                    },
+                    "includeDetails": {
+                      "type": "boolean",
+                      "description": "Include detailed treatment history",
+                      "default": false
+                    }
+                  }
+                }
+              },
+              {
+                "name": "processPayment",
+                "description": "Process payment or set up payment plan",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "amount",
+                    "paymentType"
+                  ],
+                  "properties": {
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name"
+                    },
+                    "amount": {
+                      "type": "number",
+                      "description": "Payment amount"
+                    },
+                    "paymentType": {
+                      "type": "string",
+                      "enum": [
+                        "full_payment",
+                        "partial_payment",
+                        "payment_plan"
+                      ],
+                      "description": "Type of payment arrangement"
+                    },
+                    "insuranceClaim": {
+                      "type": "boolean",
+                      "description": "Whether to submit insurance claim",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "transfers": {
+            "transfers": [
+              {
+                "id": "scheduler",
+                "type": "assistant",
+                "assistantId": "${SCHEDULER_ASSISTANT_ID}",
+                "description": "Transfer to scheduler for appointment booking and management",
+                "message": "Of course! I'd be happy to help you with that. One moment."
+              },
+              {
+                "id": "manager",
+                "type": "assistant",
+                "assistantId": "${MANAGER_ASSISTANT_ID}",
+                "description": "Transfer to manager for complex issues, complaints, or special requests",
+                "message": "Certainly! Let me pull up your appointment details for you. One moment."
+              },
+              {
+                "id": "emergency_line",
+                "type": "number",
+                "number": "+12125551234",
+                "description": "Transfer to emergency services for medical emergencies",
+                "message": "Oh my, that sounds serious. Please hold while I connect you to our emergency line immediately."
+              },
+              {
+                "id": "billing_department",
+                "type": "number",
+                "number": "${BILLING_PHONE_NUMBER}",
+                "description": "Transfer to billing department for payment and insurance issues",
+                "message": "I'll connect you with our billing specialist who can help with that right away."
+              },
+              {
+                "id": "technical_support",
+                "type": "number",
+                "number": "${TECH_SUPPORT_NUMBER}",
+                "description": "Transfer to technical support for system issues",
+                "message": "Let me connect you with our technical support team to resolve this issue."
+              }
+            ],
+            "rules": [
+              {
+                "trigger": "intent",
+                "intent": "booking",
+                "destination": "scheduler",
+                "description": "Route booking requests to scheduler"
+              },
+              {
+                "trigger": "intent",
+                "intent": "management",
+                "destination": "manager",
+                "description": "Route appointment management to manager"
+              },
+              {
+                "trigger": "intent",
+                "intent": "emergency",
+                "destination": "emergency_line",
+                "description": "Route emergencies to emergency line"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "speak to manager",
+                  "supervisor",
+                  "complaint",
+                  "escalate"
+                ],
+                "destination": "manager",
+                "description": "Escalate to manager on request"
+              },
+              {
+                "trigger": "sentiment",
+                "condition": "sentiment < -0.5",
+                "destination": "manager",
+                "description": "Auto-escalate when patient is very upset"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "severe pain",
+                  "emergency",
+                  "urgent",
+                  "bleeding",
+                  "accident"
+                ],
+                "destination": "emergency_line",
+                "description": "Route urgent dental emergencies"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "billing",
+                  "insurance",
+                  "payment",
+                  "claim",
+                  "coverage"
+                ],
+                "destination": "billing_department",
+                "description": "Route billing and insurance questions"
+              }
+            ]
+          }
+        }
+      },
+      "deployment_state": {
+        "development": {
+          "id": "01400b87-bc4f-4587-9bb7-9238cc48393f",
+          "deployed_at": "2025-09-16T18:06:33.757601+00:00",
+          "deployed_by": "sebr5550",
+          "version": 1
+        },
+        "production": {
+          "id": null,
+          "deployed_at": null,
+          "deployed_by": null,
+          "version": 0
+        },
+        "staging": {
+          "id": null,
+          "deployed_at": null,
+          "deployed_by": null,
+          "version": 0
+        }
+      },
+      "file_contents": {
+        "assistant.yaml": "_vapi:\n  current_environment: development\n  environments:\n    development:\n      deployed_at: '2025-09-16T18:06:33.757601+00:00'\n      deployed_by: sebr5550\n      id: 01400b87-bc4f-4587-9bb7-9238cc48393f\n      version: 1\n    production:\n      deployed_at: null\n      deployed_by: null\n      id: null\n      version: 0\n    staging:\n      deployed_at: null\n      deployed_by: null\n      id: null\n      version: 0\n  last_sync: '2025-09-16T18:06:33.757601+00:00'\nanalysisPlan:\n  minMessagesThreshold: 2\n  structuredDataPlan:\n    enabled: true\n    timeoutSeconds: 15\n  summaryPlan:\n    enabled: true\n    timeoutSeconds: 15\ndescription: AI assistant for Vicky Dental clinic operations\nenvironments:\n  development:\n    firstMessageMode: assistant-speaks-first\n    model:\n      model: gpt-3.5-turbo\n      temperature: 0.8\n  production:\n    firstMessageMode: assistant-speaks-first-with-model-generated-message\n    model:\n      model: gpt-4o-mini\n      temperature: 0.4\n  staging:\n    firstMessageMode: wait-for-user\n    voice:\n      voiceId: socialmedia_female_1_v1\nfeatures:\n  enableAnalytics: true\n  enableRecording: true\n  enableTranscription: true\nfirstMessageMode: assistant-speaks-first-with-model-generated-message\nmetadata:\n  author: Vicky Dental Team\n  tags:\n  - dental-clinic\n  - customer-service\n  - healthcare\n  template: vicky_dental_clinic\n  version: 1.0.0\nmodel:\n  model: gpt-4o-mini\n  provider: openai\n  temperature: 0.6\nname: billing_assistant\nserver:\n  timeoutSeconds: 20\n  url: ${WEBHOOK_URL}/assistants/billing_assistant/webhook\ntranscriber:\n  language: en\n  model: nova-2\n  provider: deepgram\nvoice:\n  provider: minimax\n  voiceId: socialmedia_female_1_v1\n",
+        "update.specs.yaml": " \ud83c\udfd7\ufe0f Architectural Analysis & Recommendations\n\n  Current State Assessment\n\n  Your project already has:\n  - \u2705 Squad models with proper Pydantic structure\n  - \u2705 Squad service with CRUD operations\n  - \u2705 Template system for assistants\n  - \u2705 File-based configuration management\n  - \u2705 Deployment state tracking\n\n  Recommended Approach: File-Based Squad Templates\n\n  Following your established patterns, I recommend extending the template system to support squads with a file-based configuration approach.\n\n  \ud83c\udfaf Recommended Command Structure\n\n  # Basic squad initialization\n  vapi-manager squad init <squad_name> --template <template_name>\n\n  # With optional parameters\n  vapi-manager squad init <squad_name> \\\n      --template dental_clinic_squad \\\n      --assistants scheduler_bot,triage_assistant,billing_assistant \\\n      --description \"Multi-assistant dental clinic squad\" \\\n      --force\n\n  \ud83d\udcc1 Proposed Squad Template Structure\n\n  templates/squads/\n  \u251c\u2500\u2500 dental_clinic_squad/\n  \u2502   \u251c\u2500\u2500 squad.yaml              # Squad configuration\n  \u2502   \u251c\u2500\u2500 members.yaml            # Member definitions & routing\n  \u2502   \u251c\u2500\u2500 overrides/              # Per-member overrides\n  \u2502   \u2502   \u251c\u2500\u2500 transcriber.yaml\n  \u2502   \u2502   \u251c\u2500\u2500 voice.yaml\n  \u2502   \u2502   \u2514\u2500\u2500 model.yaml\n  \u2502   \u2514\u2500\u2500 routing/                # Assistant routing rules\n  \u2502       \u251c\u2500\u2500 destinations.yaml\n  \u2502       \u2514\u2500\u2500 rules.yaml\n  \u2514\u2500\u2500 customer_service_squad/\n      \u251c\u2500\u2500 squad.yaml\n      \u251c\u2500\u2500 members.yaml\n      \u2514\u2500\u2500 ...\n\n  \ud83d\udee0\ufe0f Required Parameters\n\n  | Parameter  | Type     | Description                     | Example                |\n  |------------|----------|---------------------------------|------------------------|\n  | squad_name | Required | Squad identifier/directory name | dental_reception_squad |\n  | --template | Required | Template to use                 | dental_clinic_squad    |\n\n  \u2699\ufe0f Optional Parameters\n\n  | Parameter     | Type   | Default       | Description                     |\n  |---------------|--------|---------------|---------------------------------|\n  | --assistants  | List   | From template | Comma-separated assistant names |\n  | --description | String | From template | Squad description               |\n  | --force       | Flag   | False         | Overwrite existing squad        |\n  | --dir         | String | squads        | Output directory                |\n  | --no-deploy   | Flag   | False         | Don't auto-deploy after init    |\n  | --env         | String | development   | Target environment              |\n\n  \ud83d\udccb Squad Template Example\n\n  templates/squads/dental_clinic_squad/squad.yaml\n  # Squad Configuration Template\n  name: \"{{squad_name}}\"\n  description: \"{{description|Multi-assistant dental clinic reception squad}}\"\n\n  # Default member configuration\n  default_overrides:\n    transcriber:\n      provider: deepgram\n      model: nova-2\n      language: en\n    voice:\n      provider: minimax\n      voiceId: socialmedia_female_1_v1\n    model:\n      provider: openai\n      model: gpt-4o-mini\n      temperature: 0.6\n\n  # Environment-specific overrides\n  environments:\n    development:\n      default_overrides:\n        model:\n          model: gpt-3.5-turbo\n    production:\n      default_overrides:\n        model:\n          model: gpt-4o-mini\n\n  # VAPI Deployment State - Managed by vapi-manager\n  _vapi:\n    environments:\n      development:\n        id: null\n        deployed_at: null\n        deployed_by: null\n        version: 0\n    current_environment: null\n    last_sync: null\n\n  templates/squads/dental_clinic_squad/members.yaml\n  # Squad Members Configuration\n  members:\n    - assistant_name: \"{{assistants[0]|scheduler_bot}}\"\n      role: \"primary_scheduler\"\n      destinations:\n        - type: assistant\n          assistant_name: \"{{assistants[1]|triage_assistant}}\"\n          message: \"Let me connect you with our triage specialist...\"\n        - type: assistant\n          assistant_name: \"{{assistants[2]|billing_assistant}}\"\n          message: \"I'll transfer you to billing for payment questions...\"\n\n    - assistant_name: \"{{assistants[1]|triage_assistant}}\"\n      role: \"medical_triage\"\n      destinations:\n        - type: assistant\n          assistant_name: \"{{assistants[0]|scheduler_bot}}\"\n          message: \"Let me help you schedule that appointment...\"\n        - type: number\n          number: \"${EMERGENCY_LINE}\"\n          message: \"This sounds urgent, connecting you to emergency services...\"\n\n    - assistant_name: \"{{assistants[2]|billing_assistant}}\"\n      role: \"billing_support\"\n      destinations:\n        - type: assistant\n          assistant_name: \"{{assistants[0]|scheduler_bot}}\"\n          message: \"For appointment scheduling, let me connect you...\"\n\n  \ud83d\udd27 Implementation Strategy\n\n  Phase 1: Core Squad Template System\n\n  1. SquadTemplateManager - Extend template system for squads\n  2. SquadConfigLoader - Load squad configurations with member resolution\n  3. CLI Integration - Add squad init command\n\n  Phase 2: Advanced Features\n\n  1. Member Resolution - Auto-resolve assistant IDs from local deployments\n  2. Validation - Ensure all referenced assistants exist\n  3. Deployment Integration - Auto-deploy squad after init\n\n  \ud83d\udca1 Advanced Parameter Options\n\n  # Assistant resolution modes\n  --assistant-mode local        # Use locally deployed assistants\n  --assistant-mode template     # Use template defaults\n  --assistant-mode prompt       # Interactive assistant selection\n\n  # Routing strategy\n  --routing-strategy round_robin\n  --routing-strategy skill_based\n  --routing-strategy load_balanced\n\n  # Member overrides\n  --voice-override \"minimax:socialmedia_female_1_v1\"\n  --model-override \"openai:gpt-4o\"\n  --language en-US\n\n  \ud83d\ude80 Command Usage Examples\n\n  # Initialize with template defaults\n  vapi-manager squad init dental_reception --template dental_clinic_squad\n\n  # Override assistants\n  vapi-manager squad init custom_squad \\\n      --template dental_clinic_squad \\\n      --assistants \"my_scheduler,my_triage,my_billing\"\n\n  # Full customization\n  vapi-manager squad init premium_support \\\n      --template customer_service_squad \\\n      --assistants \"ai_agent_1,ai_agent_2,ai_agent_3\" \\\n      --description \"Premium customer support squad\" \\\n      --voice-override \"elevenlabs:premium_voice\" \\\n      --env production\n\n  \ud83d\udd04 Integration with Existing Workflow\n\n  # Natural workflow progression\n  vapi-manager file init scheduler_bot --template vicky_dental_clinic\n  vapi-manager file init triage_bot --template medical_triage\n  vapi-manager file init billing_bot --template billing_support\n\n  # Deploy assistants individually\n  vapi-manager file create scheduler_bot --env development\n  vapi-manager file create triage_bot --env development\n  vapi-manager file create billing_bot --env development\n\n  # Create and deploy squad\n  vapi-manager squad init clinic_squad \\\n      --template dental_clinic_squad \\\n      --assistants scheduler_bot,triage_bot,billing_bot \\\n      --env development\n\n  # Deploy squad\n  vapi-manager squad create clinic_squad --env development\n\n  \ud83c\udfd7\ufe0f Implementation Priority\n\n  High Priority:\n  - Squad template system\n  - Basic member configuration\n  - Assistant reference resolution\n  - State management integration\n\n  Medium Priority:\n  - Advanced routing strategies\n  - Per-member overrides\n  - Environment-specific configurations\n\n  Low Priority:\n  - Interactive assistant selection\n  - Auto-deployment features\n  - Advanced validation rules\n\n  This approach leverages your existing excellent architecture while extending it naturally to support squads. The file-based approach maintains consistency with your assistant management\n  pattern and provides the flexibility needed for complex multi-assistant scenarios.",
+        "prompts\\first_message.md": "Hi there! Thank you for calling Vicky Dental. This is Sarah... how can I help you today?",
+        "prompts\\system.md": "# Vicky Dental Clinic Assistant\n\nYou are Sarah, an AI assistant at Vicky Dental Clinic. Your personality is warm, empathetic, professional, and genuinely caring. You make patients feel comfortable and heard.\n\n## Core Responsibilities\n\n### Primary Role\nYou are the first point of contact for patients calling Vicky Dental. Your purpose is to:\n- Understand the caller's primary intent\n- Provide helpful information using the knowledge base\n- Route calls to the appropriate specialist when needed\n- Handle appointment scheduling and management\n\n### Personality Traits\n- **Warm and empathetic**: Show genuine care for patient concerns\n- **Professional yet approachable**: Maintain clinical standards while being friendly\n- **Patient and understanding**: Take time to listen and comprehend needs\n- **Solution-oriented**: Focus on helping patients achieve their goals\n\n## Communication Guidelines\n\n### Natural Speech Patterns\n- Use gentle hesitations to sound natural: \"Let me... let me just check that for you.\"\n- Show empathy: \"Oh, I understand that can be concerning...\"\n- Use natural transitions: \"Alright, so...\", \"Hmm, let me see...\"\n- Include thinking pauses: \"One moment while I look that up...\"\n\n### Active Listening\n- Acknowledge patient concerns explicitly\n- Paraphrase to confirm understanding: \"So you're saying that...\"\n- Ask clarifying questions when needed\n- Validate feelings: \"That sounds frustrating, I can help with that.\"\n\n## Knowledge Areas\n\n### Services & Treatments\n- General dentistry (cleanings, fillings, crowns)\n- Cosmetic dentistry (whitening, veneers)\n- Orthodontics (braces, aligners)\n- Oral surgery (extractions, implants)\n- Emergency dental care\n- Pediatric dentistry\n\n### Administrative Support\n- Appointment scheduling and rescheduling\n- Insurance verification and claims\n- Payment plans and financing options\n- Office hours and location information\n- Pre-appointment instructions\n- Post-treatment care guidelines\n\n## Conversation Flow\n\n1. **Greeting**: \"Thank you for calling Vicky Dental, this is Sarah. How can I help you today?\"\n\n2. **Discovery**: Listen carefully and identify the caller's intent:\n   - New appointment booking\n   - Existing appointment management\n   - General questions about services\n   - Emergency dental situations\n   - Billing or insurance inquiries\n\n3. **Action**: Based on their intent:\n   - **Information requests**: Use knowledge base to provide accurate answers\n   - **Appointment needs**: Guide through scheduling process\n   - **Complex issues**: Transfer to appropriate specialist\n   - **Emergencies**: Prioritize and connect to emergency line\n\n4. **Confirmation**: Ensure the caller's needs are met\n   - Summarize what was accomplished\n   - Confirm any scheduled appointments\n   - Provide confirmation numbers or references\n\n5. **Closing**: Professional farewell with follow-up offer\n   - \"Is there anything else I can help you with today?\"\n   - \"Thank you for calling Vicky Dental, have a great day!\"\n\n## Call Routing Guidelines\n\n### Transfer to Scheduler\n- New patient appointments\n- Routine cleaning appointments\n- Consultation requests\n- Multiple appointment scheduling\n\n### Transfer to Manager\n- Complex insurance issues\n- Billing disputes\n- Complaints or concerns\n- Special accommodation requests\n\n### Emergency Protocol\n- Severe pain or trauma\n- Dental emergencies\n- After-hours urgent care needs\n\n## Important Rules\n\n### Do's\n- Always maintain patient confidentiality\n- Verify patient information before discussing details\n- Use the knowledge base to provide accurate information\n- Be patient with elderly or anxious callers\n- Offer alternatives when primary options aren't available\n\n### Don'ts\n- Never make medical diagnoses or give medical advice\n- Don't make promises about treatment outcomes\n- Don't discuss other patients' information\n- Don't bypass verification procedures\n- Don't rush patients who need time to explain their situation\n\n## Knowledge Base Usage\n\nWhen patients ask about:\n- **Services and pricing**: Use knowledge base search\n- **Office policies**: Reference current policy documents\n- **Treatment procedures**: Provide general information, refer to doctor for specifics\n- **Insurance coverage**: Use knowledge base, verify with patient's specific plan\n\nAlways search the knowledge base before providing information to ensure accuracy and current pricing.\n\n## Error Handling\n\n- **System issues**: \"I apologize, our system is temporarily unavailable. Let me take your information and have someone call you back.\"\n- **Unknown information**: \"That's a great question. Let me connect you with someone who can give you the most accurate information.\"\n- **Busy schedule**: \"I understand you need to be seen soon. Let me check for any cancellations or openings with our other providers.\"\n\nRemember: You represent Vicky Dental's commitment to excellent patient care in every interaction.",
+        "schemas\\structured_data.yaml": "# Vicky Dental Clinic - Call Data Extraction Schema\n\ntype: object\nrequired:\n  - call_type\n  - transferred_to\n  - sentimentAnalysis\n  - leadScoring\n\nproperties:\n  # Patient Information\n  firstName:\n    type: string\n    description: \"Patient's first name if collected\"\n\n  lastName:\n    type: string\n    description: \"Patient's last name if collected\"\n\n  phoneNumber:\n    type: string\n    description: \"Patient's phone number if collected\"\n\n  # Call Classification\n  call_type:\n    type: string\n    enum:\n      - emergency\n      - informational\n      - booking\n      - management\n    description: \"Primary purpose of the call\"\n\n  # Transfer Routing\n  transferred_to:\n    type: string\n    enum:\n      - emergency_line\n      - scheduler\n      - manager\n      - none\n    description: \"Where the call was transferred\"\n\n  # Appointment Details\n  appointmentType:\n    type: string\n    enum:\n      - cleaning\n      - checkup\n      - consultation\n      - procedure\n      - emergency\n      - not_specified\n    description: \"Type of appointment discussed\"\n\n  appointmentDateTime:\n    type: string\n    description: \"Appointment date/time if discussed (format: YYYY-MM-DD HH:MM)\"\n\n  doctorName:\n    type: string\n    enum:\n      - Daniel\n      - James\n      - Metha\n      - not_specified\n    description: \"Doctor preference mentioned or suggested\"\n\n  # Sentiment Analysis\n  sentimentAnalysis:\n    type: object\n    required:\n      - urgency\n      - hesitation\n      - positivity\n    properties:\n      urgency:\n        type: string\n        enum:\n          - low\n          - medium\n          - high\n          - emergency\n        description: \"Level of urgency expressed by patient\"\n\n      hesitation:\n        type: string\n        enum:\n          - none\n          - slight\n          - moderate\n          - significant\n        description: \"Patient's hesitation level about booking\"\n\n      positivity:\n        type: string\n        enum:\n          - negative\n          - neutral\n          - positive\n          - very_positive\n        description: \"Overall emotional tone of the patient\"\n\n  # Lead Scoring\n  leadScoring:\n    type: string\n    enum:\n      - hot\n      - warm\n      - cold\n    description: \"Lead quality: hot=booked, warm=rescheduled/interested, cold=not_booked\"\n\n  # Dental-Specific Information\n  dentalConcern:\n    type: string\n    description: \"Primary dental concern or reason for calling\"\n\n  painLevel:\n    type: integer\n    minimum: 0\n    maximum: 10\n    description: \"Pain level on scale of 0-10 if mentioned\"\n\n  insuranceProvider:\n    type: string\n    description: \"Insurance provider if mentioned\"\n\n  lastVisit:\n    type: string\n    description: \"When patient last visited the clinic\"\n\n  # Call Outcome\n  callSuccessful:\n    type: boolean\n    description: \"Whether the call achieved the desired outcome\"\n\n  followUpRequired:\n    type: boolean\n    description: \"Whether follow-up is needed\"\n\n  notes:\n    type: string\n    description: \"Additional notes about the call\"",
+        "tools\\functions.yaml": "# Vicky Dental Clinic Function Tools\n\nfunctions:\n  - name: queryKnowledgeBase\n    description: \"Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions\"\n    parameters:\n      type: object\n      required:\n        - query\n      properties:\n        query:\n          type: string\n          description: \"The user's question or information request\"\n\n  - name: checkAppointmentAvailability\n    description: \"Check available appointment slots for scheduling\"\n    parameters:\n      type: object\n      required:\n        - appointmentType\n        - preferredDate\n      properties:\n        appointmentType:\n          type: string\n          enum:\n            - cleaning\n            - checkup\n            - consultation\n            - emergency\n            - procedure\n          description: \"Type of appointment needed\"\n        preferredDate:\n          type: string\n          format: date\n          description: \"Preferred appointment date (YYYY-MM-DD)\"\n        doctorPreference:\n          type: string\n          enum:\n            - Daniel\n            - James\n            - Metha\n            - any\n          description: \"Preferred doctor\"\n        timePreference:\n          type: string\n          enum:\n            - morning\n            - afternoon\n            - evening\n            - any\n          description: \"Preferred time of day\"\n\n  - name: bookAppointment\n    description: \"Book an appointment for a patient\"\n    parameters:\n      type: object\n      required:\n        - patientName\n        - phoneNumber\n        - appointmentType\n        - appointmentDateTime\n      properties:\n        patientName:\n          type: string\n          description: \"Patient's full name\"\n        phoneNumber:\n          type: string\n          description: \"Patient's contact phone number\"\n        appointmentType:\n          type: string\n          enum:\n            - cleaning\n            - checkup\n            - consultation\n            - emergency\n            - procedure\n          description: \"Type of appointment\"\n        appointmentDateTime:\n          type: string\n          format: date-time\n          description: \"Scheduled appointment date and time\"\n        doctorName:\n          type: string\n          enum:\n            - Daniel\n            - James\n            - Metha\n          description: \"Assigned doctor\"\n        notes:\n          type: string\n          description: \"Special notes or requests\"\n\n  - name: verifyInsurance\n    description: \"Verify patient's insurance coverage and benefits\"\n    parameters:\n      type: object\n      required:\n        - insuranceProvider\n        - memberID\n      properties:\n        insuranceProvider:\n          type: string\n          description: \"Insurance company name\"\n        memberID:\n          type: string\n          description: \"Insurance member ID\"\n        groupNumber:\n          type: string\n          description: \"Group number if available\"\n        patientName:\n          type: string\n          description: \"Patient name for verification\"\n\n  - name: getPatientHistory\n    description: \"Retrieve patient's appointment and treatment history\"\n    parameters:\n      type: object\n      required:\n        - patientIdentifier\n      properties:\n        patientIdentifier:\n          type: string\n          description: \"Patient phone number, email, or ID\"\n        includeDetails:\n          type: boolean\n          description: \"Include detailed treatment history\"\n          default: false\n\n  - name: processPayment\n    description: \"Process payment or set up payment plan\"\n    parameters:\n      type: object\n      required:\n        - patientName\n        - amount\n        - paymentType\n      properties:\n        patientName:\n          type: string\n          description: \"Patient name\"\n        amount:\n          type: number\n          description: \"Payment amount\"\n        paymentType:\n          type: string\n          enum:\n            - full_payment\n            - partial_payment\n            - payment_plan\n          description: \"Type of payment arrangement\"\n        insuranceClaim:\n          type: boolean\n          description: \"Whether to submit insurance claim\"\n          default: false",
+        "tools\\transfers.yaml": "# Vicky Dental Clinic Transfer Destinations\n\ntransfers:\n  - id: scheduler\n    type: assistant\n    assistantId: \"${SCHEDULER_ASSISTANT_ID}\"\n    description: \"Transfer to scheduler for appointment booking and management\"\n    message: \"Of course! I'd be happy to help you with that. One moment.\"\n\n  - id: manager\n    type: assistant\n    assistantId: \"${MANAGER_ASSISTANT_ID}\"\n    description: \"Transfer to manager for complex issues, complaints, or special requests\"\n    message: \"Certainly! Let me pull up your appointment details for you. One moment.\"\n\n  - id: emergency_line\n    type: number\n    number: \"+12125551234\"\n    description: \"Transfer to emergency services for medical emergencies\"\n    message: \"Oh my, that sounds serious. Please hold while I connect you to our emergency line immediately.\"\n\n  - id: billing_department\n    type: number\n    number: \"${BILLING_PHONE_NUMBER}\"\n    description: \"Transfer to billing department for payment and insurance issues\"\n    message: \"I'll connect you with our billing specialist who can help with that right away.\"\n\n  - id: technical_support\n    type: number\n    number: \"${TECH_SUPPORT_NUMBER}\"\n    description: \"Transfer to technical support for system issues\"\n    message: \"Let me connect you with our technical support team to resolve this issue.\"\n\n# Transfer Rules and Conditions\nrules:\n  - trigger: \"intent\"\n    intent: \"booking\"\n    destination: \"scheduler\"\n    description: \"Route booking requests to scheduler\"\n\n  - trigger: \"intent\"\n    intent: \"management\"\n    destination: \"manager\"\n    description: \"Route appointment management to manager\"\n\n  - trigger: \"intent\"\n    intent: \"emergency\"\n    destination: \"emergency_line\"\n    description: \"Route emergencies to emergency line\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"speak to manager\"\n      - \"supervisor\"\n      - \"complaint\"\n      - \"escalate\"\n    destination: \"manager\"\n    description: \"Escalate to manager on request\"\n\n  - trigger: \"sentiment\"\n    condition: \"sentiment < -0.5\"\n    destination: \"manager\"\n    description: \"Auto-escalate when patient is very upset\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"severe pain\"\n      - \"emergency\"\n      - \"urgent\"\n      - \"bleeding\"\n      - \"accident\"\n    destination: \"emergency_line\"\n    description: \"Route urgent dental emergencies\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"billing\"\n      - \"insurance\"\n      - \"payment\"\n      - \"claim\"\n      - \"coverage\"\n    destination: \"billing_department\"\n    description: \"Route billing and insurance questions\""
+      },
+      "backup_timestamp": "2025-09-16T18:31:43.467649+00:00"
+    },
+    {
+      "assistant_name": "example_assistant",
+      "vapi_data": null,
+      "local_config": {
+        "config": {
+          "name": "Customer Service Assistant",
+          "description": "An intelligent assistant for handling customer inquiries",
+          "voice": {
+            "provider": "minimax",
+            "voiceId": "socialmedia_female_1_v1",
+            "speed": 1.0,
+            "stability": 0.8
+          },
+          "model": {
+            "provider": "openai",
+            "model": "gpt-3.5-turbo",
+            "temperature": 0.8,
+            "maxTokens": 500
+          },
+          "transcriber": {
+            "provider": "deepgram",
+            "model": "nova-2",
+            "language": "en"
+          },
+          "server": {
+            "url": "${WEBHOOK_URL}/assistants/webhook",
+            "secret": "${WEBHOOK_SECRET}",
+            "timeoutSeconds": 20
+          },
+          "features": {
+            "enableAnalytics": true,
+            "enableRecording": false,
+            "enableTranscription": true
+          },
+          "metadata": {
+            "version": "1.0.0",
+            "author": "Team Name",
+            "lastUpdated": "2024-01-15",
+            "tags": [
+              "customer-service",
+              "tier-1-support"
+            ]
+          }
+        },
+        "schemas": {
+          "structured_data": {
+            "type": "object",
+            "required": [
+              "customerIntent",
+              "sentimentScore",
+              "issueResolved"
+            ],
+            "properties": {
+              "customerInfo": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "description": "Customer's first name if provided"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "Customer's last name if provided"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Customer's email if provided"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "description": "Customer's phone number if provided"
+                  },
+                  "customerId": {
+                    "type": "string",
+                    "description": "Customer ID if mentioned"
+                  }
+                }
+              },
+              "customerIntent": {
+                "type": "string",
+                "enum": [
+                  "purchase_inquiry",
+                  "technical_support",
+                  "billing_issue",
+                  "return_exchange",
+                  "general_question",
+                  "complaint",
+                  "feedback"
+                ],
+                "description": "Primary reason for the call"
+              },
+              "sentimentScore": {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1,
+                "description": "Customer sentiment (-1 very negative to 1 very positive)"
+              },
+              "emotionalState": {
+                "type": "string",
+                "enum": [
+                  "calm",
+                  "frustrated",
+                  "angry",
+                  "happy",
+                  "confused",
+                  "anxious"
+                ],
+                "description": "Customer's emotional state during the call"
+              },
+              "issueDetails": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "description": "Issue category"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Detailed description of the issue"
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "urgent"
+                    ],
+                    "description": "Issue priority level"
+                  }
+                }
+              },
+              "issueResolved": {
+                "type": "boolean",
+                "description": "Whether the issue was resolved during the call"
+              },
+              "resolutionDetails": {
+                "type": "string",
+                "description": "How the issue was resolved"
+              },
+              "followUpRequired": {
+                "type": "boolean",
+                "description": "Whether follow-up is needed"
+              },
+              "callMetrics": {
+                "type": "object",
+                "properties": {
+                  "callDuration": {
+                    "type": "number",
+                    "description": "Call duration in seconds"
+                  },
+                  "numberOfTransfers": {
+                    "type": "integer",
+                    "description": "Number of times call was transferred"
+                  },
+                  "holdTime": {
+                    "type": "number",
+                    "description": "Total hold time in seconds"
+                  }
+                }
+              },
+              "actionItems": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "action": {
+                      "type": "string",
+                      "description": "Action to be taken"
+                    },
+                    "assignedTo": {
+                      "type": "string",
+                      "description": "Team or person responsible"
+                    },
+                    "deadline": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Deadline for the action"
+                    }
+                  }
+                }
+              },
+              "notes": {
+                "type": "string",
+                "description": "Additional notes or observations from the call"
+              }
+            }
+          }
+        },
+        "tools": {
+          "functions": {
+            "functions": [
+              {
+                "name": "checkOrderStatus",
+                "description": "Check the status of a customer's order",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "orderId"
+                  ],
+                  "properties": {
+                    "orderId": {
+                      "type": "string",
+                      "description": "The order ID to check"
+                    },
+                    "includeDetails": {
+                      "type": "boolean",
+                      "description": "Whether to include detailed order information",
+                      "default": false
+                    }
+                  }
+                }
+              },
+              {
+                "name": "searchKnowledgeBase",
+                "description": "Search the company knowledge base for information",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "query"
+                  ],
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "description": "The search query"
+                    },
+                    "category": {
+                      "type": "string",
+                      "enum": [
+                        "products",
+                        "policies",
+                        "troubleshooting",
+                        "faqs"
+                      ],
+                      "description": "Category to search within"
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "description": "Maximum number of results",
+                      "default": 5
+                    }
+                  }
+                }
+              },
+              {
+                "name": "createTicket",
+                "description": "Create a support ticket for follow-up",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "description",
+                    "priority"
+                  ],
+                  "properties": {
+                    "description": {
+                      "type": "string",
+                      "description": "Detailed description of the issue"
+                    },
+                    "priority": {
+                      "type": "string",
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high",
+                        "urgent"
+                      ],
+                      "description": "Ticket priority"
+                    },
+                    "customerId": {
+                      "type": "string",
+                      "description": "Customer ID"
+                    },
+                    "category": {
+                      "type": "string",
+                      "description": "Issue category"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "scheduleCallback",
+                "description": "Schedule a callback for the customer",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "phoneNumber",
+                    "preferredTime"
+                  ],
+                  "properties": {
+                    "phoneNumber": {
+                      "type": "string",
+                      "description": "Phone number to call back"
+                    },
+                    "preferredTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Preferred callback time"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "description": "Reason for callback"
+                    },
+                    "agentId": {
+                      "type": "string",
+                      "description": "Specific agent to handle callback"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "processReturn",
+                "description": "Initiate a return or exchange process",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "orderId",
+                    "items",
+                    "reason"
+                  ],
+                  "properties": {
+                    "orderId": {
+                      "type": "string",
+                      "description": "Order ID for the return"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "itemId": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "description": "Items to return"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "defective",
+                        "wrong_item",
+                        "not_as_described",
+                        "no_longer_needed",
+                        "other"
+                      ],
+                      "description": "Reason for return"
+                    },
+                    "action": {
+                      "type": "string",
+                      "enum": [
+                        "refund",
+                        "exchange"
+                      ],
+                      "description": "Desired action",
+                      "default": "refund"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "transfers": {
+            "transfers": [
+              {
+                "id": "technical_support",
+                "type": "assistant",
+                "assistantId": "${TECH_SUPPORT_ASSISTANT_ID}",
+                "description": "Transfer to technical support for complex technical issues",
+                "message": "I'll transfer you to our technical support team who can better assist with this issue."
+              },
+              {
+                "id": "billing_department",
+                "type": "number",
+                "number": "+1-555-BILLING",
+                "description": "Transfer to billing department for payment issues",
+                "message": "Let me connect you with our billing department to help with your payment question."
+              },
+              {
+                "id": "sales_team",
+                "type": "squad",
+                "squadId": "${SALES_SQUAD_ID}",
+                "description": "Transfer to sales team for product inquiries and purchases",
+                "message": "I'll connect you with our sales team who can help you with that product."
+              },
+              {
+                "id": "manager",
+                "type": "assistant",
+                "assistantId": "${MANAGER_ASSISTANT_ID}",
+                "description": "Escalate to manager for complaints or special requests",
+                "message": "I understand your concern. Let me get my manager to assist you better."
+              },
+              {
+                "id": "emergency",
+                "type": "number",
+                "number": "911",
+                "description": "Emergency services for urgent situations",
+                "message": "This seems like an emergency. I'm connecting you to emergency services immediately."
+              }
+            ],
+            "rules": [
+              {
+                "trigger": "customer_sentiment",
+                "condition": "sentiment < -0.5",
+                "destination": "manager",
+                "description": "Auto-escalate to manager when customer is very upset"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "speak to manager",
+                  "supervisor",
+                  "escalate"
+                ],
+                "destination": "manager"
+              },
+              {
+                "trigger": "intent",
+                "intent": "technical_support",
+                "destination": "technical_support"
+              },
+              {
+                "trigger": "intent",
+                "intent": "billing_issue",
+                "destination": "billing_department"
+              }
+            ]
+          }
+        }
+      },
+      "deployment_state": {
+        "development": {
+          "id": null,
+          "deployed_at": null,
+          "deployed_by": null,
+          "version": 0
+        },
+        "staging": {
+          "id": null,
+          "deployed_at": null,
+          "deployed_by": null,
+          "version": 0
+        },
+        "production": {
+          "id": null,
+          "deployed_at": null,
+          "deployed_by": null,
+          "version": 0
+        }
+      },
+      "file_contents": {
+        "assistant.yaml": "# Assistant Configuration\n# This file defines the main configuration and can override any default values\n\nname: \"Customer Service Assistant\"\ndescription: \"An intelligent assistant for handling customer inquiries\"\n\n# Voice Configuration\nvoice:\n  provider: minimax\n  voiceId: socialmedia_female_1_v1\n  speed: 1.0\n  stability: 0.8\n\n# Model Configuration\nmodel:\n  provider: openai\n  model: gpt-4o-mini\n  temperature: 0.6\n  maxTokens: 500\n\n# Transcriber Configuration\ntranscriber:\n  provider: deepgram\n  model: nova-2\n  language: en\n\n# Environment-specific overrides\nenvironments:\n  development:\n    model:\n      model: gpt-3.5-turbo  # Use cheaper model in dev\n      temperature: 0.8\n  staging:\n    voice:\n      speed: 1.1\n  production:\n    model:\n      model: gpt-4o\n      temperature: 0.4\n\n# Server configuration\nserver:\n  url: \"${WEBHOOK_URL}/assistants/webhook\"\n  secret: \"${WEBHOOK_SECRET}\"\n  timeoutSeconds: 20\n\n# Feature flags\nfeatures:\n  enableAnalytics: true\n  enableRecording: false\n  enableTranscription: true\n\n# Metadata\nmetadata:\n  version: \"1.0.0\"\n  author: \"Team Name\"\n  lastUpdated: \"2024-01-15\"\n  tags:\n    - customer-service\n    - tier-1-support",
+        "prompts\\first_message.md": "Hi there! Thank you for calling. This is Sarah from customer service. How can I help you today?",
+        "prompts\\system.md": "# System Prompt\n\nYou are Sarah, a friendly and professional customer service representative for our company.\n\n## Core Personality Traits\n- Warm and empathetic\n- Professional yet approachable\n- Solution-oriented\n- Patient and understanding\n\n## Communication Guidelines\n\n### Tone and Style\n- Use natural, conversational language\n- Include gentle hesitations to sound human (e.g., \"Let me... let me check that for you\")\n- Show empathy with phrases like \"I understand that can be frustrating\"\n- Use thinking pauses naturally (e.g., \"Hmm, let me see...\")\n\n### Active Listening\n- Acknowledge customer concerns explicitly\n- Paraphrase to confirm understanding\n- Ask clarifying questions when needed\n\n## Knowledge Base\n- You have access to our complete product catalog\n- You can check order status and shipping information\n- You can process returns and exchanges\n- You can escalate to specialized teams when needed\n\n## Conversation Flow\n\n1. **Greeting**: Warm welcome and ask how you can help\n2. **Discovery**: Understand the customer's needs or issues\n3. **Solution**: Provide helpful information or take action\n4. **Confirmation**: Ensure the customer is satisfied\n5. **Closing**: Professional farewell with follow-up offer\n\n## Important Rules\n- Never make promises you cannot keep\n- Always verify customer information before making changes\n- Escalate complex technical issues to the appropriate team\n- Maintain confidentiality of customer data\n\n## Error Handling\n- If you don't know something, admit it and offer to find out\n- If a system is down, apologize and provide alternatives\n- If a request is impossible, explain why and offer alternatives",
+        "schemas\\structured_data.yaml": "# Structured Data Extraction Schema\n# Defines what data to extract from conversations\n\ntype: object\nrequired:\n  - customerIntent\n  - sentimentScore\n  - issueResolved\n\nproperties:\n  # Customer Information\n  customerInfo:\n    type: object\n    properties:\n      firstName:\n        type: string\n        description: \"Customer's first name if provided\"\n      lastName:\n        type: string\n        description: \"Customer's last name if provided\"\n      email:\n        type: string\n        format: email\n        description: \"Customer's email if provided\"\n      phone:\n        type: string\n        description: \"Customer's phone number if provided\"\n      customerId:\n        type: string\n        description: \"Customer ID if mentioned\"\n\n  # Conversation Analysis\n  customerIntent:\n    type: string\n    enum:\n      - purchase_inquiry\n      - technical_support\n      - billing_issue\n      - return_exchange\n      - general_question\n      - complaint\n      - feedback\n    description: \"Primary reason for the call\"\n\n  sentimentScore:\n    type: number\n    minimum: -1\n    maximum: 1\n    description: \"Customer sentiment (-1 very negative to 1 very positive)\"\n\n  emotionalState:\n    type: string\n    enum:\n      - calm\n      - frustrated\n      - angry\n      - happy\n      - confused\n      - anxious\n    description: \"Customer's emotional state during the call\"\n\n  # Issue Details\n  issueDetails:\n    type: object\n    properties:\n      category:\n        type: string\n        description: \"Issue category\"\n      description:\n        type: string\n        description: \"Detailed description of the issue\"\n      priority:\n        type: string\n        enum: [low, medium, high, urgent]\n        description: \"Issue priority level\"\n\n  # Resolution\n  issueResolved:\n    type: boolean\n    description: \"Whether the issue was resolved during the call\"\n\n  resolutionDetails:\n    type: string\n    description: \"How the issue was resolved\"\n\n  followUpRequired:\n    type: boolean\n    description: \"Whether follow-up is needed\"\n\n  # Metrics\n  callMetrics:\n    type: object\n    properties:\n      callDuration:\n        type: number\n        description: \"Call duration in seconds\"\n      numberOfTransfers:\n        type: integer\n        description: \"Number of times call was transferred\"\n      holdTime:\n        type: number\n        description: \"Total hold time in seconds\"\n\n  # Action Items\n  actionItems:\n    type: array\n    items:\n      type: object\n      properties:\n        action:\n          type: string\n          description: \"Action to be taken\"\n        assignedTo:\n          type: string\n          description: \"Team or person responsible\"\n        deadline:\n          type: string\n          format: date-time\n          description: \"Deadline for the action\"\n\n  # Additional Notes\n  notes:\n    type: string\n    description: \"Additional notes or observations from the call\"",
+        "tools\\functions.yaml": "# Function Tool Definitions\n# Define custom functions that the assistant can call\n\nfunctions:\n  - name: checkOrderStatus\n    description: \"Check the status of a customer's order\"\n    parameters:\n      type: object\n      required:\n        - orderId\n      properties:\n        orderId:\n          type: string\n          description: \"The order ID to check\"\n        includeDetails:\n          type: boolean\n          description: \"Whether to include detailed order information\"\n          default: false\n\n  - name: searchKnowledgeBase\n    description: \"Search the company knowledge base for information\"\n    parameters:\n      type: object\n      required:\n        - query\n      properties:\n        query:\n          type: string\n          description: \"The search query\"\n        category:\n          type: string\n          enum:\n            - products\n            - policies\n            - troubleshooting\n            - faqs\n          description: \"Category to search within\"\n        limit:\n          type: integer\n          description: \"Maximum number of results\"\n          default: 5\n\n  - name: createTicket\n    description: \"Create a support ticket for follow-up\"\n    parameters:\n      type: object\n      required:\n        - description\n        - priority\n      properties:\n        description:\n          type: string\n          description: \"Detailed description of the issue\"\n        priority:\n          type: string\n          enum: [low, medium, high, urgent]\n          description: \"Ticket priority\"\n        customerId:\n          type: string\n          description: \"Customer ID\"\n        category:\n          type: string\n          description: \"Issue category\"\n\n  - name: scheduleCallback\n    description: \"Schedule a callback for the customer\"\n    parameters:\n      type: object\n      required:\n        - phoneNumber\n        - preferredTime\n      properties:\n        phoneNumber:\n          type: string\n          description: \"Phone number to call back\"\n        preferredTime:\n          type: string\n          format: date-time\n          description: \"Preferred callback time\"\n        reason:\n          type: string\n          description: \"Reason for callback\"\n        agentId:\n          type: string\n          description: \"Specific agent to handle callback\"\n\n  - name: processReturn\n    description: \"Initiate a return or exchange process\"\n    parameters:\n      type: object\n      required:\n        - orderId\n        - items\n        - reason\n      properties:\n        orderId:\n          type: string\n          description: \"Order ID for the return\"\n        items:\n          type: array\n          items:\n            type: object\n            properties:\n              itemId:\n                type: string\n              quantity:\n                type: integer\n          description: \"Items to return\"\n        reason:\n          type: string\n          enum:\n            - defective\n            - wrong_item\n            - not_as_described\n            - no_longer_needed\n            - other\n          description: \"Reason for return\"\n        action:\n          type: string\n          enum: [refund, exchange]\n          description: \"Desired action\"\n          default: refund",
+        "tools\\transfers.yaml": "# Transfer Destinations Configuration\n# Define where calls can be transferred\n\ntransfers:\n  - id: technical_support\n    type: assistant\n    assistantId: \"${TECH_SUPPORT_ASSISTANT_ID}\"\n    description: \"Transfer to technical support for complex technical issues\"\n    message: \"I'll transfer you to our technical support team who can better assist with this issue.\"\n\n  - id: billing_department\n    type: number\n    number: \"+1-555-BILLING\"\n    description: \"Transfer to billing department for payment issues\"\n    message: \"Let me connect you with our billing department to help with your payment question.\"\n\n  - id: sales_team\n    type: squad\n    squadId: \"${SALES_SQUAD_ID}\"\n    description: \"Transfer to sales team for product inquiries and purchases\"\n    message: \"I'll connect you with our sales team who can help you with that product.\"\n\n  - id: manager\n    type: assistant\n    assistantId: \"${MANAGER_ASSISTANT_ID}\"\n    description: \"Escalate to manager for complaints or special requests\"\n    message: \"I understand your concern. Let me get my manager to assist you better.\"\n\n  - id: emergency\n    type: number\n    number: \"911\"\n    description: \"Emergency services for urgent situations\"\n    message: \"This seems like an emergency. I'm connecting you to emergency services immediately.\"\n\n# Transfer Rules and Conditions\nrules:\n  - trigger: \"customer_sentiment\"\n    condition: \"sentiment < -0.5\"\n    destination: \"manager\"\n    description: \"Auto-escalate to manager when customer is very upset\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"speak to manager\"\n      - \"supervisor\"\n      - \"escalate\"\n    destination: \"manager\"\n\n  - trigger: \"intent\"\n    intent: \"technical_support\"\n    destination: \"technical_support\"\n\n  - trigger: \"intent\"\n    intent: \"billing_issue\"\n    destination: \"billing_department\""
+      },
+      "backup_timestamp": "2025-09-16T18:31:44.217960+00:00"
+    },
+    {
+      "assistant_name": "scheduler_bot",
+      "vapi_data": {
+        "id": "10839fd4-90a4-46af-b730-13ca99ec3fb6",
+        "orgId": "66efc01a-e805-4865-905e-e5c06d284a84",
+        "name": "scheduler_bot",
+        "voice": {
+          "voiceId": "socialmedia_female_1_v1",
+          "provider": "minimax"
+        },
+        "model": {
+          "model": "gpt-3.5-turbo",
+          "provider": "openai",
+          "temperature": 0.8,
+          "tools": [
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "queryKnowledgeBase",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "query"
+                  ],
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "description": "The user's question or information request"
+                    }
+                  }
+                },
+                "description": "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "checkAppointmentAvailability",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "appointmentType",
+                    "preferredDate"
+                  ],
+                  "properties": {
+                    "preferredDate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Preferred appointment date (YYYY-MM-DD)"
+                    },
+                    "timePreference": {
+                      "enum": [
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "any"
+                      ],
+                      "type": "string",
+                      "description": "Preferred time of day"
+                    },
+                    "appointmentType": {
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "type": "string",
+                      "description": "Type of appointment needed"
+                    },
+                    "doctorPreference": {
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha",
+                        "any"
+                      ],
+                      "type": "string",
+                      "description": "Preferred doctor"
+                    }
+                  }
+                },
+                "description": "Check available appointment slots for scheduling"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "bookAppointment",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "phoneNumber",
+                    "appointmentType",
+                    "appointmentDateTime"
+                  ],
+                  "properties": {
+                    "notes": {
+                      "type": "string",
+                      "description": "Special notes or requests"
+                    },
+                    "doctorName": {
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha"
+                      ],
+                      "type": "string",
+                      "description": "Assigned doctor"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient's full name"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "description": "Patient's contact phone number"
+                    },
+                    "appointmentType": {
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "type": "string",
+                      "description": "Type of appointment"
+                    },
+                    "appointmentDateTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Scheduled appointment date and time"
+                    }
+                  }
+                },
+                "description": "Book an appointment for a patient"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "verifyInsurance",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "insuranceProvider",
+                    "memberID"
+                  ],
+                  "properties": {
+                    "memberID": {
+                      "type": "string",
+                      "description": "Insurance member ID"
+                    },
+                    "groupNumber": {
+                      "type": "string",
+                      "description": "Group number if available"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name for verification"
+                    },
+                    "insuranceProvider": {
+                      "type": "string",
+                      "description": "Insurance company name"
+                    }
+                  }
+                },
+                "description": "Verify patient's insurance coverage and benefits"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "getPatientHistory",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientIdentifier"
+                  ],
+                  "properties": {
+                    "includeDetails": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Include detailed treatment history"
+                    },
+                    "patientIdentifier": {
+                      "type": "string",
+                      "description": "Patient phone number, email, or ID"
+                    }
+                  }
+                },
+                "description": "Retrieve patient's appointment and treatment history"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "processPayment",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "amount",
+                    "paymentType"
+                  ],
+                  "properties": {
+                    "amount": {
+                      "type": "number",
+                      "description": "Payment amount"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name"
+                    },
+                    "paymentType": {
+                      "enum": [
+                        "full_payment",
+                        "partial_payment",
+                        "payment_plan"
+                      ],
+                      "type": "string",
+                      "description": "Type of payment arrangement"
+                    },
+                    "insuranceClaim": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Whether to submit insurance claim"
+                    }
+                  }
+                },
+                "description": "Process payment or set up payment plan"
+              }
+            },
+            {
+              "type": "transferCall",
+              "destinations": [
+                {
+                  "type": "number",
+                  "number": "+12125551234",
+                  "description": "Transfer to emergency services for medical emergencies"
+                }
+              ],
+              "server": null,
+              "function": null
+            },
+            {
+              "type": "endCall",
+              "destinations": null,
+              "server": null,
+              "function": null
+            }
+          ],
+          "toolIds": null,
+          "messages": [
+            {
+              "role": "system",
+              "content": "# Vicky Dental Clinic Assistant\n\nYou are Sarah, an AI assistant at Vicky Dental Clinic. Your personality is warm, empathetic, professional, and genuinely caring. You make patients feel comfortable and heard.\n\n## Core Responsibilities\n\n### Primary Role\nYou are the first point of contact for patients calling Vicky Dental. Your purpose is to:\n- Understand the caller's primary intent\n- Provide helpful information using the knowledge base\n- Route calls to the appropriate specialist when needed\n- Handle appointment scheduling and management\n\n### Personality Traits\n- **Warm and empathetic**: Show genuine care for patient concerns\n- **Professional yet approachable**: Maintain clinical standards while being friendly\n- **Patient and understanding**: Take time to listen and comprehend needs\n- **Solution-oriented**: Focus on helping patients achieve their goals\n\n## Communication Guidelines\n\n### Natural Speech Patterns\n- Use gentle hesitations to sound natural: \"Let me... let me just check that for you.\"\n- Show empathy: \"Oh, I understand that can be concerning...\"\n- Use natural transitions: \"Alright, so...\", \"Hmm, let me see...\"\n- Include thinking pauses: \"One moment while I look that up...\"\n\n### Active Listening\n- Acknowledge patient concerns explicitly\n- Paraphrase to confirm understanding: \"So you're saying that...\"\n- Ask clarifying questions when needed\n- Validate feelings: \"That sounds frustrating, I can help with that.\"\n\n## Knowledge Areas\n\n### Services & Treatments\n- General dentistry (cleanings, fillings, crowns)\n- Cosmetic dentistry (whitening, veneers)\n- Orthodontics (braces, aligners)\n- Oral surgery (extractions, implants)\n- Emergency dental care\n- Pediatric dentistry\n\n### Administrative Support\n- Appointment scheduling and rescheduling\n- Insurance verification and claims\n- Payment plans and financing options\n- Office hours and location information\n- Pre-appointment instructions\n- Post-treatment care guidelines\n\n## Conversation Flow\n\n1. **Greeting**: \"Thank you for calling Vicky Dental, this is Sarah. How can I help you today?\"\n\n2. **Discovery**: Listen carefully and identify the caller's intent:\n   - New appointment booking\n   - Existing appointment management\n   - General questions about services\n   - Emergency dental situations\n   - Billing or insurance inquiries\n\n3. **Action**: Based on their intent:\n   - **Information requests**: Use knowledge base to provide accurate answers\n   - **Appointment needs**: Guide through scheduling process\n   - **Complex issues**: Transfer to appropriate specialist\n   - **Emergencies**: Prioritize and connect to emergency line\n\n4. **Confirmation**: Ensure the caller's needs are met\n   - Summarize what was accomplished\n   - Confirm any scheduled appointments\n   - Provide confirmation numbers or references\n\n5. **Closing**: Professional farewell with follow-up offer\n   - \"Is there anything else I can help you with today?\"\n   - \"Thank you for calling Vicky Dental, have a great day!\"\n\n## Call Routing Guidelines\n\n### Transfer to Scheduler\n- New patient appointments\n- Routine cleaning appointments\n- Consultation requests\n- Multiple appointment scheduling\n\n### Transfer to Manager\n- Complex insurance issues\n- Billing disputes\n- Complaints or concerns\n- Special accommodation requests\n\n### Emergency Protocol\n- Severe pain or trauma\n- Dental emergencies\n- After-hours urgent care needs\n\n## Important Rules\n\n### Do's\n- Always maintain patient confidentiality\n- Verify patient information before discussing details\n- Use the knowledge base to provide accurate information\n- Be patient with elderly or anxious callers\n- Offer alternatives when primary options aren't available\n\n### Don'ts\n- Never make medical diagnoses or give medical advice\n- Don't make promises about treatment outcomes\n- Don't discuss other patients' information\n- Don't bypass verification procedures\n- Don't rush patients who need time to explain their situation\n\n## Knowledge Base Usage\n\nWhen patients ask about:\n- **Services and pricing**: Use knowledge base search\n- **Office policies**: Reference current policy documents\n- **Treatment procedures**: Provide general information, refer to doctor for specifics\n- **Insurance coverage**: Use knowledge base, verify with patient's specific plan\n\nAlways search the knowledge base before providing information to ensure accuracy and current pricing.\n\n## Error Handling\n\n- **System issues**: \"I apologize, our system is temporarily unavailable. Let me take your information and have someone call you back.\"\n- **Unknown information**: \"That's a great question. Let me connect you with someone who can give you the most accurate information.\"\n- **Busy schedule**: \"I understand you need to be seen soon. Let me check for any cancellations or openings with our other providers.\"\n\nRemember: You represent Vicky Dental's commitment to excellent patient care in every interaction."
+            }
+          ]
+        },
+        "transcriber": {
+          "model": "nova-2",
+          "provider": "deepgram",
+          "language": "en"
+        },
+        "firstMessage": null,
+        "firstMessageMode": null,
+        "serverMessages": null,
+        "analysisPlan": null,
+        "server": {
+          "url": "https://n8n-2-u19609.vm.elestio.app/webhook/scheduler_bot",
+          "timeoutSeconds": null
+        },
+        "isServerUrlSecretSet": false,
+        "createdAt": "2025-09-16T16:05:40.996000+00:00",
+        "updatedAt": "2025-09-16T16:26:14.074000+00:00"
+      },
+      "local_config": {
+        "config": {
+          "_vapi": {
+            "current_environment": "development",
+            "environments": {
+              "development": {
+                "deployed_at": "2025-09-16T16:26:14.172895+00:00",
+                "deployed_by": "sebr5550",
+                "id": "10839fd4-90a4-46af-b730-13ca99ec3fb6",
+                "version": 5
+              },
+              "production": {
+                "deployed_at": null,
+                "deployed_by": null,
+                "id": null,
+                "version": 0
+              },
+              "staging": {
+                "deployed_at": null,
+                "deployed_by": null,
+                "id": null,
+                "version": 0
+              }
+            },
+            "last_sync": "2025-09-16T16:26:14.172895+00:00"
+          },
+          "analysisPlan": {
+            "minMessagesThreshold": 2,
+            "structuredDataPlan": {
+              "enabled": true,
+              "timeoutSeconds": 15
+            },
+            "summaryPlan": {
+              "enabled": true,
+              "timeoutSeconds": 15
+            }
+          },
+          "description": "AI assistant for Vicky Dental clinic operations",
+          "features": {
+            "enableAnalytics": true,
+            "enableRecording": true,
+            "enableTranscription": true
+          },
+          "metadata": {
+            "author": "Vicky Dental Team",
+            "tags": [
+              "dental-clinic",
+              "customer-service",
+              "healthcare"
+            ],
+            "template": "vicky_dental_clinic",
+            "version": "1.0.0"
+          },
+          "model": {
+            "model": "gpt-3.5-turbo",
+            "provider": "openai",
+            "temperature": 0.8
+          },
+          "name": "scheduler_bot",
+          "server": {
+            "timeoutSeconds": 20,
+            "url": "https://n8n-2-u19609.vm.elestio.app/webhook/scheduler_bot"
+          },
+          "transcriber": {
+            "language": "en",
+            "model": "nova-2",
+            "provider": "deepgram"
+          },
+          "voice": {
+            "provider": "minimax",
+            "voiceId": "socialmedia_female_1_v1"
+          }
+        },
+        "schemas": {
+          "structured_data": {
+            "type": "object",
+            "required": [
+              "call_type",
+              "transferred_to",
+              "sentimentAnalysis",
+              "leadScoring"
+            ],
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "description": "Patient's first name if collected"
+              },
+              "lastName": {
+                "type": "string",
+                "description": "Patient's last name if collected"
+              },
+              "phoneNumber": {
+                "type": "string",
+                "description": "Patient's phone number if collected"
+              },
+              "call_type": {
+                "type": "string",
+                "enum": [
+                  "emergency",
+                  "informational",
+                  "booking",
+                  "management"
+                ],
+                "description": "Primary purpose of the call"
+              },
+              "transferred_to": {
+                "type": "string",
+                "enum": [
+                  "emergency_line",
+                  "scheduler",
+                  "manager",
+                  "none"
+                ],
+                "description": "Where the call was transferred"
+              },
+              "appointmentType": {
+                "type": "string",
+                "enum": [
+                  "cleaning",
+                  "checkup",
+                  "consultation",
+                  "procedure",
+                  "emergency",
+                  "not_specified"
+                ],
+                "description": "Type of appointment discussed"
+              },
+              "appointmentDateTime": {
+                "type": "string",
+                "description": "Appointment date/time if discussed (format: YYYY-MM-DD HH:MM)"
+              },
+              "doctorName": {
+                "type": "string",
+                "enum": [
+                  "Daniel",
+                  "James",
+                  "Metha",
+                  "not_specified"
+                ],
+                "description": "Doctor preference mentioned or suggested"
+              },
+              "sentimentAnalysis": {
+                "type": "object",
+                "required": [
+                  "urgency",
+                  "hesitation",
+                  "positivity"
+                ],
+                "properties": {
+                  "urgency": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "emergency"
+                    ],
+                    "description": "Level of urgency expressed by patient"
+                  },
+                  "hesitation": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "slight",
+                      "moderate",
+                      "significant"
+                    ],
+                    "description": "Patient's hesitation level about booking"
+                  },
+                  "positivity": {
+                    "type": "string",
+                    "enum": [
+                      "negative",
+                      "neutral",
+                      "positive",
+                      "very_positive"
+                    ],
+                    "description": "Overall emotional tone of the patient"
+                  }
+                }
+              },
+              "leadScoring": {
+                "type": "string",
+                "enum": [
+                  "hot",
+                  "warm",
+                  "cold"
+                ],
+                "description": "Lead quality: hot=booked, warm=rescheduled/interested, cold=not_booked"
+              },
+              "dentalConcern": {
+                "type": "string",
+                "description": "Primary dental concern or reason for calling"
+              },
+              "painLevel": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10,
+                "description": "Pain level on scale of 0-10 if mentioned"
+              },
+              "insuranceProvider": {
+                "type": "string",
+                "description": "Insurance provider if mentioned"
+              },
+              "lastVisit": {
+                "type": "string",
+                "description": "When patient last visited the clinic"
+              },
+              "callSuccessful": {
+                "type": "boolean",
+                "description": "Whether the call achieved the desired outcome"
+              },
+              "followUpRequired": {
+                "type": "boolean",
+                "description": "Whether follow-up is needed"
+              },
+              "notes": {
+                "type": "string",
+                "description": "Additional notes about the call"
+              }
+            }
+          }
+        },
+        "tools": {
+          "functions": {
+            "functions": [
+              {
+                "name": "queryKnowledgeBase",
+                "description": "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "query"
+                  ],
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "description": "The user's question or information request"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "checkAppointmentAvailability",
+                "description": "Check available appointment slots for scheduling",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "appointmentType",
+                    "preferredDate"
+                  ],
+                  "properties": {
+                    "appointmentType": {
+                      "type": "string",
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "description": "Type of appointment needed"
+                    },
+                    "preferredDate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Preferred appointment date (YYYY-MM-DD)"
+                    },
+                    "doctorPreference": {
+                      "type": "string",
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha",
+                        "any"
+                      ],
+                      "description": "Preferred doctor"
+                    },
+                    "timePreference": {
+                      "type": "string",
+                      "enum": [
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "any"
+                      ],
+                      "description": "Preferred time of day"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "bookAppointment",
+                "description": "Book an appointment for a patient",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "phoneNumber",
+                    "appointmentType",
+                    "appointmentDateTime"
+                  ],
+                  "properties": {
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient's full name"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "description": "Patient's contact phone number"
+                    },
+                    "appointmentType": {
+                      "type": "string",
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "description": "Type of appointment"
+                    },
+                    "appointmentDateTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Scheduled appointment date and time"
+                    },
+                    "doctorName": {
+                      "type": "string",
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha"
+                      ],
+                      "description": "Assigned doctor"
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Special notes or requests"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "verifyInsurance",
+                "description": "Verify patient's insurance coverage and benefits",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "insuranceProvider",
+                    "memberID"
+                  ],
+                  "properties": {
+                    "insuranceProvider": {
+                      "type": "string",
+                      "description": "Insurance company name"
+                    },
+                    "memberID": {
+                      "type": "string",
+                      "description": "Insurance member ID"
+                    },
+                    "groupNumber": {
+                      "type": "string",
+                      "description": "Group number if available"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name for verification"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "getPatientHistory",
+                "description": "Retrieve patient's appointment and treatment history",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientIdentifier"
+                  ],
+                  "properties": {
+                    "patientIdentifier": {
+                      "type": "string",
+                      "description": "Patient phone number, email, or ID"
+                    },
+                    "includeDetails": {
+                      "type": "boolean",
+                      "description": "Include detailed treatment history",
+                      "default": false
+                    }
+                  }
+                }
+              },
+              {
+                "name": "processPayment",
+                "description": "Process payment or set up payment plan",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "amount",
+                    "paymentType"
+                  ],
+                  "properties": {
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name"
+                    },
+                    "amount": {
+                      "type": "number",
+                      "description": "Payment amount"
+                    },
+                    "paymentType": {
+                      "type": "string",
+                      "enum": [
+                        "full_payment",
+                        "partial_payment",
+                        "payment_plan"
+                      ],
+                      "description": "Type of payment arrangement"
+                    },
+                    "insuranceClaim": {
+                      "type": "boolean",
+                      "description": "Whether to submit insurance claim",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "transfers": {
+            "transfers": [
+              {
+                "id": "scheduler",
+                "type": "assistant",
+                "assistantId": "${SCHEDULER_ASSISTANT_ID}",
+                "description": "Transfer to scheduler for appointment booking and management",
+                "message": "Of course! I'd be happy to help you with that. One moment."
+              },
+              {
+                "id": "manager",
+                "type": "assistant",
+                "assistantId": "${MANAGER_ASSISTANT_ID}",
+                "description": "Transfer to manager for complex issues, complaints, or special requests",
+                "message": "Certainly! Let me pull up your appointment details for you. One moment."
+              },
+              {
+                "id": "emergency_line",
+                "type": "number",
+                "number": "+12125551234",
+                "description": "Transfer to emergency services for medical emergencies",
+                "message": "Oh my, that sounds serious. Please hold while I connect you to our emergency line immediately."
+              },
+              {
+                "id": "billing_department",
+                "type": "number",
+                "number": "${BILLING_PHONE_NUMBER}",
+                "description": "Transfer to billing department for payment and insurance issues",
+                "message": "I'll connect you with our billing specialist who can help with that right away."
+              },
+              {
+                "id": "technical_support",
+                "type": "number",
+                "number": "${TECH_SUPPORT_NUMBER}",
+                "description": "Transfer to technical support for system issues",
+                "message": "Let me connect you with our technical support team to resolve this issue."
+              }
+            ],
+            "rules": [
+              {
+                "trigger": "intent",
+                "intent": "booking",
+                "destination": "scheduler",
+                "description": "Route booking requests to scheduler"
+              },
+              {
+                "trigger": "intent",
+                "intent": "management",
+                "destination": "manager",
+                "description": "Route appointment management to manager"
+              },
+              {
+                "trigger": "intent",
+                "intent": "emergency",
+                "destination": "emergency_line",
+                "description": "Route emergencies to emergency line"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "speak to manager",
+                  "supervisor",
+                  "complaint",
+                  "escalate"
+                ],
+                "destination": "manager",
+                "description": "Escalate to manager on request"
+              },
+              {
+                "trigger": "sentiment",
+                "condition": "sentiment < -0.5",
+                "destination": "manager",
+                "description": "Auto-escalate when patient is very upset"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "severe pain",
+                  "emergency",
+                  "urgent",
+                  "bleeding",
+                  "accident"
+                ],
+                "destination": "emergency_line",
+                "description": "Route urgent dental emergencies"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "billing",
+                  "insurance",
+                  "payment",
+                  "claim",
+                  "coverage"
+                ],
+                "destination": "billing_department",
+                "description": "Route billing and insurance questions"
+              }
+            ]
+          }
+        }
+      },
+      "deployment_state": {
+        "development": {
+          "id": "10839fd4-90a4-46af-b730-13ca99ec3fb6",
+          "deployed_at": "2025-09-16T16:26:14.172895+00:00",
+          "deployed_by": "sebr5550",
+          "version": 5
+        },
+        "production": {
+          "id": null,
+          "deployed_at": null,
+          "deployed_by": null,
+          "version": 0
+        },
+        "staging": {
+          "id": null,
+          "deployed_at": null,
+          "deployed_by": null,
+          "version": 0
+        }
+      },
+      "file_contents": {
+        "assistant.yaml": "_vapi:\n  current_environment: development\n  environments:\n    development:\n      deployed_at: '2025-09-16T16:26:14.172895+00:00'\n      deployed_by: sebr5550\n      id: 10839fd4-90a4-46af-b730-13ca99ec3fb6\n      version: 5\n    production:\n      deployed_at: null\n      deployed_by: null\n      id: null\n      version: 0\n    staging:\n      deployed_at: null\n      deployed_by: null\n      id: null\n      version: 0\n  last_sync: '2025-09-16T16:26:14.172895+00:00'\nanalysisPlan:\n  minMessagesThreshold: 2\n  structuredDataPlan:\n    enabled: true\n    timeoutSeconds: 15\n  summaryPlan:\n    enabled: true\n    timeoutSeconds: 15\ndescription: AI assistant for Vicky Dental clinic operations\nenvironments:\n  development:\n    model:\n      model: gpt-3.5-turbo\n      temperature: 0.8\n  production:\n    model:\n      model: gpt-4o-mini\n      temperature: 0.4\n  staging:\n    voice:\n      voiceId: socialmedia_female_1_v1\nfeatures:\n  enableAnalytics: true\n  enableRecording: true\n  enableTranscription: true\nmetadata:\n  author: Vicky Dental Team\n  tags:\n  - dental-clinic\n  - customer-service\n  - healthcare\n  template: vicky_dental_clinic\n  version: 1.0.0\nmodel:\n  model: gpt-4o-mini\n  provider: openai\n  temperature: 0.6\nname: scheduler_bot\nserver:\n  timeoutSeconds: 20\n  url: https://n8n-2-u19609.vm.elestio.app/webhook/scheduler_bot\ntranscriber:\n  language: en\n  model: nova-2\n  provider: deepgram\nvoice:\n  provider: minimax\n  voiceId: socialmedia_female_1_v1\n",
+        ".backups\\backup_development_20250916_122528.yaml": "_vapi:\n  current_environment: development\n  environments:\n    development:\n      deployed_at: '2025-09-16T16:05:41.092507+00:00'\n      deployed_by: sebr5550\n      id: 10839fd4-90a4-46af-b730-13ca99ec3fb6\n      version: 3\n    production:\n      deployed_at: null\n      deployed_by: null\n      id: null\n      version: 0\n    staging:\n      deployed_at: null\n      deployed_by: null\n      id: null\n      version: 0\n  last_sync: '2025-09-16T16:05:41.092507+00:00'\nanalysisPlan:\n  minMessagesThreshold: 2\n  structuredDataPlan:\n    enabled: true\n    timeoutSeconds: 15\n  summaryPlan:\n    enabled: true\n    timeoutSeconds: 15\ndescription: AI assistant for Vicky Dental clinic operations\nenvironments:\n  development:\n    model:\n      model: gpt-3.5-turbo\n      temperature: 0.8\n  production:\n    model:\n      model: gpt-4o-mini\n      temperature: 0.4\n  staging:\n    voice:\n      voiceId: socialmedia_female_1_v1\nfeatures:\n  enableAnalytics: true\n  enableRecording: true\n  enableTranscription: true\nmetadata:\n  author: Vicky Dental Team\n  tags:\n  - dental-clinic\n  - customer-service\n  - healthcare\n  template: vicky_dental_clinic\n  version: 1.0.0\nmodel:\n  model: gpt-4o-mini\n  provider: openai\n  temperature: 0.6\nname: scheduler_bot\nserver:\n  timeoutSeconds: 20\n  url: https://n8n-2-u19609.vm.elestio.app/webhook/scheduler_bot\ntranscriber:\n  language: en\n  model: nova-2\n  provider: deepgram\nvoice:\n  provider: minimax\n  voiceId: socialmedia_female_1_v1\n",
+        "prompts\\first_message.md": "Hi there! Thank you for calling Vicky Dental. This is Sarah... how can I help you today?",
+        "prompts\\system.md": "# Vicky Dental Clinic Assistant\n\nYou are Sarah, an AI assistant at Vicky Dental Clinic. Your personality is warm, empathetic, professional, and genuinely caring. You make patients feel comfortable and heard.\n\n## Core Responsibilities\n\n### Primary Role\nYou are the first point of contact for patients calling Vicky Dental. Your purpose is to:\n- Understand the caller's primary intent\n- Provide helpful information using the knowledge base\n- Route calls to the appropriate specialist when needed\n- Handle appointment scheduling and management\n\n### Personality Traits\n- **Warm and empathetic**: Show genuine care for patient concerns\n- **Professional yet approachable**: Maintain clinical standards while being friendly\n- **Patient and understanding**: Take time to listen and comprehend needs\n- **Solution-oriented**: Focus on helping patients achieve their goals\n\n## Communication Guidelines\n\n### Natural Speech Patterns\n- Use gentle hesitations to sound natural: \"Let me... let me just check that for you.\"\n- Show empathy: \"Oh, I understand that can be concerning...\"\n- Use natural transitions: \"Alright, so...\", \"Hmm, let me see...\"\n- Include thinking pauses: \"One moment while I look that up...\"\n\n### Active Listening\n- Acknowledge patient concerns explicitly\n- Paraphrase to confirm understanding: \"So you're saying that...\"\n- Ask clarifying questions when needed\n- Validate feelings: \"That sounds frustrating, I can help with that.\"\n\n## Knowledge Areas\n\n### Services & Treatments\n- General dentistry (cleanings, fillings, crowns)\n- Cosmetic dentistry (whitening, veneers)\n- Orthodontics (braces, aligners)\n- Oral surgery (extractions, implants)\n- Emergency dental care\n- Pediatric dentistry\n\n### Administrative Support\n- Appointment scheduling and rescheduling\n- Insurance verification and claims\n- Payment plans and financing options\n- Office hours and location information\n- Pre-appointment instructions\n- Post-treatment care guidelines\n\n## Conversation Flow\n\n1. **Greeting**: \"Thank you for calling Vicky Dental, this is Sarah. How can I help you today?\"\n\n2. **Discovery**: Listen carefully and identify the caller's intent:\n   - New appointment booking\n   - Existing appointment management\n   - General questions about services\n   - Emergency dental situations\n   - Billing or insurance inquiries\n\n3. **Action**: Based on their intent:\n   - **Information requests**: Use knowledge base to provide accurate answers\n   - **Appointment needs**: Guide through scheduling process\n   - **Complex issues**: Transfer to appropriate specialist\n   - **Emergencies**: Prioritize and connect to emergency line\n\n4. **Confirmation**: Ensure the caller's needs are met\n   - Summarize what was accomplished\n   - Confirm any scheduled appointments\n   - Provide confirmation numbers or references\n\n5. **Closing**: Professional farewell with follow-up offer\n   - \"Is there anything else I can help you with today?\"\n   - \"Thank you for calling Vicky Dental, have a great day!\"\n\n## Call Routing Guidelines\n\n### Transfer to Scheduler\n- New patient appointments\n- Routine cleaning appointments\n- Consultation requests\n- Multiple appointment scheduling\n\n### Transfer to Manager\n- Complex insurance issues\n- Billing disputes\n- Complaints or concerns\n- Special accommodation requests\n\n### Emergency Protocol\n- Severe pain or trauma\n- Dental emergencies\n- After-hours urgent care needs\n\n## Important Rules\n\n### Do's\n- Always maintain patient confidentiality\n- Verify patient information before discussing details\n- Use the knowledge base to provide accurate information\n- Be patient with elderly or anxious callers\n- Offer alternatives when primary options aren't available\n\n### Don'ts\n- Never make medical diagnoses or give medical advice\n- Don't make promises about treatment outcomes\n- Don't discuss other patients' information\n- Don't bypass verification procedures\n- Don't rush patients who need time to explain their situation\n\n## Knowledge Base Usage\n\nWhen patients ask about:\n- **Services and pricing**: Use knowledge base search\n- **Office policies**: Reference current policy documents\n- **Treatment procedures**: Provide general information, refer to doctor for specifics\n- **Insurance coverage**: Use knowledge base, verify with patient's specific plan\n\nAlways search the knowledge base before providing information to ensure accuracy and current pricing.\n\n## Error Handling\n\n- **System issues**: \"I apologize, our system is temporarily unavailable. Let me take your information and have someone call you back.\"\n- **Unknown information**: \"That's a great question. Let me connect you with someone who can give you the most accurate information.\"\n- **Busy schedule**: \"I understand you need to be seen soon. Let me check for any cancellations or openings with our other providers.\"\n\nRemember: You represent Vicky Dental's commitment to excellent patient care in every interaction.",
+        "schemas\\structured_data.yaml": "# Vicky Dental Clinic - Call Data Extraction Schema\n\ntype: object\nrequired:\n  - call_type\n  - transferred_to\n  - sentimentAnalysis\n  - leadScoring\n\nproperties:\n  # Patient Information\n  firstName:\n    type: string\n    description: \"Patient's first name if collected\"\n\n  lastName:\n    type: string\n    description: \"Patient's last name if collected\"\n\n  phoneNumber:\n    type: string\n    description: \"Patient's phone number if collected\"\n\n  # Call Classification\n  call_type:\n    type: string\n    enum:\n      - emergency\n      - informational\n      - booking\n      - management\n    description: \"Primary purpose of the call\"\n\n  # Transfer Routing\n  transferred_to:\n    type: string\n    enum:\n      - emergency_line\n      - scheduler\n      - manager\n      - none\n    description: \"Where the call was transferred\"\n\n  # Appointment Details\n  appointmentType:\n    type: string\n    enum:\n      - cleaning\n      - checkup\n      - consultation\n      - procedure\n      - emergency\n      - not_specified\n    description: \"Type of appointment discussed\"\n\n  appointmentDateTime:\n    type: string\n    description: \"Appointment date/time if discussed (format: YYYY-MM-DD HH:MM)\"\n\n  doctorName:\n    type: string\n    enum:\n      - Daniel\n      - James\n      - Metha\n      - not_specified\n    description: \"Doctor preference mentioned or suggested\"\n\n  # Sentiment Analysis\n  sentimentAnalysis:\n    type: object\n    required:\n      - urgency\n      - hesitation\n      - positivity\n    properties:\n      urgency:\n        type: string\n        enum:\n          - low\n          - medium\n          - high\n          - emergency\n        description: \"Level of urgency expressed by patient\"\n\n      hesitation:\n        type: string\n        enum:\n          - none\n          - slight\n          - moderate\n          - significant\n        description: \"Patient's hesitation level about booking\"\n\n      positivity:\n        type: string\n        enum:\n          - negative\n          - neutral\n          - positive\n          - very_positive\n        description: \"Overall emotional tone of the patient\"\n\n  # Lead Scoring\n  leadScoring:\n    type: string\n    enum:\n      - hot\n      - warm\n      - cold\n    description: \"Lead quality: hot=booked, warm=rescheduled/interested, cold=not_booked\"\n\n  # Dental-Specific Information\n  dentalConcern:\n    type: string\n    description: \"Primary dental concern or reason for calling\"\n\n  painLevel:\n    type: integer\n    minimum: 0\n    maximum: 10\n    description: \"Pain level on scale of 0-10 if mentioned\"\n\n  insuranceProvider:\n    type: string\n    description: \"Insurance provider if mentioned\"\n\n  lastVisit:\n    type: string\n    description: \"When patient last visited the clinic\"\n\n  # Call Outcome\n  callSuccessful:\n    type: boolean\n    description: \"Whether the call achieved the desired outcome\"\n\n  followUpRequired:\n    type: boolean\n    description: \"Whether follow-up is needed\"\n\n  notes:\n    type: string\n    description: \"Additional notes about the call\"",
+        "tools\\functions.yaml": "# Vicky Dental Clinic Function Tools\n\nfunctions:\n  - name: queryKnowledgeBase\n    description: \"Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions\"\n    parameters:\n      type: object\n      required:\n        - query\n      properties:\n        query:\n          type: string\n          description: \"The user's question or information request\"\n\n  - name: checkAppointmentAvailability\n    description: \"Check available appointment slots for scheduling\"\n    parameters:\n      type: object\n      required:\n        - appointmentType\n        - preferredDate\n      properties:\n        appointmentType:\n          type: string\n          enum:\n            - cleaning\n            - checkup\n            - consultation\n            - emergency\n            - procedure\n          description: \"Type of appointment needed\"\n        preferredDate:\n          type: string\n          format: date\n          description: \"Preferred appointment date (YYYY-MM-DD)\"\n        doctorPreference:\n          type: string\n          enum:\n            - Daniel\n            - James\n            - Metha\n            - any\n          description: \"Preferred doctor\"\n        timePreference:\n          type: string\n          enum:\n            - morning\n            - afternoon\n            - evening\n            - any\n          description: \"Preferred time of day\"\n\n  - name: bookAppointment\n    description: \"Book an appointment for a patient\"\n    parameters:\n      type: object\n      required:\n        - patientName\n        - phoneNumber\n        - appointmentType\n        - appointmentDateTime\n      properties:\n        patientName:\n          type: string\n          description: \"Patient's full name\"\n        phoneNumber:\n          type: string\n          description: \"Patient's contact phone number\"\n        appointmentType:\n          type: string\n          enum:\n            - cleaning\n            - checkup\n            - consultation\n            - emergency\n            - procedure\n          description: \"Type of appointment\"\n        appointmentDateTime:\n          type: string\n          format: date-time\n          description: \"Scheduled appointment date and time\"\n        doctorName:\n          type: string\n          enum:\n            - Daniel\n            - James\n            - Metha\n          description: \"Assigned doctor\"\n        notes:\n          type: string\n          description: \"Special notes or requests\"\n\n  - name: verifyInsurance\n    description: \"Verify patient's insurance coverage and benefits\"\n    parameters:\n      type: object\n      required:\n        - insuranceProvider\n        - memberID\n      properties:\n        insuranceProvider:\n          type: string\n          description: \"Insurance company name\"\n        memberID:\n          type: string\n          description: \"Insurance member ID\"\n        groupNumber:\n          type: string\n          description: \"Group number if available\"\n        patientName:\n          type: string\n          description: \"Patient name for verification\"\n\n  - name: getPatientHistory\n    description: \"Retrieve patient's appointment and treatment history\"\n    parameters:\n      type: object\n      required:\n        - patientIdentifier\n      properties:\n        patientIdentifier:\n          type: string\n          description: \"Patient phone number, email, or ID\"\n        includeDetails:\n          type: boolean\n          description: \"Include detailed treatment history\"\n          default: false\n\n  - name: processPayment\n    description: \"Process payment or set up payment plan\"\n    parameters:\n      type: object\n      required:\n        - patientName\n        - amount\n        - paymentType\n      properties:\n        patientName:\n          type: string\n          description: \"Patient name\"\n        amount:\n          type: number\n          description: \"Payment amount\"\n        paymentType:\n          type: string\n          enum:\n            - full_payment\n            - partial_payment\n            - payment_plan\n          description: \"Type of payment arrangement\"\n        insuranceClaim:\n          type: boolean\n          description: \"Whether to submit insurance claim\"\n          default: false",
+        "tools\\transfers.yaml": "# Vicky Dental Clinic Transfer Destinations\n\ntransfers:\n  - id: scheduler\n    type: assistant\n    assistantId: \"${SCHEDULER_ASSISTANT_ID}\"\n    description: \"Transfer to scheduler for appointment booking and management\"\n    message: \"Of course! I'd be happy to help you with that. One moment.\"\n\n  - id: manager\n    type: assistant\n    assistantId: \"${MANAGER_ASSISTANT_ID}\"\n    description: \"Transfer to manager for complex issues, complaints, or special requests\"\n    message: \"Certainly! Let me pull up your appointment details for you. One moment.\"\n\n  - id: emergency_line\n    type: number\n    number: \"+12125551234\"\n    description: \"Transfer to emergency services for medical emergencies\"\n    message: \"Oh my, that sounds serious. Please hold while I connect you to our emergency line immediately.\"\n\n  - id: billing_department\n    type: number\n    number: \"${BILLING_PHONE_NUMBER}\"\n    description: \"Transfer to billing department for payment and insurance issues\"\n    message: \"I'll connect you with our billing specialist who can help with that right away.\"\n\n  - id: technical_support\n    type: number\n    number: \"${TECH_SUPPORT_NUMBER}\"\n    description: \"Transfer to technical support for system issues\"\n    message: \"Let me connect you with our technical support team to resolve this issue.\"\n\n# Transfer Rules and Conditions\nrules:\n  - trigger: \"intent\"\n    intent: \"booking\"\n    destination: \"scheduler\"\n    description: \"Route booking requests to scheduler\"\n\n  - trigger: \"intent\"\n    intent: \"management\"\n    destination: \"manager\"\n    description: \"Route appointment management to manager\"\n\n  - trigger: \"intent\"\n    intent: \"emergency\"\n    destination: \"emergency_line\"\n    description: \"Route emergencies to emergency line\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"speak to manager\"\n      - \"supervisor\"\n      - \"complaint\"\n      - \"escalate\"\n    destination: \"manager\"\n    description: \"Escalate to manager on request\"\n\n  - trigger: \"sentiment\"\n    condition: \"sentiment < -0.5\"\n    destination: \"manager\"\n    description: \"Auto-escalate when patient is very upset\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"severe pain\"\n      - \"emergency\"\n      - \"urgent\"\n      - \"bleeding\"\n      - \"accident\"\n    destination: \"emergency_line\"\n    description: \"Route urgent dental emergencies\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"billing\"\n      - \"insurance\"\n      - \"payment\"\n      - \"claim\"\n      - \"coverage\"\n    destination: \"billing_department\"\n    description: \"Route billing and insurance questions\""
+      },
+      "backup_timestamp": "2025-09-16T18:31:44.354157+00:00"
+    },
+    {
+      "assistant_name": "triage_assistant",
+      "vapi_data": {
+        "id": "96e98007-7f60-4e49-bc1b-4b64cf7ca757",
+        "orgId": "66efc01a-e805-4865-905e-e5c06d284a84",
+        "name": "triage_assistant",
+        "voice": {
+          "voiceId": "socialmedia_female_1_v1",
+          "provider": "minimax"
+        },
+        "model": {
+          "model": "gpt-3.5-turbo",
+          "provider": "openai",
+          "temperature": 0.8,
+          "tools": [
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "queryKnowledgeBase",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "query"
+                  ],
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "description": "The user's question or information request"
+                    }
+                  }
+                },
+                "description": "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "checkAppointmentAvailability",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "appointmentType",
+                    "preferredDate"
+                  ],
+                  "properties": {
+                    "preferredDate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Preferred appointment date (YYYY-MM-DD)"
+                    },
+                    "timePreference": {
+                      "enum": [
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "any"
+                      ],
+                      "type": "string",
+                      "description": "Preferred time of day"
+                    },
+                    "appointmentType": {
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "type": "string",
+                      "description": "Type of appointment needed"
+                    },
+                    "doctorPreference": {
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha",
+                        "any"
+                      ],
+                      "type": "string",
+                      "description": "Preferred doctor"
+                    }
+                  }
+                },
+                "description": "Check available appointment slots for scheduling"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "bookAppointment",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "phoneNumber",
+                    "appointmentType",
+                    "appointmentDateTime"
+                  ],
+                  "properties": {
+                    "notes": {
+                      "type": "string",
+                      "description": "Special notes or requests"
+                    },
+                    "doctorName": {
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha"
+                      ],
+                      "type": "string",
+                      "description": "Assigned doctor"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient's full name"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "description": "Patient's contact phone number"
+                    },
+                    "appointmentType": {
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "type": "string",
+                      "description": "Type of appointment"
+                    },
+                    "appointmentDateTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Scheduled appointment date and time"
+                    }
+                  }
+                },
+                "description": "Book an appointment for a patient"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "verifyInsurance",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "insuranceProvider",
+                    "memberID"
+                  ],
+                  "properties": {
+                    "memberID": {
+                      "type": "string",
+                      "description": "Insurance member ID"
+                    },
+                    "groupNumber": {
+                      "type": "string",
+                      "description": "Group number if available"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name for verification"
+                    },
+                    "insuranceProvider": {
+                      "type": "string",
+                      "description": "Insurance company name"
+                    }
+                  }
+                },
+                "description": "Verify patient's insurance coverage and benefits"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "getPatientHistory",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientIdentifier"
+                  ],
+                  "properties": {
+                    "includeDetails": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Include detailed treatment history"
+                    },
+                    "patientIdentifier": {
+                      "type": "string",
+                      "description": "Patient phone number, email, or ID"
+                    }
+                  }
+                },
+                "description": "Retrieve patient's appointment and treatment history"
+              }
+            },
+            {
+              "type": "function",
+              "destinations": null,
+              "server": null,
+              "function": {
+                "name": "processPayment",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "amount",
+                    "paymentType"
+                  ],
+                  "properties": {
+                    "amount": {
+                      "type": "number",
+                      "description": "Payment amount"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name"
+                    },
+                    "paymentType": {
+                      "enum": [
+                        "full_payment",
+                        "partial_payment",
+                        "payment_plan"
+                      ],
+                      "type": "string",
+                      "description": "Type of payment arrangement"
+                    },
+                    "insuranceClaim": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Whether to submit insurance claim"
+                    }
+                  }
+                },
+                "description": "Process payment or set up payment plan"
+              }
+            },
+            {
+              "type": "transferCall",
+              "destinations": [
+                {
+                  "type": "number",
+                  "number": "+12125551234",
+                  "description": "Transfer to emergency services for medical emergencies"
+                }
+              ],
+              "server": null,
+              "function": null
+            },
+            {
+              "type": "endCall",
+              "destinations": null,
+              "server": null,
+              "function": null
+            }
+          ],
+          "toolIds": null,
+          "messages": [
+            {
+              "role": "system",
+              "content": "# Vicky Dental Clinic Assistant\n\nYou are Sarah, an AI assistant at Vicky Dental Clinic. Your personality is warm, empathetic, professional, and genuinely caring. You make patients feel comfortable and heard.\n\n## Core Responsibilities\n\n### Primary Role\nYou are the first point of contact for patients calling Vicky Dental. Your purpose is to:\n- Understand the caller's primary intent\n- Provide helpful information using the knowledge base\n- Route calls to the appropriate specialist when needed\n- Handle appointment scheduling and management\n\n### Personality Traits\n- **Warm and empathetic**: Show genuine care for patient concerns\n- **Professional yet approachable**: Maintain clinical standards while being friendly\n- **Patient and understanding**: Take time to listen and comprehend needs\n- **Solution-oriented**: Focus on helping patients achieve their goals\n\n## Communication Guidelines\n\n### Natural Speech Patterns\n- Use gentle hesitations to sound natural: \"Let me... let me just check that for you.\"\n- Show empathy: \"Oh, I understand that can be concerning...\"\n- Use natural transitions: \"Alright, so...\", \"Hmm, let me see...\"\n- Include thinking pauses: \"One moment while I look that up...\"\n\n### Active Listening\n- Acknowledge patient concerns explicitly\n- Paraphrase to confirm understanding: \"So you're saying that...\"\n- Ask clarifying questions when needed\n- Validate feelings: \"That sounds frustrating, I can help with that.\"\n\n## Knowledge Areas\n\n### Services & Treatments\n- General dentistry (cleanings, fillings, crowns)\n- Cosmetic dentistry (whitening, veneers)\n- Orthodontics (braces, aligners)\n- Oral surgery (extractions, implants)\n- Emergency dental care\n- Pediatric dentistry\n\n### Administrative Support\n- Appointment scheduling and rescheduling\n- Insurance verification and claims\n- Payment plans and financing options\n- Office hours and location information\n- Pre-appointment instructions\n- Post-treatment care guidelines\n\n## Conversation Flow\n\n1. **Greeting**: \"Thank you for calling Vicky Dental, this is Sarah. How can I help you today?\"\n\n2. **Discovery**: Listen carefully and identify the caller's intent:\n   - New appointment booking\n   - Existing appointment management\n   - General questions about services\n   - Emergency dental situations\n   - Billing or insurance inquiries\n\n3. **Action**: Based on their intent:\n   - **Information requests**: Use knowledge base to provide accurate answers\n   - **Appointment needs**: Guide through scheduling process\n   - **Complex issues**: Transfer to appropriate specialist\n   - **Emergencies**: Prioritize and connect to emergency line\n\n4. **Confirmation**: Ensure the caller's needs are met\n   - Summarize what was accomplished\n   - Confirm any scheduled appointments\n   - Provide confirmation numbers or references\n\n5. **Closing**: Professional farewell with follow-up offer\n   - \"Is there anything else I can help you with today?\"\n   - \"Thank you for calling Vicky Dental, have a great day!\"\n\n## Call Routing Guidelines\n\n### Transfer to Scheduler\n- New patient appointments\n- Routine cleaning appointments\n- Consultation requests\n- Multiple appointment scheduling\n\n### Transfer to Manager\n- Complex insurance issues\n- Billing disputes\n- Complaints or concerns\n- Special accommodation requests\n\n### Emergency Protocol\n- Severe pain or trauma\n- Dental emergencies\n- After-hours urgent care needs\n\n## Important Rules\n\n### Do's\n- Always maintain patient confidentiality\n- Verify patient information before discussing details\n- Use the knowledge base to provide accurate information\n- Be patient with elderly or anxious callers\n- Offer alternatives when primary options aren't available\n\n### Don'ts\n- Never make medical diagnoses or give medical advice\n- Don't make promises about treatment outcomes\n- Don't discuss other patients' information\n- Don't bypass verification procedures\n- Don't rush patients who need time to explain their situation\n\n## Knowledge Base Usage\n\nWhen patients ask about:\n- **Services and pricing**: Use knowledge base search\n- **Office policies**: Reference current policy documents\n- **Treatment procedures**: Provide general information, refer to doctor for specifics\n- **Insurance coverage**: Use knowledge base, verify with patient's specific plan\n\nAlways search the knowledge base before providing information to ensure accuracy and current pricing.\n\n## Error Handling\n\n- **System issues**: \"I apologize, our system is temporarily unavailable. Let me take your information and have someone call you back.\"\n- **Unknown information**: \"That's a great question. Let me connect you with someone who can give you the most accurate information.\"\n- **Busy schedule**: \"I understand you need to be seen soon. Let me check for any cancellations or openings with our other providers.\"\n\nRemember: You represent Vicky Dental's commitment to excellent patient care in every interaction."
+            }
+          ]
+        },
+        "transcriber": {
+          "model": "nova-2",
+          "provider": "deepgram",
+          "language": "en"
+        },
+        "firstMessage": null,
+        "firstMessageMode": null,
+        "serverMessages": null,
+        "analysisPlan": null,
+        "server": null,
+        "isServerUrlSecretSet": false,
+        "createdAt": "2025-09-16T18:05:59.165000+00:00",
+        "updatedAt": "2025-09-16T18:05:59.165000+00:00"
+      },
+      "local_config": {
+        "config": {
+          "_vapi": {
+            "current_environment": "development",
+            "environments": {
+              "development": {
+                "deployed_at": "2025-09-16T18:05:59.250114+00:00",
+                "deployed_by": "sebr5550",
+                "id": "96e98007-7f60-4e49-bc1b-4b64cf7ca757",
+                "version": 1
+              },
+              "production": {
+                "deployed_at": null,
+                "deployed_by": null,
+                "id": null,
+                "version": 0
+              },
+              "staging": {
+                "deployed_at": null,
+                "deployed_by": null,
+                "id": null,
+                "version": 0
+              }
+            },
+            "last_sync": "2025-09-16T18:05:59.250114+00:00"
+          },
+          "analysisPlan": {
+            "minMessagesThreshold": 2,
+            "structuredDataPlan": {
+              "enabled": true,
+              "timeoutSeconds": 15
+            },
+            "summaryPlan": {
+              "enabled": true,
+              "timeoutSeconds": 15
+            }
+          },
+          "description": "AI assistant for Vicky Dental clinic operations",
+          "features": {
+            "enableAnalytics": true,
+            "enableRecording": true,
+            "enableTranscription": true
+          },
+          "metadata": {
+            "author": "Vicky Dental Team",
+            "tags": [
+              "dental-clinic",
+              "customer-service",
+              "healthcare"
+            ],
+            "template": "vicky_dental_clinic",
+            "version": "1.0.0"
+          },
+          "model": {
+            "model": "gpt-3.5-turbo",
+            "provider": "openai",
+            "temperature": 0.8
+          },
+          "name": "triage_assistant",
+          "server": {
+            "timeoutSeconds": 20,
+            "url": "${WEBHOOK_URL}/assistants/triage_assistant/webhook"
+          },
+          "transcriber": {
+            "language": "en",
+            "model": "nova-2",
+            "provider": "deepgram"
+          },
+          "voice": {
+            "provider": "minimax",
+            "voiceId": "socialmedia_female_1_v1"
+          }
+        },
+        "schemas": {
+          "structured_data": {
+            "type": "object",
+            "required": [
+              "call_type",
+              "transferred_to",
+              "sentimentAnalysis",
+              "leadScoring"
+            ],
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "description": "Patient's first name if collected"
+              },
+              "lastName": {
+                "type": "string",
+                "description": "Patient's last name if collected"
+              },
+              "phoneNumber": {
+                "type": "string",
+                "description": "Patient's phone number if collected"
+              },
+              "call_type": {
+                "type": "string",
+                "enum": [
+                  "emergency",
+                  "informational",
+                  "booking",
+                  "management"
+                ],
+                "description": "Primary purpose of the call"
+              },
+              "transferred_to": {
+                "type": "string",
+                "enum": [
+                  "emergency_line",
+                  "scheduler",
+                  "manager",
+                  "none"
+                ],
+                "description": "Where the call was transferred"
+              },
+              "appointmentType": {
+                "type": "string",
+                "enum": [
+                  "cleaning",
+                  "checkup",
+                  "consultation",
+                  "procedure",
+                  "emergency",
+                  "not_specified"
+                ],
+                "description": "Type of appointment discussed"
+              },
+              "appointmentDateTime": {
+                "type": "string",
+                "description": "Appointment date/time if discussed (format: YYYY-MM-DD HH:MM)"
+              },
+              "doctorName": {
+                "type": "string",
+                "enum": [
+                  "Daniel",
+                  "James",
+                  "Metha",
+                  "not_specified"
+                ],
+                "description": "Doctor preference mentioned or suggested"
+              },
+              "sentimentAnalysis": {
+                "type": "object",
+                "required": [
+                  "urgency",
+                  "hesitation",
+                  "positivity"
+                ],
+                "properties": {
+                  "urgency": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "emergency"
+                    ],
+                    "description": "Level of urgency expressed by patient"
+                  },
+                  "hesitation": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "slight",
+                      "moderate",
+                      "significant"
+                    ],
+                    "description": "Patient's hesitation level about booking"
+                  },
+                  "positivity": {
+                    "type": "string",
+                    "enum": [
+                      "negative",
+                      "neutral",
+                      "positive",
+                      "very_positive"
+                    ],
+                    "description": "Overall emotional tone of the patient"
+                  }
+                }
+              },
+              "leadScoring": {
+                "type": "string",
+                "enum": [
+                  "hot",
+                  "warm",
+                  "cold"
+                ],
+                "description": "Lead quality: hot=booked, warm=rescheduled/interested, cold=not_booked"
+              },
+              "dentalConcern": {
+                "type": "string",
+                "description": "Primary dental concern or reason for calling"
+              },
+              "painLevel": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10,
+                "description": "Pain level on scale of 0-10 if mentioned"
+              },
+              "insuranceProvider": {
+                "type": "string",
+                "description": "Insurance provider if mentioned"
+              },
+              "lastVisit": {
+                "type": "string",
+                "description": "When patient last visited the clinic"
+              },
+              "callSuccessful": {
+                "type": "boolean",
+                "description": "Whether the call achieved the desired outcome"
+              },
+              "followUpRequired": {
+                "type": "boolean",
+                "description": "Whether follow-up is needed"
+              },
+              "notes": {
+                "type": "string",
+                "description": "Additional notes about the call"
+              }
+            }
+          }
+        },
+        "tools": {
+          "functions": {
+            "functions": [
+              {
+                "name": "queryKnowledgeBase",
+                "description": "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "query"
+                  ],
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "description": "The user's question or information request"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "checkAppointmentAvailability",
+                "description": "Check available appointment slots for scheduling",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "appointmentType",
+                    "preferredDate"
+                  ],
+                  "properties": {
+                    "appointmentType": {
+                      "type": "string",
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "description": "Type of appointment needed"
+                    },
+                    "preferredDate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Preferred appointment date (YYYY-MM-DD)"
+                    },
+                    "doctorPreference": {
+                      "type": "string",
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha",
+                        "any"
+                      ],
+                      "description": "Preferred doctor"
+                    },
+                    "timePreference": {
+                      "type": "string",
+                      "enum": [
+                        "morning",
+                        "afternoon",
+                        "evening",
+                        "any"
+                      ],
+                      "description": "Preferred time of day"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "bookAppointment",
+                "description": "Book an appointment for a patient",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "phoneNumber",
+                    "appointmentType",
+                    "appointmentDateTime"
+                  ],
+                  "properties": {
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient's full name"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "description": "Patient's contact phone number"
+                    },
+                    "appointmentType": {
+                      "type": "string",
+                      "enum": [
+                        "cleaning",
+                        "checkup",
+                        "consultation",
+                        "emergency",
+                        "procedure"
+                      ],
+                      "description": "Type of appointment"
+                    },
+                    "appointmentDateTime": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Scheduled appointment date and time"
+                    },
+                    "doctorName": {
+                      "type": "string",
+                      "enum": [
+                        "Daniel",
+                        "James",
+                        "Metha"
+                      ],
+                      "description": "Assigned doctor"
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Special notes or requests"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "verifyInsurance",
+                "description": "Verify patient's insurance coverage and benefits",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "insuranceProvider",
+                    "memberID"
+                  ],
+                  "properties": {
+                    "insuranceProvider": {
+                      "type": "string",
+                      "description": "Insurance company name"
+                    },
+                    "memberID": {
+                      "type": "string",
+                      "description": "Insurance member ID"
+                    },
+                    "groupNumber": {
+                      "type": "string",
+                      "description": "Group number if available"
+                    },
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name for verification"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "getPatientHistory",
+                "description": "Retrieve patient's appointment and treatment history",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientIdentifier"
+                  ],
+                  "properties": {
+                    "patientIdentifier": {
+                      "type": "string",
+                      "description": "Patient phone number, email, or ID"
+                    },
+                    "includeDetails": {
+                      "type": "boolean",
+                      "description": "Include detailed treatment history",
+                      "default": false
+                    }
+                  }
+                }
+              },
+              {
+                "name": "processPayment",
+                "description": "Process payment or set up payment plan",
+                "parameters": {
+                  "type": "object",
+                  "required": [
+                    "patientName",
+                    "amount",
+                    "paymentType"
+                  ],
+                  "properties": {
+                    "patientName": {
+                      "type": "string",
+                      "description": "Patient name"
+                    },
+                    "amount": {
+                      "type": "number",
+                      "description": "Payment amount"
+                    },
+                    "paymentType": {
+                      "type": "string",
+                      "enum": [
+                        "full_payment",
+                        "partial_payment",
+                        "payment_plan"
+                      ],
+                      "description": "Type of payment arrangement"
+                    },
+                    "insuranceClaim": {
+                      "type": "boolean",
+                      "description": "Whether to submit insurance claim",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "transfers": {
+            "transfers": [
+              {
+                "id": "scheduler",
+                "type": "assistant",
+                "assistantId": "${SCHEDULER_ASSISTANT_ID}",
+                "description": "Transfer to scheduler for appointment booking and management",
+                "message": "Of course! I'd be happy to help you with that. One moment."
+              },
+              {
+                "id": "manager",
+                "type": "assistant",
+                "assistantId": "${MANAGER_ASSISTANT_ID}",
+                "description": "Transfer to manager for complex issues, complaints, or special requests",
+                "message": "Certainly! Let me pull up your appointment details for you. One moment."
+              },
+              {
+                "id": "emergency_line",
+                "type": "number",
+                "number": "+12125551234",
+                "description": "Transfer to emergency services for medical emergencies",
+                "message": "Oh my, that sounds serious. Please hold while I connect you to our emergency line immediately."
+              },
+              {
+                "id": "billing_department",
+                "type": "number",
+                "number": "${BILLING_PHONE_NUMBER}",
+                "description": "Transfer to billing department for payment and insurance issues",
+                "message": "I'll connect you with our billing specialist who can help with that right away."
+              },
+              {
+                "id": "technical_support",
+                "type": "number",
+                "number": "${TECH_SUPPORT_NUMBER}",
+                "description": "Transfer to technical support for system issues",
+                "message": "Let me connect you with our technical support team to resolve this issue."
+              }
+            ],
+            "rules": [
+              {
+                "trigger": "intent",
+                "intent": "booking",
+                "destination": "scheduler",
+                "description": "Route booking requests to scheduler"
+              },
+              {
+                "trigger": "intent",
+                "intent": "management",
+                "destination": "manager",
+                "description": "Route appointment management to manager"
+              },
+              {
+                "trigger": "intent",
+                "intent": "emergency",
+                "destination": "emergency_line",
+                "description": "Route emergencies to emergency line"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "speak to manager",
+                  "supervisor",
+                  "complaint",
+                  "escalate"
+                ],
+                "destination": "manager",
+                "description": "Escalate to manager on request"
+              },
+              {
+                "trigger": "sentiment",
+                "condition": "sentiment < -0.5",
+                "destination": "manager",
+                "description": "Auto-escalate when patient is very upset"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "severe pain",
+                  "emergency",
+                  "urgent",
+                  "bleeding",
+                  "accident"
+                ],
+                "destination": "emergency_line",
+                "description": "Route urgent dental emergencies"
+              },
+              {
+                "trigger": "keyword",
+                "keywords": [
+                  "billing",
+                  "insurance",
+                  "payment",
+                  "claim",
+                  "coverage"
+                ],
+                "destination": "billing_department",
+                "description": "Route billing and insurance questions"
+              }
+            ]
+          }
+        }
+      },
+      "deployment_state": {
+        "development": {
+          "id": "96e98007-7f60-4e49-bc1b-4b64cf7ca757",
+          "deployed_at": "2025-09-16T18:05:59.250114+00:00",
+          "deployed_by": "sebr5550",
+          "version": 1
+        },
+        "production": {
+          "id": null,
+          "deployed_at": null,
+          "deployed_by": null,
+          "version": 0
+        },
+        "staging": {
+          "id": null,
+          "deployed_at": null,
+          "deployed_by": null,
+          "version": 0
+        }
+      },
+      "file_contents": {
+        "assistant.yaml": "_vapi:\n  current_environment: development\n  environments:\n    development:\n      deployed_at: '2025-09-16T18:05:59.250114+00:00'\n      deployed_by: sebr5550\n      id: 96e98007-7f60-4e49-bc1b-4b64cf7ca757\n      version: 1\n    production:\n      deployed_at: null\n      deployed_by: null\n      id: null\n      version: 0\n    staging:\n      deployed_at: null\n      deployed_by: null\n      id: null\n      version: 0\n  last_sync: '2025-09-16T18:05:59.250114+00:00'\nanalysisPlan:\n  minMessagesThreshold: 2\n  structuredDataPlan:\n    enabled: true\n    timeoutSeconds: 15\n  summaryPlan:\n    enabled: true\n    timeoutSeconds: 15\ndescription: AI assistant for Vicky Dental clinic operations\nenvironments:\n  development:\n    model:\n      model: gpt-3.5-turbo\n      temperature: 0.8\n  production:\n    model:\n      model: gpt-4o-mini\n      temperature: 0.4\n  staging:\n    voice:\n      voiceId: socialmedia_female_1_v1\nfeatures:\n  enableAnalytics: true\n  enableRecording: true\n  enableTranscription: true\nmetadata:\n  author: Vicky Dental Team\n  tags:\n  - dental-clinic\n  - customer-service\n  - healthcare\n  template: vicky_dental_clinic\n  version: 1.0.0\nmodel:\n  model: gpt-4o-mini\n  provider: openai\n  temperature: 0.6\nname: triage_assistant\nserver:\n  timeoutSeconds: 20\n  url: ${WEBHOOK_URL}/assistants/triage_assistant/webhook\ntranscriber:\n  language: en\n  model: nova-2\n  provider: deepgram\nvoice:\n  provider: minimax\n  voiceId: socialmedia_female_1_v1\n",
+        "prompts\\first_message.md": "Hi there! Thank you for calling Vicky Dental. This is Sarah... how can I help you today?",
+        "prompts\\system.md": "# Vicky Dental Clinic Assistant\n\nYou are Sarah, an AI assistant at Vicky Dental Clinic. Your personality is warm, empathetic, professional, and genuinely caring. You make patients feel comfortable and heard.\n\n## Core Responsibilities\n\n### Primary Role\nYou are the first point of contact for patients calling Vicky Dental. Your purpose is to:\n- Understand the caller's primary intent\n- Provide helpful information using the knowledge base\n- Route calls to the appropriate specialist when needed\n- Handle appointment scheduling and management\n\n### Personality Traits\n- **Warm and empathetic**: Show genuine care for patient concerns\n- **Professional yet approachable**: Maintain clinical standards while being friendly\n- **Patient and understanding**: Take time to listen and comprehend needs\n- **Solution-oriented**: Focus on helping patients achieve their goals\n\n## Communication Guidelines\n\n### Natural Speech Patterns\n- Use gentle hesitations to sound natural: \"Let me... let me just check that for you.\"\n- Show empathy: \"Oh, I understand that can be concerning...\"\n- Use natural transitions: \"Alright, so...\", \"Hmm, let me see...\"\n- Include thinking pauses: \"One moment while I look that up...\"\n\n### Active Listening\n- Acknowledge patient concerns explicitly\n- Paraphrase to confirm understanding: \"So you're saying that...\"\n- Ask clarifying questions when needed\n- Validate feelings: \"That sounds frustrating, I can help with that.\"\n\n## Knowledge Areas\n\n### Services & Treatments\n- General dentistry (cleanings, fillings, crowns)\n- Cosmetic dentistry (whitening, veneers)\n- Orthodontics (braces, aligners)\n- Oral surgery (extractions, implants)\n- Emergency dental care\n- Pediatric dentistry\n\n### Administrative Support\n- Appointment scheduling and rescheduling\n- Insurance verification and claims\n- Payment plans and financing options\n- Office hours and location information\n- Pre-appointment instructions\n- Post-treatment care guidelines\n\n## Conversation Flow\n\n1. **Greeting**: \"Thank you for calling Vicky Dental, this is Sarah. How can I help you today?\"\n\n2. **Discovery**: Listen carefully and identify the caller's intent:\n   - New appointment booking\n   - Existing appointment management\n   - General questions about services\n   - Emergency dental situations\n   - Billing or insurance inquiries\n\n3. **Action**: Based on their intent:\n   - **Information requests**: Use knowledge base to provide accurate answers\n   - **Appointment needs**: Guide through scheduling process\n   - **Complex issues**: Transfer to appropriate specialist\n   - **Emergencies**: Prioritize and connect to emergency line\n\n4. **Confirmation**: Ensure the caller's needs are met\n   - Summarize what was accomplished\n   - Confirm any scheduled appointments\n   - Provide confirmation numbers or references\n\n5. **Closing**: Professional farewell with follow-up offer\n   - \"Is there anything else I can help you with today?\"\n   - \"Thank you for calling Vicky Dental, have a great day!\"\n\n## Call Routing Guidelines\n\n### Transfer to Scheduler\n- New patient appointments\n- Routine cleaning appointments\n- Consultation requests\n- Multiple appointment scheduling\n\n### Transfer to Manager\n- Complex insurance issues\n- Billing disputes\n- Complaints or concerns\n- Special accommodation requests\n\n### Emergency Protocol\n- Severe pain or trauma\n- Dental emergencies\n- After-hours urgent care needs\n\n## Important Rules\n\n### Do's\n- Always maintain patient confidentiality\n- Verify patient information before discussing details\n- Use the knowledge base to provide accurate information\n- Be patient with elderly or anxious callers\n- Offer alternatives when primary options aren't available\n\n### Don'ts\n- Never make medical diagnoses or give medical advice\n- Don't make promises about treatment outcomes\n- Don't discuss other patients' information\n- Don't bypass verification procedures\n- Don't rush patients who need time to explain their situation\n\n## Knowledge Base Usage\n\nWhen patients ask about:\n- **Services and pricing**: Use knowledge base search\n- **Office policies**: Reference current policy documents\n- **Treatment procedures**: Provide general information, refer to doctor for specifics\n- **Insurance coverage**: Use knowledge base, verify with patient's specific plan\n\nAlways search the knowledge base before providing information to ensure accuracy and current pricing.\n\n## Error Handling\n\n- **System issues**: \"I apologize, our system is temporarily unavailable. Let me take your information and have someone call you back.\"\n- **Unknown information**: \"That's a great question. Let me connect you with someone who can give you the most accurate information.\"\n- **Busy schedule**: \"I understand you need to be seen soon. Let me check for any cancellations or openings with our other providers.\"\n\nRemember: You represent Vicky Dental's commitment to excellent patient care in every interaction.",
+        "schemas\\structured_data.yaml": "# Vicky Dental Clinic - Call Data Extraction Schema\n\ntype: object\nrequired:\n  - call_type\n  - transferred_to\n  - sentimentAnalysis\n  - leadScoring\n\nproperties:\n  # Patient Information\n  firstName:\n    type: string\n    description: \"Patient's first name if collected\"\n\n  lastName:\n    type: string\n    description: \"Patient's last name if collected\"\n\n  phoneNumber:\n    type: string\n    description: \"Patient's phone number if collected\"\n\n  # Call Classification\n  call_type:\n    type: string\n    enum:\n      - emergency\n      - informational\n      - booking\n      - management\n    description: \"Primary purpose of the call\"\n\n  # Transfer Routing\n  transferred_to:\n    type: string\n    enum:\n      - emergency_line\n      - scheduler\n      - manager\n      - none\n    description: \"Where the call was transferred\"\n\n  # Appointment Details\n  appointmentType:\n    type: string\n    enum:\n      - cleaning\n      - checkup\n      - consultation\n      - procedure\n      - emergency\n      - not_specified\n    description: \"Type of appointment discussed\"\n\n  appointmentDateTime:\n    type: string\n    description: \"Appointment date/time if discussed (format: YYYY-MM-DD HH:MM)\"\n\n  doctorName:\n    type: string\n    enum:\n      - Daniel\n      - James\n      - Metha\n      - not_specified\n    description: \"Doctor preference mentioned or suggested\"\n\n  # Sentiment Analysis\n  sentimentAnalysis:\n    type: object\n    required:\n      - urgency\n      - hesitation\n      - positivity\n    properties:\n      urgency:\n        type: string\n        enum:\n          - low\n          - medium\n          - high\n          - emergency\n        description: \"Level of urgency expressed by patient\"\n\n      hesitation:\n        type: string\n        enum:\n          - none\n          - slight\n          - moderate\n          - significant\n        description: \"Patient's hesitation level about booking\"\n\n      positivity:\n        type: string\n        enum:\n          - negative\n          - neutral\n          - positive\n          - very_positive\n        description: \"Overall emotional tone of the patient\"\n\n  # Lead Scoring\n  leadScoring:\n    type: string\n    enum:\n      - hot\n      - warm\n      - cold\n    description: \"Lead quality: hot=booked, warm=rescheduled/interested, cold=not_booked\"\n\n  # Dental-Specific Information\n  dentalConcern:\n    type: string\n    description: \"Primary dental concern or reason for calling\"\n\n  painLevel:\n    type: integer\n    minimum: 0\n    maximum: 10\n    description: \"Pain level on scale of 0-10 if mentioned\"\n\n  insuranceProvider:\n    type: string\n    description: \"Insurance provider if mentioned\"\n\n  lastVisit:\n    type: string\n    description: \"When patient last visited the clinic\"\n\n  # Call Outcome\n  callSuccessful:\n    type: boolean\n    description: \"Whether the call achieved the desired outcome\"\n\n  followUpRequired:\n    type: boolean\n    description: \"Whether follow-up is needed\"\n\n  notes:\n    type: string\n    description: \"Additional notes about the call\"",
+        "tools\\functions.yaml": "# Vicky Dental Clinic Function Tools\n\nfunctions:\n  - name: queryKnowledgeBase\n    description: \"Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions\"\n    parameters:\n      type: object\n      required:\n        - query\n      properties:\n        query:\n          type: string\n          description: \"The user's question or information request\"\n\n  - name: checkAppointmentAvailability\n    description: \"Check available appointment slots for scheduling\"\n    parameters:\n      type: object\n      required:\n        - appointmentType\n        - preferredDate\n      properties:\n        appointmentType:\n          type: string\n          enum:\n            - cleaning\n            - checkup\n            - consultation\n            - emergency\n            - procedure\n          description: \"Type of appointment needed\"\n        preferredDate:\n          type: string\n          format: date\n          description: \"Preferred appointment date (YYYY-MM-DD)\"\n        doctorPreference:\n          type: string\n          enum:\n            - Daniel\n            - James\n            - Metha\n            - any\n          description: \"Preferred doctor\"\n        timePreference:\n          type: string\n          enum:\n            - morning\n            - afternoon\n            - evening\n            - any\n          description: \"Preferred time of day\"\n\n  - name: bookAppointment\n    description: \"Book an appointment for a patient\"\n    parameters:\n      type: object\n      required:\n        - patientName\n        - phoneNumber\n        - appointmentType\n        - appointmentDateTime\n      properties:\n        patientName:\n          type: string\n          description: \"Patient's full name\"\n        phoneNumber:\n          type: string\n          description: \"Patient's contact phone number\"\n        appointmentType:\n          type: string\n          enum:\n            - cleaning\n            - checkup\n            - consultation\n            - emergency\n            - procedure\n          description: \"Type of appointment\"\n        appointmentDateTime:\n          type: string\n          format: date-time\n          description: \"Scheduled appointment date and time\"\n        doctorName:\n          type: string\n          enum:\n            - Daniel\n            - James\n            - Metha\n          description: \"Assigned doctor\"\n        notes:\n          type: string\n          description: \"Special notes or requests\"\n\n  - name: verifyInsurance\n    description: \"Verify patient's insurance coverage and benefits\"\n    parameters:\n      type: object\n      required:\n        - insuranceProvider\n        - memberID\n      properties:\n        insuranceProvider:\n          type: string\n          description: \"Insurance company name\"\n        memberID:\n          type: string\n          description: \"Insurance member ID\"\n        groupNumber:\n          type: string\n          description: \"Group number if available\"\n        patientName:\n          type: string\n          description: \"Patient name for verification\"\n\n  - name: getPatientHistory\n    description: \"Retrieve patient's appointment and treatment history\"\n    parameters:\n      type: object\n      required:\n        - patientIdentifier\n      properties:\n        patientIdentifier:\n          type: string\n          description: \"Patient phone number, email, or ID\"\n        includeDetails:\n          type: boolean\n          description: \"Include detailed treatment history\"\n          default: false\n\n  - name: processPayment\n    description: \"Process payment or set up payment plan\"\n    parameters:\n      type: object\n      required:\n        - patientName\n        - amount\n        - paymentType\n      properties:\n        patientName:\n          type: string\n          description: \"Patient name\"\n        amount:\n          type: number\n          description: \"Payment amount\"\n        paymentType:\n          type: string\n          enum:\n            - full_payment\n            - partial_payment\n            - payment_plan\n          description: \"Type of payment arrangement\"\n        insuranceClaim:\n          type: boolean\n          description: \"Whether to submit insurance claim\"\n          default: false",
+        "tools\\transfers.yaml": "# Vicky Dental Clinic Transfer Destinations\n\ntransfers:\n  - id: scheduler\n    type: assistant\n    assistantId: \"${SCHEDULER_ASSISTANT_ID}\"\n    description: \"Transfer to scheduler for appointment booking and management\"\n    message: \"Of course! I'd be happy to help you with that. One moment.\"\n\n  - id: manager\n    type: assistant\n    assistantId: \"${MANAGER_ASSISTANT_ID}\"\n    description: \"Transfer to manager for complex issues, complaints, or special requests\"\n    message: \"Certainly! Let me pull up your appointment details for you. One moment.\"\n\n  - id: emergency_line\n    type: number\n    number: \"+12125551234\"\n    description: \"Transfer to emergency services for medical emergencies\"\n    message: \"Oh my, that sounds serious. Please hold while I connect you to our emergency line immediately.\"\n\n  - id: billing_department\n    type: number\n    number: \"${BILLING_PHONE_NUMBER}\"\n    description: \"Transfer to billing department for payment and insurance issues\"\n    message: \"I'll connect you with our billing specialist who can help with that right away.\"\n\n  - id: technical_support\n    type: number\n    number: \"${TECH_SUPPORT_NUMBER}\"\n    description: \"Transfer to technical support for system issues\"\n    message: \"Let me connect you with our technical support team to resolve this issue.\"\n\n# Transfer Rules and Conditions\nrules:\n  - trigger: \"intent\"\n    intent: \"booking\"\n    destination: \"scheduler\"\n    description: \"Route booking requests to scheduler\"\n\n  - trigger: \"intent\"\n    intent: \"management\"\n    destination: \"manager\"\n    description: \"Route appointment management to manager\"\n\n  - trigger: \"intent\"\n    intent: \"emergency\"\n    destination: \"emergency_line\"\n    description: \"Route emergencies to emergency line\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"speak to manager\"\n      - \"supervisor\"\n      - \"complaint\"\n      - \"escalate\"\n    destination: \"manager\"\n    description: \"Escalate to manager on request\"\n\n  - trigger: \"sentiment\"\n    condition: \"sentiment < -0.5\"\n    destination: \"manager\"\n    description: \"Auto-escalate when patient is very upset\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"severe pain\"\n      - \"emergency\"\n      - \"urgent\"\n      - \"bleeding\"\n      - \"accident\"\n    destination: \"emergency_line\"\n    description: \"Route urgent dental emergencies\"\n\n  - trigger: \"keyword\"\n    keywords:\n      - \"billing\"\n      - \"insurance\"\n      - \"payment\"\n      - \"claim\"\n      - \"coverage\"\n    destination: \"billing_department\"\n    description: \"Route billing and insurance questions\""
+      },
+      "backup_timestamp": "2025-09-16T18:31:44.997988+00:00"
+    }
+  ],
+  "backup_format_version": "1.0",
+  "checksum": "8e1dc34d3dd0232f988e2912fdd928da3da2b11056d8748d5138525617262f26"
+}

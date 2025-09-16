@@ -1,0 +1,34 @@
+# Voice Override Configurations
+# Different voice personalities for different roles
+
+# Professional, warm voice for reception/scheduling
+reception_voice:
+  provider: minimax
+  voiceId: socialmedia_female_1_v1
+  speed: 1.0
+  pitch: 0.0
+  stability: 0.8
+
+# Calm, authoritative voice for medical triage
+medical_voice:
+  provider: elevenlabs
+  voiceId: medical_professional_female
+  speed: 0.9  # Slightly slower for clarity
+  pitch: -0.1  # Slightly lower for authority
+  stability: 0.9  # Very stable for medical context
+
+# Friendly, helpful voice for billing/customer service
+billing_voice:
+  provider: minimax
+  voiceId: customer_service_female_1
+  speed: 1.0
+  pitch: 0.1  # Slightly higher for friendliness
+  stability: 0.7
+
+# Emergency voice - clear and urgent when needed
+emergency_voice:
+  provider: deepgram
+  voiceId: emergency_clear_female
+  speed: 1.1  # Faster for urgency
+  pitch: 0.0
+  stability: 1.0  # Maximum stability for emergencies

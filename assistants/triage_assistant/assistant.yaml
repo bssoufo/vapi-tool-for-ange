@@ -1,0 +1,67 @@
+_vapi:
+  current_environment: development
+  environments:
+    development:
+      deployed_at: '2025-09-16T20:17:52.200070+00:00'
+      deployed_by: sebr5550
+      id: 96e98007-7f60-4e49-bc1b-4b64cf7ca757
+      version: 2
+    production:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-09-16T20:17:52.200070+00:00'
+analysisPlan:
+  minMessagesThreshold: 2
+  structuredDataPlan:
+    enabled: true
+    timeoutSeconds: 15
+  summaryPlan:
+    enabled: true
+    timeoutSeconds: 15
+description: AI assistant for Vicky Dental clinic operations
+environments:
+  development:
+    model:
+      model: gpt-3.5-turbo
+      temperature: 0.8
+  production:
+    model:
+      model: gpt-4o-mini
+      temperature: 0.4
+  staging:
+    voice:
+      voiceId: socialmedia_female_1_v1
+features:
+  enableAnalytics: true
+  enableRecording: true
+  enableTranscription: true
+metadata:
+  author: Vicky Dental Team
+  tags:
+  - dental-clinic
+  - customer-service
+  - healthcare
+  template: vicky_dental_clinic
+  version: 1.0.0
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0.6
+name: triage_assistant
+server:
+  timeoutSeconds: 20
+  url: ${WEBHOOK_URL}/assistants/triage_assistant/webhook
+transcriber:
+  language: en
+  model: nova-2
+  provider: deepgram
+voice:
+  provider: minimax
+  voiceId: socialmedia_female_1_v1

@@ -1,0 +1,122 @@
+# Function Tool Definitions
+# Define custom functions that the assistant can call
+
+functions:
+  - name: checkOrderStatus
+    description: "Check the status of a customer's order"
+    parameters:
+      type: object
+      required:
+        - orderId
+      properties:
+        orderId:
+          type: string
+          description: "The order ID to check"
+        includeDetails:
+          type: boolean
+          description: "Whether to include detailed order information"
+          default: false
+
+  - name: searchKnowledgeBase
+    description: "Search the company knowledge base for information"
+    parameters:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: "The search query"
+        category:
+          type: string
+          enum:
+            - products
+            - policies
+            - troubleshooting
+            - faqs
+          description: "Category to search within"
+        limit:
+          type: integer
+          description: "Maximum number of results"
+          default: 5
+
+  - name: createTicket
+    description: "Create a support ticket for follow-up"
+    parameters:
+      type: object
+      required:
+        - description
+        - priority
+      properties:
+        description:
+          type: string
+          description: "Detailed description of the issue"
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          description: "Ticket priority"
+        customerId:
+          type: string
+          description: "Customer ID"
+        category:
+          type: string
+          description: "Issue category"
+
+  - name: scheduleCallback
+    description: "Schedule a callback for the customer"
+    parameters:
+      type: object
+      required:
+        - phoneNumber
+        - preferredTime
+      properties:
+        phoneNumber:
+          type: string
+          description: "Phone number to call back"
+        preferredTime:
+          type: string
+          format: date-time
+          description: "Preferred callback time"
+        reason:
+          type: string
+          description: "Reason for callback"
+        agentId:
+          type: string
+          description: "Specific agent to handle callback"
+
+  - name: processReturn
+    description: "Initiate a return or exchange process"
+    parameters:
+      type: object
+      required:
+        - orderId
+        - items
+        - reason
+      properties:
+        orderId:
+          type: string
+          description: "Order ID for the return"
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              itemId:
+                type: string
+              quantity:
+                type: integer
+          description: "Items to return"
+        reason:
+          type: string
+          enum:
+            - defective
+            - wrong_item
+            - not_as_described
+            - no_longer_needed
+            - other
+          description: "Reason for return"
+        action:
+          type: string
+          enum: [refund, exchange]
+          description: "Desired action"
+          default: refund

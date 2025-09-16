@@ -1,0 +1,55 @@
+# Transfer Destinations Configuration
+# Define where calls can be transferred
+
+transfers:
+  - id: technical_support
+    type: assistant
+    assistantId: "${TECH_SUPPORT_ASSISTANT_ID}"
+    description: "Transfer to technical support for complex technical issues"
+    message: "I'll transfer you to our technical support team who can better assist with this issue."
+
+  - id: billing_department
+    type: number
+    number: "+1-555-BILLING"
+    description: "Transfer to billing department for payment issues"
+    message: "Let me connect you with our billing department to help with your payment question."
+
+  - id: sales_team
+    type: squad
+    squadId: "${SALES_SQUAD_ID}"
+    description: "Transfer to sales team for product inquiries and purchases"
+    message: "I'll connect you with our sales team who can help you with that product."
+
+  - id: manager
+    type: assistant
+    assistantId: "${MANAGER_ASSISTANT_ID}"
+    description: "Escalate to manager for complaints or special requests"
+    message: "I understand your concern. Let me get my manager to assist you better."
+
+  - id: emergency
+    type: number
+    number: "911"
+    description: "Emergency services for urgent situations"
+    message: "This seems like an emergency. I'm connecting you to emergency services immediately."
+
+# Transfer Rules and Conditions
+rules:
+  - trigger: "customer_sentiment"
+    condition: "sentiment < -0.5"
+    destination: "manager"
+    description: "Auto-escalate to manager when customer is very upset"
+
+  - trigger: "keyword"
+    keywords:
+      - "speak to manager"
+      - "supervisor"
+      - "escalate"
+    destination: "manager"
+
+  - trigger: "intent"
+    intent: "technical_support"
+    destination: "technical_support"
+
+  - trigger: "intent"
+    intent: "billing_issue"
+    destination: "billing_department"

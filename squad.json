@@ -1,0 +1,155 @@
+[
+    {
+        "id": "0d131c73-e857-480c-b586-d6c7201003af",
+        "orgId": "1e617d7d-9047-45f1-a1db-e77d9798ea81",
+        "createdAt": "2025-09-11T10:44:23.242Z",
+        "updatedAt": "2025-09-16T15:10:09.413Z",
+        "members": [
+            {
+                "assistantId": "3552f359-dc15-4580-81aa-950753f50b0c",
+                "assistantOverrides": {
+                    "transcriber": {
+                        "language": "fr-CA",
+                        "provider": "azure"
+                    },
+                    "model": {
+                        "model": "gpt-4.1-nano",
+                        "provider": "openai",
+                        "temperature": 0
+                    },
+                    "voice": {
+                        "model": "sonic-2",
+                        "voiceId": "402107b2-b0e7-414c-a263-df8a450c8913",
+                        "provider": "cartesia"
+                    }
+                },
+                "assistantDestinations": [
+                    {
+                        "message": "",
+                        "type": "assistant",
+                        "assistantName": "Sarah_Emergency_v1_0"
+                    },
+                    {
+                        "message": "",
+                        "type": "assistant",
+                        "assistantName": "Sarah_NoteTaker_v1_0"
+                    },
+                    {
+                        "message": "",
+                        "type": "assistant",
+                        "assistantName": "Sarah_FAQ_v1_0"
+                    }
+                ]
+            },
+            {
+                "assistantId": "3bfdddd3-7983-4b6d-977c-fd81300e75b8",
+                "assistantOverrides": {
+                    "transcriber": {
+                        "language": "fr-CA",
+                        "provider": "azure"
+                    },
+                    "model": {
+                        "model": "gpt-4o-mini",
+                        "provider": "openai",
+                        "temperature": 0
+                    },
+                    "voice": {
+                        "model": "sonic-2",
+                        "voiceId": "402107b2-b0e7-414c-a263-df8a450c8913",
+                        "provider": "cartesia"
+                    }
+                },
+                "assistantDestinations": [
+                    {
+                        "message": "Patientez un instant s'il vous plaît...",
+                        "type": "assistant",
+                        "assistantName": "Sarah_Greeter_v1_0"
+                    },
+                    {
+                        "message": "Patientez un instant s'il vous plaît...",
+                        "type": "assistant",
+                        "assistantName": "Sarah_NoteTaker_v1_0"
+                    },
+                    {
+                        "message": "Patientez un instant s'il vous plaît...",
+                        "type": "assistant",
+                        "assistantName": "Sarah_FAQ_v1_0"
+                    }
+                ]
+            },
+            {
+                "assistantId": "6bce6fc9-fc64-414e-a7dd-923a990cf7fc",
+                "assistantOverrides": {
+                    "transcriber": {
+                        "language": "fr-CA",
+                        "provider": "azure"
+                    },
+                    "model": {
+                        "model": "gpt-4o-mini",
+                        "provider": "openai",
+                        "temperature": 0
+                    },
+                    "voice": {
+                        "model": "sonic-2",
+                        "voiceId": "402107b2-b0e7-414c-a263-df8a450c8913",
+                        "provider": "cartesia"
+                    }
+                },
+                "assistantDestinations": [
+                    {
+                        "message": "",
+                        "type": "assistant",
+                        "assistantName": "Sarah_Greeter_v1_0"
+                    },
+                    {
+                        "message": "",
+                        "type": "assistant",
+                        "assistantName": "Sarah_Emergency_v1_0"
+                    },
+                    {
+                        "message": "",
+                        "type": "assistant",
+                        "assistantName": "Sarah_FAQ_v1_0"
+                    }
+                ]
+            },
+            {
+                "assistantId": "b1c41b75-ae7c-43ef-af15-ac0f7c19630f",
+                "assistantOverrides": {
+                    "transcriber": {
+                        "language": "fr-CA",
+                        "provider": "azure"
+                    },
+                    "model": {
+                        "model": "gpt-4o-mini",
+                        "provider": "openai",
+                        "temperature": 0
+                    },
+                    "voice": {
+                        "model": "sonic-2",
+                        "voiceId": "402107b2-b0e7-414c-a263-df8a450c8913",
+                        "provider": "cartesia"
+                    }
+                },
+                "assistantDestinations": [
+                    {
+                        "message": "Patientez un instant s'il vous plaît...",
+                        "type": "assistant",
+                        "assistantName": "Sarah_Greeter_v1_0"
+                    },
+                    {
+                        "message": "Patientez un instant s'il vous plaît...",
+                        "type": "assistant",
+                        "assistantName": "Sarah_Emergency_v1_0"
+                    },
+                    {
+                        "message": "Patientez un instant s'il vous plaît...",
+                        "type": "assistant",
+                        "assistantName": "Sarah_NoteTaker_v1_0"
+                    }
+                ]
+            }
+        ],
+        "name": "Beau_Sourire_Clinic_receptionist_v1_0"
+    }
+]

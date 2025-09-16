@@ -1,0 +1,74 @@
+# Squad Configuration Template
+name: "{{squad_name}}"
+description: "{{description|Multi-assistant dental clinic reception squad}}"
+
+# Default member configuration
+default_overrides:
+  transcriber:
+    provider: deepgram
+    model: nova-2
+    language: en
+  voice:
+    provider: minimax
+    voiceId: socialmedia_female_1_v1
+  model:
+    provider: openai
+    model: gpt-4o-mini
+    temperature: 0.6
+
+# Environment-specific overrides
+environments:
+  development:
+    default_overrides:
+      model:
+        model: gpt-3.5-turbo
+        temperature: 0.8
+  staging:
+    default_overrides:
+      model:
+        model: gpt-4o-mini
+        temperature: 0.7
+  production:
+    default_overrides:
+      model:
+        model: gpt-4o-mini
+        temperature: 0.4
+
+# Squad-level configuration
+squad_settings:
+  max_concurrent_calls: 10
+  routing_strategy: "skill_based"
+  fallback_enabled: true
+
+# VAPI Deployment State - Managed by vapi-manager
+# WARNING: Do not edit this section manually - changes will be overwritten
+_vapi:
+  environments:
+    development:
+      id: null
+      deployed_at: null
+      deployed_by: null
+      version: 0
+    staging:
+      id: null
+      deployed_at: null
+      deployed_by: null
+      version: 0
+    production:
+      id: null
+      deployed_at: null
+      deployed_by: null
+      version: 0
+  current_environment: null
+  last_sync: null
+
+# Metadata
+metadata:
+  version: "1.0.0"
+  template: "dental_clinic_squad"
+  author: "Vicky Dental Team"
+  tags:
+    - dental-clinic
+    - multi-assistant
+    - reception
+    - healthcare

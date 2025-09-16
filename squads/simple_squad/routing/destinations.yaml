@@ -1,0 +1,92 @@
+# Routing Destinations Configuration
+# Define how assistants can transfer to each other or external systems
+
+# Assistant-to-Assistant transfers
+assistant_destinations:
+  scheduler_to_triage:
+    type: assistant
+    source: "scheduler_bot"
+    target: "triage_assistant"
+    conditions:
+      - keywords: ["pain", "emergency", "urgent", "symptoms"]
+      - intent: "medical_question"
+    message: "Based on what you're describing, let me connect you with our medical triage specialist who can better assess your situation..."
+
+  scheduler_to_billing:
+    type: assistant
+    source: "scheduler_bot"
+    target: "billing_assistant"
+    conditions:
+      - keywords: ["payment", "insurance", "cost", "billing"]
+      - intent: "financial_question"
+    message: "For billing and insurance questions, our specialist can help you with that..."
+
+  triage_to_scheduler:
+    type: assistant
+    source: "triage_assistant"
+    target: "scheduler_bot"
+    conditions:
+      - intent: "appointment_needed"
+      - assessment: "non_emergency"
+    message: "Now that I've assessed your situation, let me connect you with our scheduler to get you the right appointment..."
+
+  billing_to_scheduler:
+    type: assistant
+    source: "billing_assistant"
+    target: "scheduler_bot"
+    conditions:
+      - intent: "schedule_after_payment"
+      - status: "payment_resolved"
+    message: "Great! Now that we've sorted out the billing, let me connect you with our scheduler..."
+
+# External system transfers
+external_destinations:
+  emergency_services:
+    type: number
+    number: "${EMERGENCY_LINE}"
+    sources: ["triage_assistant"]
+    conditions:
+      - keywords: ["severe", "bleeding", "unconscious", "chest pain"]
+      - urgency: "critical"
+    message: "This sounds like a medical emergency. I'm connecting you to emergency services immediately. Please stay on the line..."
+
+  dentist_emergency:
+    type: number
+    number: "${DENTIST_EMERGENCY_LINE}"
+    sources: ["triage_assistant", "scheduler_bot"]
+    conditions:
+      - keywords: ["tooth knocked out", "severe dental trauma", "dental emergency"]
+      - urgency: "high"
+    message: "This is a dental emergency. I'm connecting you directly to our emergency dental line..."
+
+  office_manager:
+    type: number
+    number: "${MANAGER_PHONE}"
+    sources: ["scheduler_bot", "billing_assistant"]
+    conditions:
+      - keywords: ["manager", "supervisor", "complaint", "escalate"]
+      - intent: "escalation"
+    message: "I understand you'd like to speak with a manager. Let me connect you right away..."
+
+  billing_department:
+    type: number
+    number: "${BILLING_DEPT_PHONE}"
+    sources: ["billing_assistant"]
+    conditions:
+      - keywords: ["complex billing", "insurance dispute", "billing manager"]
+      - complexity: "high"
+    message: "For this complex billing matter, let me connect you with our billing department manager..."
+
+# Voicemail destinations for after-hours
+voicemail_destinations:
+  after_hours_general:
+    type: voicemail
+    number: "${MAIN_VOICEMAIL}"
+    active_hours: "17:01-07:59"
+    message: "Our office is currently closed. Please leave a detailed message and we'll return your call first thing in the morning. For emergencies, please call our emergency line at ${EMERGENCY_LINE}."
+
+  weekend_emergency_screening:
+    type: assistant
+    target: "triage_assistant"
+    active_days: ["saturday", "sunday"]
+    message: "Our office is closed for the weekend, but I can help determine if your situation needs immediate attention..."

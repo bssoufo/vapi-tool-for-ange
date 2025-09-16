@@ -1,0 +1,227 @@
+{
+  "id": "46ceb742-224f-49ea-affc-14cbbe4191b5",
+  "orgId": "66efc01a-e805-4865-905e-e5c06d284a84",
+  "name": "triage",
+  "voice": {
+    "voiceId": "socialmedia_female_1_v1",
+    "provider": "minimax"
+  },
+  "createdAt": "2025-09-15T23:11:55.338Z",
+  "updatedAt": "2025-09-16T12:29:59.674Z",
+  "model": {
+    "model": "gpt-4o-mini",
+    "tools": [
+      {
+        "type": "endCall"
+      },
+      {
+        "type": "transferCall",
+        "destinations": [
+          {
+            "type": "number",
+            "number": "+12125551234",
+            "description": "Transfer to emergency services for medical emergencies"
+          }
+        ]
+      },
+      {
+        "type": "function",
+        "server": {
+          "url": "https://n8n-2-u19609.vm.elestio.app/webhook/cdda2586-cb51-472a-814f-34c4f2bbcf06"
+        },
+        "function": {
+          "name": "queryKnowledgeBase",
+          "strict": false,
+          "parameters": {
+            "type": "object",
+            "required": [
+              "query"
+            ],
+            "properties": {
+              "query": {
+                "type": "string",
+                "description": "The user's question or information request"
+              }
+            }
+          },
+          "description": "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions"
+        }
+      }
+    ],
+    "toolIds": [
+      "9c890e7a-bcf4-406a-85f8-c92276b63f07"
+    ],
+    "messages": [
+      {
+        "role": "system",
+        "content": "[Persona]\n- You are Sarah, an AI assistant at Vicky Dental.\n- Your personality is warm, empathetic, professional, and genuinely caring. You make patients feel comfortable and heard.\n- You must maintain the illusion of being one single person, Sarah, throughout the entire call, even when the conversation is handed off between specialist assistants.\n\n[Natural Speech Patterns]\n- Use gentle hesitations to sound natural (e.g., \"Let me... let me just check that for you.\").\n- Use empathetic phrases (e.g., \"Oh, I understand that can be concerning...\").\n- Use natural transitions and thinking pauses (e.g., \"Alright, so...\", \"Hmm, let me see...\").\n\n[CRITICAL INSTRUCTION: IMMEDIATE TOOL CALLS]\nThis is the most important rule. When the flow requires a tool (like fetching data or transferring), your response is twofold:\n1.  You may say a brief phrase to the user to let them know you're working on their request (e.g., \"Just a moment while I pull that up...\").\n2.  After that phrase, your **next and ONLY action MUST be to call the required tool.** Do not generate any further text. Do not wait for the user to speak. The tool call is not conversational; it is a required system action.\n\n[End Call Rules]\n- When a caller indicates the conversation is over (e.g., \"goodbye,\" \"thanks, that's all,\" \"bye\"), respond warmly and your **ONLY next action MUST be to call the `endCall` tool.**\n- After successfully completing a task (booking, canceling), if the user has no other needs, say goodbye and call the `endCall` tool.\n- Never leave a call without a proper closing.\n\n[Knowledge Base Tool Instructions]\nWhen a user asks about general information (pricing, treatments, insurance, hours, policies, procedures):\n- Use the `queryKnowledgeBase` tool to fetch accurate information\n- Pass the user's question directly to the tool as the query parameter\n- Wait for the response and share it naturally with the patient\n- If the response doesn't fully answer their question, you can call the tool again with a refined query\n- After answering, always ask if they have any other questions or if they'd like to book an appointment\n\n[Role]\nYou are the first point of contact. Your sole purpose is to understand the caller's primary intent and either answer general questions using the knowledge base or route them to the correct specialist assistant to handle their request.\n\n[Task: Conversation Flow]\n1.  **Greeting**: Greet the user warmly: \"Thank you for calling Vicky Dental, this is Sarah. How can I help you today?\"\n2.  **Listen & Identify Intent**: Listen carefully to the user's request.\n3.  **Route Based on Intent**: Based on their intent, perform ONLY ONE of the following actions. Your final words should lead into the action, which you will take silently and immediately.\n\n    - **If Intent is NEW BOOKING:**\n        - **Your final words:** \"Of course! I'd be happy to help you with that. One moment.\"\n        - **Your ONLY next action:** Silently call the `transferToScheduler` tool. Do not say anything else.\n\n    - **If Intent is MANAGE EXISTING APPOINTMENT (reschedule/cancel):**\n        - **Your final words:** \"Certainly! Let me pull up your appointment details for you. One moment.\"\n        - **Your ONLY next action:** Silently call the `transferToManager` tool. Do not say anything else.\n\n    - **If Intent is GENERAL QUESTION (e.g., hours, services, insurance, pricing, treatments):**\n        - **Your final words:** \"I can definitely help you with that information.\"\n        - **Your ONLY next action:** Call the `queryKnowledgeBase` tool with their question. After receiving the response, share the information naturally and ask if they have any other questions.\n\n    - **If Intent is EMERGENCY:**\n        - **Your final words:** \"Oh my, that sounds serious. Please hold while I connect you to our emergency line immediately.\"\n        - **Your ONLY next action:** Silently call the `transferToEmergency` tool. Do not say anything else.\n\nKNOWLEDGE BASE INSTRUCTIONS:\nYou have access to the following knowledge bases. Use the appropriate search tool when users ask questions related to these topics:\n\n- 'clinic_general_info_search' tool: General clinic information, treatments, pricing, and FAQs\n\nIMPORTANT: Always search the relevant knowledge base before providing answers to ensure accuracy. Use the exact tool names listed above."
+      }
+    ],
+    "provider": "openai",
+    "temperature": 0.6
+  },
+  "firstMessage": "Hi there! Thank you for calling Vicky Dental. This is Sarah... how can I help you today?",
+  "transcriber": {
+    "model": "nova-2",
+    "language": "en",
+    "provider": "deepgram"
+  },
+  "serverMessages": [
+    "end-of-call-report"
+  ],
+  "firstMessageMode": "assistant-speaks-first-with-model-generated-message",
+  "analysisPlan": {
+    "minMessagesThreshold": 2,
+    "summaryPlan": {
+      "enabled": true,
+      "messages": [
+        {
+          "content": "Analyze this dental clinic call and provide a comprehensive summary including: 1) Call outcome and patient sentiment, 2) Appointment details if discussed, 3) Doctor preferences mentioned, 4) Urgency level and emotional tone, 5) Overall call success and lead quality",
+          "role": "system"
+        },
+        {
+          "content": "Transcript:\n{{transcript}}\n\nProvide detailed summary with sentiment analysis:",
+          "role": "user"
+        }
+      ],
+      "timeoutSeconds": 15
+    },
+    "structuredDataPlan": {
+      "enabled": true,
+      "schema": {
+        "type": "object",
+        "required": [
+          "call_type",
+          "transferred_to",
+          "sentimentAnalysis",
+          "leadScoring"
+        ],
+        "properties": {
+          "lastName": {
+            "description": "Patient's last name if collected",
+            "type": "string"
+          },
+          "call_type": {
+            "description": "Primary purpose of the call",
+            "type": "string",
+            "enum": [
+              "emergency",
+              "informational",
+              "booking",
+              "management"
+            ]
+          },
+          "firstName": {
+            "description": "Patient's first name if collected",
+            "type": "string"
+          },
+          "doctorName": {
+            "description": "Doctor preference mentioned or suggested",
+            "type": "string",
+            "enum": [
+              "Daniel",
+              "James",
+              "Metha",
+              "not_specified"
+            ]
+          },
+          "leadScoring": {
+            "description": "Lead quality: hot=booked, warm=rescheduled/interested, cold=not_booked",
+            "type": "string",
+            "enum": [
+              "hot",
+              "warm",
+              "cold"
+            ]
+          },
+          "phoneNumber": {
+            "description": "Patient's phone number if collected",
+            "type": "string"
+          },
+          "transferred_to": {
+            "description": "Where the call was transferred",
+            "type": "string",
+            "enum": [
+              "emergency_line",
+              "scheduler",
+              "manager",
+              "none"
+            ]
+          },
+          "appointmentType": {
+            "description": "Type of appointment discussed",
+            "type": "string",
+            "enum": [
+              "cleaning",
+              "checkup",
+              "consultation",
+              "procedure",
+              "emergency",
+              "not_specified"
+            ]
+          },
+          "sentimentAnalysis": {
+            "type": "object",
+            "required": [
+              "urgency",
+              "hesitation",
+              "positivity"
+            ],
+            "properties": {
+              "urgency": {
+                "description": "Level of urgency expressed by patient",
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "emergency"
+                ]
+              },
+              "hesitation": {
+                "description": "Patient's hesitation level about booking",
+                "type": "string",
+                "enum": [
+                  "none",
+                  "slight",
+                  "moderate",
+                  "significant"
+                ]
+              },
+              "positivity": {
+                "description": "Overall emotional tone of the patient",
+                "type": "string",
+                "enum": [
+                  "negative",
+                  "neutral",
+                  "positive",
+                  "very_positive"
+                ]
+              }
+            }
+          },
+          "appointmentDateTime": {
+            "description": "Appointment date/time if discussed (format: YYYY-MM-DD HH:MM)",
+            "type": "string"
+          }
+        }
+      },
+      "messages": [
+        {
+          "content": "Extract comprehensive call data including patient information, appointment details, sentiment analysis, and lead scoring. Analyze the patient's emotional state, urgency level, and booking likelihood based on the conversation tone and outcome.",
+          "role": "system"
+        },
+        {
+          "content": "Call transcript:\n{{transcript}}\n\nExtract structured data:",
+          "role": "user"
+        }
+      ],
+      "timeoutSeconds": 15
+    }
+  },
+  "server": {
+    "url": "https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38",
+    "timeoutSeconds": 20
+  },
+  "isServerUrlSecretSet": false
+}

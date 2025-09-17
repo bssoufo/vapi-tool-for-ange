@@ -1,8 +1,10 @@
-# Vicky Dental Clinic Function Tools
+# Manager Assistant Function Tools
 
 functions:
   - name: queryKnowledgeBase
     description: "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions"
+    server:
+      url: "https://n8n-2-u19609.vm.elestio.app/webhook/cdda2586-cb51-472a-814f-34c4f2bbcf06"
     parameters:
       type: object
       required:
@@ -12,143 +14,86 @@ functions:
           type: string
           description: "The user's question or information request"
 
-  - name: checkAppointmentAvailability
-    description: "Check available appointment slots for scheduling"
+  - name: findAppointment
+    description: "Searches for a user's upcoming appointments using their phone number. This is the required FIRST STEP before modifying or cancelling an appointment."
+    server:
+      url: "https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38"
     parameters:
       type: object
       required:
-        - appointmentType
-        - preferredDate
-      properties:
-        appointmentType:
-          type: string
-          enum:
-            - cleaning
-            - checkup
-            - consultation
-            - emergency
-            - procedure
-          description: "Type of appointment needed"
-        preferredDate:
-          type: string
-          format: date
-          description: "Preferred appointment date (YYYY-MM-DD)"
-        doctorPreference:
-          type: string
-          enum:
-            - Daniel
-            - James
-            - Metha
-            - any
-          description: "Preferred doctor"
-        timePreference:
-          type: string
-          enum:
-            - morning
-            - afternoon
-            - evening
-            - any
-          description: "Preferred time of day"
-
-  - name: bookAppointment
-    description: "Book an appointment for a patient"
-    parameters:
-      type: object
-      required:
-        - patientName
         - phoneNumber
-        - appointmentType
-        - appointmentDateTime
       properties:
-        patientName:
-          type: string
-          description: "Patient's full name"
         phoneNumber:
           type: string
-          description: "Patient's contact phone number"
-        appointmentType:
-          type: string
-          enum:
-            - cleaning
-            - checkup
-            - consultation
-            - emergency
-            - procedure
-          description: "Type of appointment"
-        appointmentDateTime:
-          type: string
-          format: date-time
-          description: "Scheduled appointment date and time"
-        doctorName:
-          type: string
-          enum:
-            - Daniel
-            - James
-            - Metha
-          description: "Assigned doctor"
-        notes:
-          type: string
-          description: "Special notes or requests"
+          description: "The user's phone number to search for existing appointments."
 
-  - name: verifyInsurance
-    description: "Verify patient's insurance coverage and benefits"
+  - name: lookupAppointment
+    description: "Look up existing appointments for a patient using their name"
+    server:
+      url: "https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38"
     parameters:
       type: object
       required:
-        - insuranceProvider
-        - memberID
+        - firstName
+        - lastName
       properties:
-        insuranceProvider:
+        lastName:
           type: string
-          description: "Insurance company name"
-        memberID:
+          description: "Patient's last name"
+        firstName:
           type: string
-          description: "Insurance member ID"
-        groupNumber:
-          type: string
-          description: "Group number if available"
-        patientName:
-          type: string
-          description: "Patient name for verification"
+          description: "Patient's first name"
 
-  - name: getPatientHistory
-    description: "Retrieve patient's appointment and treatment history"
+  - name: cancelAppointment
+    description: "Cancels an existing appointment after it has been found and confirmed with the user."
+    server:
+      url: "https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38"
     parameters:
       type: object
       required:
-        - patientIdentifier
+        - eventId
+        - calendarId
       properties:
-        patientIdentifier:
+        eventId:
           type: string
-          description: "Patient phone number, email, or ID"
-        includeDetails:
-          type: boolean
-          description: "Include detailed treatment history"
-          default: false
+          description: "The unique ID of the event to be cancelled. This MUST be obtained from the result of a `findAppointment` call."
+        calendarId:
+          type: string
+          description: "The unique ID of the calendar the event is on. This MUST be obtained from the result of a `findAppointment` call."
 
-  - name: processPayment
-    description: "Process payment or set up payment plan"
+  - name: modifyAppointment
+    description: "Updates an existing appointment to a new time. Requires the original event details and the new desired time slot details."
+    server:
+      url: "https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38"
     parameters:
       type: object
       required:
-        - patientName
-        - amount
-        - paymentType
+        - originalEvent
+        - newStartTimeISO
+        - newEndTimeISO
+        - newDoctorName
       properties:
-        patientName:
-          type: string
-          description: "Patient name"
-        amount:
-          type: number
-          description: "Payment amount"
-        paymentType:
-          type: string
+        newDoctorName:
           enum:
-            - full_payment
-            - partial_payment
-            - payment_plan
-          description: "Type of payment arrangement"
-        insuranceClaim:
-          type: boolean
-          description: "Whether to submit insurance claim"
-          default: false
+            - "Daniel"
+            - "James"
+            - "Metha"
+          type: string
+          description: "The doctor for the rescheduled appointment (can be same or different from original)"
+        newEndTimeISO:
+          type: string
+          description: "The new end time for the appointment in ISO 8601 format. Obtained from a new `checkAvailability` call."
+        originalEvent:
+          type: object
+          required:
+            - eventId
+            - calendarId
+          properties:
+            eventId:
+              type: string
+            calendarId:
+              type: string
+          description: "An object containing the eventId and calendarId of the appointment to be changed. Obtained from the `findAppointment` tool."
+        newStartTimeISO:
+          type: string
+          description: "The new start time for the appointment in ISO 8601 format. Obtained from a new `checkAvailability` call."

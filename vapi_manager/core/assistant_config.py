@@ -311,6 +311,11 @@ class AssistantBuilder:
                         "parameters": func.get("parameters", {})
                     }
                 }
+
+                # Add server configuration if present
+                if 'server' in func and func['server']:
+                    tool['server'] = func['server']
+
                 tools.append(tool)
 
         # Process transfers

@@ -7,16 +7,16 @@ _vapi:
       id: null
       version: 0
     production:
-      deployed_at: '2025-09-17T12:44:04.510696+00:00'
+      deployed_at: '2025-09-17T13:20:20.820162+00:00'
       deployed_by: sebr5550
       id: eba167a4-7163-4b77-b0a7-e5eb8e2cb911
-      version: 3
+      version: 7
     staging:
       deployed_at: null
       deployed_by: null
       id: null
       version: 0
-  last_sync: '2025-09-17T12:44:04.510696+00:00'
+  last_sync: '2025-09-17T13:20:20.820162+00:00'
 default_overrides:
   model:
     model: gpt-4o-mini

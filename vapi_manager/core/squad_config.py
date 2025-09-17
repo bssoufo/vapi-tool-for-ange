@@ -263,6 +263,17 @@ class SquadBuilder:
                             'type': 'assistant',
                             'assistantName': assistant_name
                         }
+
+                        # Always set message to empty string to prevent VAPI default messages
+                        destination['message'] = ''
+
+                        # Include description if present (VAPI supports this)
+                        if 'description' in dest_config:
+                            destination['description'] = dest_config['description']
+
+                        # Note: VAPI API does not support conditions, keywords, intent, priority
+                        # These are used for routing logic in the YAML but not sent to VAPI
+
                         destinations.append(destination)
 
             # Note: VAPI API currently only supports 'assistant' type destinations

@@ -61,17 +61,17 @@
                 },
                 "assistantDestinations": [
                     {
-                        "message": "Patientez un instant s'il vous plaît...",
+                        "message": "",
                         "type": "assistant",
                         "assistantName": "Sarah_Greeter_v1_0"
                     },
                     {
-                        "message": "Patientez un instant s'il vous plaît...",
+                        "message": "",
                         "type": "assistant",
                         "assistantName": "Sarah_NoteTaker_v1_0"
                     },
                     {
-                        "message": "Patientez un instant s'il vous plaît...",
+                        "message": "",
                         "type": "assistant",
                         "assistantName": "Sarah_FAQ_v1_0"
                     }
@@ -133,17 +133,17 @@
                 },
                 "assistantDestinations": [
                     {
-                        "message": "Patientez un instant s'il vous plaît...",
+                        "message": "",
                         "type": "assistant",
                         "assistantName": "Sarah_Greeter_v1_0"
                     },
                     {
-                        "message": "Patientez un instant s'il vous plaît...",
+                        "message": "",
                         "type": "assistant",
                         "assistantName": "Sarah_Emergency_v1_0"
                     },
                     {
-                        "message": "Patientez un instant s'il vous plaît...",
+                        "message": "",
                         "type": "assistant",
                         "assistantName": "Sarah_NoteTaker_v1_0"
                     }

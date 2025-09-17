@@ -10,7 +10,7 @@ assistant_destinations:
     conditions:
       - keywords: ["pain", "emergency", "urgent", "symptoms"]
       - intent: "medical_question"
-    message: "Based on what you're describing, let me connect you with our medical triage specialist who can better assess your situation..."
+    message: ""
 
   scheduler_to_billing:
     type: assistant
@@ -19,7 +19,7 @@ assistant_destinations:
     conditions:
       - keywords: ["payment", "insurance", "cost", "billing"]
       - intent: "financial_question"
-    message: "For billing and insurance questions, our specialist can help you with that..."
+    message: ""
 
   triage_to_scheduler:
     type: assistant
@@ -28,7 +28,7 @@ assistant_destinations:
     conditions:
       - intent: "appointment_needed"
       - assessment: "non_emergency"
-    message: "Now that I've assessed your situation, let me connect you with our scheduler to get you the right appointment..."
+    message: ""
 
   billing_to_scheduler:
     type: assistant
@@ -37,7 +37,7 @@ assistant_destinations:
     conditions:
       - intent: "schedule_after_payment"
       - status: "payment_resolved"
-    message: "Great! Now that we've sorted out the billing, let me connect you with our scheduler..."
+    message: ""
 
 # External system transfers
 external_destinations:
@@ -48,7 +48,7 @@ external_destinations:
     conditions:
       - keywords: ["severe", "bleeding", "unconscious", "chest pain"]
       - urgency: "critical"
-    message: "This sounds like a medical emergency. I'm connecting you to emergency services immediately. Please stay on the line..."
+    message: ""
 
   dentist_emergency:
     type: number
@@ -57,7 +57,7 @@ external_destinations:
     conditions:
       - keywords: ["tooth knocked out", "severe dental trauma", "dental emergency"]
       - urgency: "high"
-    message: "This is a dental emergency. I'm connecting you directly to our emergency dental line..."
+    message: ""
 
   office_manager:
     type: number
@@ -66,7 +66,7 @@ external_destinations:
     conditions:
       - keywords: ["manager", "supervisor", "complaint", "escalate"]
       - intent: "escalation"
-    message: "I understand you'd like to speak with a manager. Let me connect you right away..."
+    message: ""
 
   billing_department:
     type: number
@@ -75,7 +75,7 @@ external_destinations:
     conditions:
       - keywords: ["complex billing", "insurance dispute", "billing manager"]
       - complexity: "high"
-    message: "For this complex billing matter, let me connect you with our billing department manager..."
+    message: ""
 
 # Voicemail destinations for after-hours
 voicemail_destinations:
@@ -83,10 +83,10 @@ voicemail_destinations:
     type: voicemail
     number: "${MAIN_VOICEMAIL}"
     active_hours: "17:01-07:59"
-    message: "Our office is currently closed. Please leave a detailed message and we'll return your call first thing in the morning. For emergencies, please call our emergency line at ${EMERGENCY_LINE}."
+    message: ""
 
   weekend_emergency_screening:
     type: assistant
     target: "triage_assistant"
     active_days: ["saturday", "sunday"]
-    message: "Our office is closed for the weekend, but I can help determine if your situation needs immediate attention..."
+    message: ""

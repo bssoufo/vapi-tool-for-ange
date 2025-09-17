@@ -129,64 +129,54 @@ tools:
     url: https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38
   type: function
 - function:
-    description: Book a new appointment for the patient
+    description: Book a new appointment
     name: bookAppointment
     parameters:
-      properties:
-        appointmentDetails:
-          properties:
-            appointmentType:
-              description: Type of appointment
-              enum:
-              - cleaning
-              - checkup
-              - consultation
-              - procedure
-              - emergency
-              type: string
-            doctorName:
-              description: The doctor for the appointment
-              enum:
-              - Daniel
-              - James
-              - Metha
-              type: string
-            endTimeISO:
-              description: Appointment end time in ISO 8601 format
-              type: string
-            startTimeISO:
-              description: Appointment start time in ISO 8601 format
-              type: string
-          required:
-          - startTimeISO
-          - endTimeISO
-          - doctorName
-          - appointmentType
-          type: object
-        patientInfo:
-          properties:
-            email:
-              description: Patient's email address
-              type: string
-            firstName:
-              description: Patient's first name
-              type: string
-            lastName:
-              description: Patient's last name
-              type: string
-            phoneNumber:
-              description: Patient's phone number
-              type: string
-          required:
-          - firstName
-          - lastName
-          - phoneNumber
-          - email
-          type: object
-      required:
-      - patientInfo
-      - appointmentDetails
       type: object
+      required:
+      - firstName
+      - lastName
+      - phoneNumber
+      - appointmentDate
+      - appointmentTime
+      - appointmentType
+      - calendarId
+      - doctorName
+      properties:
+        firstName:
+          type: string
+          description: Patient's first name
+        lastName:
+          type: string
+          description: Patient's last name
+        phoneNumber:
+          type: string
+          description: Patient's phone number
+        appointmentDate:
+          type: string
+          format: date
+          description: Appointment date (YYYY-MM-DD)
+        appointmentTime:
+          type: string
+          description: Appointment time (HH:MM)
+        appointmentType:
+          type: string
+          enum:
+          - cleaning
+          - checkup
+          - consultation
+          - procedure
+          description: Type of appointment
+        calendarId:
+          type: string
+          description: The unique ID of the calendar to book the appointment on. This MUST be taken from the result of the 'checkAvailability' function.
+        doctorName:
+          type: string
+          enum:
+          - Daniel
+          - James
+          - Metha
+          description: The doctor for this appointment (Daniel, James, or Metha)
     strict: false
   server:
     url: https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38

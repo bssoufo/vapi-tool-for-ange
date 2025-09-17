@@ -1,166 +1,171 @@
-# Vicky Dental Clinic Function Tools
-
 functions:
-  - name: queryKnowledgeBase
-    description: "Query the clinic knowledge base for information about treatments, pricing, policies, insurance, and general questions"
-    server:
-      url: "https://n8n-2-u19609.vm.elestio.app/webhook/cdda2586-cb51-472a-814f-34c4f2bbcf06"
-    parameters:
-      type: object
-      required:
-        - query
-      properties:
-        query:
-          type: string
-          description: "The user's question or information request"
-
-  - name: checkAppointmentAvailability
-    description: "Check available appointment slots for scheduling"
-    server:
-      url: "https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38"
-    parameters:
-      type: object
-      required:
-        - appointmentType
-        - preferredDate
-      properties:
-        appointmentType:
-          type: string
-          enum:
-            - cleaning
-            - checkup
-            - consultation
-            - emergency
-            - procedure
-          description: "Type of appointment needed"
-        preferredDate:
-          type: string
-          format: date
-          description: "Preferred appointment date (YYYY-MM-DD)"
-        doctorPreference:
-          type: string
-          enum:
-            - Daniel
-            - James
-            - Metha
-            - any
-          description: "Preferred doctor"
-        timePreference:
-          type: string
-          enum:
-            - morning
-            - afternoon
-            - evening
-            - any
-          description: "Preferred time of day"
-
-  - name: bookAppointment
-    description: "Book an appointment for a patient"
-    server:
-      url: "https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38"
-    parameters:
-      type: object
-      required:
-        - patientName
-        - phoneNumber
-        - appointmentType
-        - appointmentDateTime
-      properties:
-        patientName:
-          type: string
-          description: "Patient's full name"
-        phoneNumber:
-          type: string
-          description: "Patient's contact phone number"
-        appointmentType:
-          type: string
-          enum:
-            - cleaning
-            - checkup
-            - consultation
-            - emergency
-            - procedure
-          description: "Type of appointment"
-        appointmentDateTime:
-          type: string
-          format: date-time
-          description: "Scheduled appointment date and time"
-        doctorName:
-          type: string
-          enum:
-            - Daniel
-            - James
-            - Metha
-          description: "Assigned doctor"
-        notes:
-          type: string
-          description: "Special notes or requests"
-
-  - name: verifyInsurance
-    description: "Verify patient's insurance coverage and benefits"
-    server:
-      url: "https://n8n-2-u19609.vm.elestio.app/webhook/insurance-verification-endpoint"
-    parameters:
-      type: object
-      required:
-        - insuranceProvider
-        - memberID
-      properties:
-        insuranceProvider:
-          type: string
-          description: "Insurance company name"
-        memberID:
-          type: string
-          description: "Insurance member ID"
-        groupNumber:
-          type: string
-          description: "Group number if available"
-        patientName:
-          type: string
-          description: "Patient name for verification"
-
-  - name: getPatientHistory
-    description: "Retrieve patient's appointment and treatment history"
-    server:
-      url: "https://n8n-2-u19609.vm.elestio.app/webhook/patient-history-endpoint"
-    parameters:
-      type: object
-      required:
-        - patientIdentifier
-      properties:
-        patientIdentifier:
-          type: string
-          description: "Patient phone number, email, or ID"
-        includeDetails:
-          type: boolean
-          description: "Include detailed treatment history"
-          default: false
-
-  - name: processPayment
-    description: "Process payment or set up payment plan"
-    server:
-      url: "https://n8n-2-u19609.vm.elestio.app/webhook/payment-processing-endpoint"
-    parameters:
-      type: object
-      required:
-        - patientName
-        - amount
-        - paymentType
-      properties:
-        patientName:
-          type: string
-          description: "Patient name"
-        amount:
-          type: number
-          description: "Payment amount"
-        paymentType:
-          type: string
-          enum:
-            - full_payment
-            - partial_payment
-            - payment_plan
-          description: "Type of payment arrangement"
-        insuranceClaim:
-          type: boolean
-          description: "Whether to submit insurance claim"
-          default: false
+- name: queryKnowledgeBase
+  description: Query the clinic knowledge base for information about treatments, pricing,
+    policies, insurance, and general questions
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/cdda2586-cb51-472a-814f-34c4f2bbcf06
+  parameters:
+    type: object
+    required:
+    - query
+    properties:
+      query:
+        type: string
+        description: The user's question or information request
+- name: checkAppointmentAvailability
+  description: Check available appointment slots for scheduling
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38
+  parameters:
+    type: object
+    required:
+    - appointmentType
+    - preferredDate
+    properties:
+      appointmentType:
+        type: string
+        enum:
+        - cleaning
+        - checkup
+        - consultation
+        - emergency
+        - procedure
+        description: Type of appointment needed
+      preferredDate:
+        type: string
+        format: date
+        description: Preferred appointment date (YYYY-MM-DD)
+      doctorPreference:
+        type: string
+        enum:
+        - Daniel
+        - James
+        - Metha
+        - any
+        description: Preferred doctor
+      timePreference:
+        type: string
+        enum:
+        - morning
+        - afternoon
+        - evening
+        - any
+        description: Preferred time of day
+- name: bookAppointment
+  description: Book a new appointment
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38
+  strict: false
+  parameters:
+    type: object
+    required:
+    - firstName
+    - lastName
+    - phoneNumber
+    - appointmentDate
+    - appointmentTime
+    - appointmentType
+    - calendarId
+    - doctorName
+    properties:
+      firstName:
+        type: string
+        description: Patient's first name
+      lastName:
+        type: string
+        description: Patient's last name
+      phoneNumber:
+        type: string
+        description: Patient's phone number
+      appointmentDate:
+        type: string
+        format: date
+        description: Appointment date (YYYY-MM-DD)
+      appointmentTime:
+        type: string
+        description: Appointment time (HH:MM)
+      appointmentType:
+        type: string
+        enum:
+        - cleaning
+        - checkup
+        - consultation
+        - procedure
+        description: Type of appointment
+      calendarId:
+        type: string
+        description: The unique ID of the calendar to book the appointment on. This
+          MUST be taken from the result of the 'checkAvailability' function.
+      doctorName:
+        type: string
+        enum:
+        - Daniel
+        - James
+        - Metha
+        description: The doctor for this appointment (Daniel, James, or Metha)
+- name: verifyInsurance
+  description: Verify patient's insurance coverage and benefits
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/insurance-verification-endpoint
+  parameters:
+    type: object
+    required:
+    - insuranceProvider
+    - memberID
+    properties:
+      insuranceProvider:
+        type: string
+        description: Insurance company name
+      memberID:
+        type: string
+        description: Insurance member ID
+      groupNumber:
+        type: string
+        description: Group number if available
+      patientName:
+        type: string
+        description: Patient name for verification
+- name: getPatientHistory
+  description: Retrieve patient's appointment and treatment history
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/patient-history-endpoint
+  parameters:
+    type: object
+    required:
+    - patientIdentifier
+    properties:
+      patientIdentifier:
+        type: string
+        description: Patient phone number, email, or ID
+      includeDetails:
+        type: boolean
+        description: Include detailed treatment history
+        default: false
+- name: processPayment
+  description: Process payment or set up payment plan
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/payment-processing-endpoint
+  parameters:
+    type: object
+    required:
+    - patientName
+    - amount
+    - paymentType
+    properties:
+      patientName:
+        type: string
+        description: Patient name
+      amount:
+        type: number
+        description: Payment amount
+      paymentType:
+        type: string
+        enum:
+        - full_payment
+        - partial_payment
+        - payment_plan
+        description: Type of payment arrangement
+      insuranceClaim:
+        type: boolean
+        description: Whether to submit insurance claim
+        default: false

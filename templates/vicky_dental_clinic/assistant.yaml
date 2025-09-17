@@ -44,6 +44,10 @@ server:
   url: "${WEBHOOK_URL}/assistants/{{assistant_name}}/webhook"
   timeoutSeconds: 20
 
+# Server Messages Configuration
+serverMessages:
+  - end-of-call-report
+
 # Analysis configuration
 analysisPlan:
   minMessagesThreshold: 2

@@ -7,16 +7,16 @@ _vapi:
       id: null
       version: 0
     production:
-      deployed_at: '2025-09-17T01:34:30.763095+00:00'
+      deployed_at: '2025-09-17T01:50:21.884370+00:00'
       deployed_by: sebr5550
       id: 58f86cf8-7ef4-4ddf-8553-a5129b9fbb25
-      version: 6
+      version: 7
     staging:
       deployed_at: null
       deployed_by: null
       id: null
       version: 0
-  last_sync: '2025-09-17T01:34:30.763095+00:00'
+  last_sync: '2025-09-17T01:50:21.884370+00:00'
 analysisPlan:
   minMessagesThreshold: 2
   structuredDataPlan:
@@ -62,6 +62,8 @@ name: triage-ange
 server:
   timeoutSeconds: 20
   url: ${WEBHOOK_URL}/assistants/triage-ange/webhook
+serverMessages:
+- end-of-call-report
 tools:
 - type: endCall
 - type: transferCall

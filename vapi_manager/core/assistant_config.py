@@ -278,6 +278,9 @@ class AssistantBuilder:
         # Get firstMessageMode value
         first_message_mode_value = assistant_config.get('firstMessageMode')
 
+        # Get serverMessages value
+        server_messages = assistant_config.get('serverMessages')
+
         # Create the assistant request
         # Build the request data as a dictionary first to use aliases properly
         request_data = {
@@ -287,6 +290,7 @@ class AssistantBuilder:
             'transcriber': transcriber,
             'firstMessage': config.first_message or assistant_config.get('firstMessage'),
             'firstMessageMode': first_message_mode_value,  # Use the original string value with alias
+            'serverMessages': server_messages,  # Add server messages support
             'server': server
         }
 

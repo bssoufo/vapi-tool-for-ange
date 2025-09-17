@@ -275,16 +275,26 @@ class AssistantBuilder:
                     timeout_seconds=server_config.get('timeoutSeconds')
                 )
 
+        # Get firstMessageMode value
+        first_message_mode_value = assistant_config.get('firstMessageMode')
+
         # Create the assistant request
-        request = AssistantCreateRequest(
-            name=assistant_config.get('name'),
-            voice=voice,
-            model=model,
-            transcriber=transcriber,
-            first_message=config.first_message or assistant_config.get('firstMessage'),
-            first_message_mode=assistant_config.get('firstMessageMode'),
-            server=server
-        )
+        # Build the request data as a dictionary first to use aliases properly
+        request_data = {
+            'name': assistant_config.get('name'),
+            'voice': voice,
+            'model': model,
+            'transcriber': transcriber,
+            'firstMessage': config.first_message or assistant_config.get('firstMessage'),
+            'firstMessageMode': first_message_mode_value,  # Use the original string value with alias
+            'server': server
+        }
+
+        # Remove None values
+        request_data = {k: v for k, v in request_data.items() if v is not None}
+
+        # Create request using model_validate
+        request = AssistantCreateRequest.model_validate(request_data)
 
         # Add structured data schema if available
         if 'structured_data' in config.schemas:

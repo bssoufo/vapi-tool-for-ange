@@ -7,16 +7,16 @@ _vapi:
       id: null
       version: 0
     production:
-      deployed_at: '2025-09-17T01:06:30.184791+00:00'
+      deployed_at: '2025-09-17T01:34:35.645728+00:00'
       deployed_by: sebr5550
       id: 7950d592-b3b5-4243-9632-0de7c4855e82
-      version: 7
+      version: 8
     staging:
       deployed_at: null
       deployed_by: null
       id: null
       version: 0
-  last_sync: '2025-09-17T01:06:30.184791+00:00'
+  last_sync: '2025-09-17T01:34:35.645728+00:00'
 analysisPlan:
   minMessagesThreshold: 2
   structuredDataPlan:

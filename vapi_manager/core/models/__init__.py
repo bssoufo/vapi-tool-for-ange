@@ -7,7 +7,8 @@ from .assistant import (
     Tool,
     Transcriber,
     AnalysisPlan,
-    Server
+    Server,
+    FirstMessageMode
 )
 from .squad import (
     Squad,
@@ -31,6 +32,7 @@ __all__ = [
     "Transcriber",
     "AnalysisPlan",
     "Server",
+    "FirstMessageMode",
     "Squad",
     "SquadCreateRequest",
     "SquadUpdateRequest",

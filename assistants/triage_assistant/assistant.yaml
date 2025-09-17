@@ -57,7 +57,7 @@ model:
 name: triage_assistant
 server:
   timeoutSeconds: 20
-  url: ${WEBHOOK_URL}/assistants/triage_assistant/webhook
+  url: https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38
 transcriber:
   language: en
   model: nova-2

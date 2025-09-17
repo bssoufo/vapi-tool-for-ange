@@ -7,16 +7,16 @@ _vapi:
       id: null
       version: 0
     production:
-      deployed_at: '2025-09-17T10:18:43.130079+00:00'
-      deployed_by: PERSIDE
-      id: 9b97d3f6-4ea2-432f-aaa9-d9bfcf8cdff6
-      version: 9
+      deployed_at: '2025-09-17T12:43:50.558788+00:00'
+      deployed_by: sebr5550
+      id: ce66b645-f307-417d-bafd-7631e329d45f
+      version: 10
     staging:
       deployed_at: null
       deployed_by: null
       id: null
       version: 0
-  last_sync: '2025-09-17T10:18:43.130101+00:00'
+  last_sync: '2025-09-17T12:43:50.558788+00:00'
 analysisPlan:
   minMessagesThreshold: 2
   structuredDataPlan:
@@ -132,7 +132,42 @@ tools:
     description: Book a new appointment
     name: bookAppointment
     parameters:
-      type: object
+      properties:
+        appointmentDate:
+          description: Appointment date (YYYY-MM-DD)
+          format: date
+          type: string
+        appointmentTime:
+          description: Appointment time (HH:MM)
+          type: string
+        appointmentType:
+          description: Type of appointment
+          enum:
+          - cleaning
+          - checkup
+          - consultation
+          - procedure
+          type: string
+        calendarId:
+          description: The unique ID of the calendar to book the appointment on. This
+            MUST be taken from the result of the 'checkAvailability' function.
+          type: string
+        doctorName:
+          description: The doctor for this appointment (Daniel, James, or Metha)
+          enum:
+          - Daniel
+          - James
+          - Metha
+          type: string
+        firstName:
+          description: Patient's first name
+          type: string
+        lastName:
+          description: Patient's last name
+          type: string
+        phoneNumber:
+          description: Patient's phone number
+          type: string
       required:
       - firstName
       - lastName
@@ -142,41 +177,7 @@ tools:
       - appointmentType
       - calendarId
       - doctorName
-      properties:
-        firstName:
-          type: string
-          description: Patient's first name
-        lastName:
-          type: string
-          description: Patient's last name
-        phoneNumber:
-          type: string
-          description: Patient's phone number
-        appointmentDate:
-          type: string
-          format: date
-          description: Appointment date (YYYY-MM-DD)
-        appointmentTime:
-          type: string
-          description: Appointment time (HH:MM)
-        appointmentType:
-          type: string
-          enum:
-          - cleaning
-          - checkup
-          - consultation
-          - procedure
-          description: Type of appointment
-        calendarId:
-          type: string
-          description: The unique ID of the calendar to book the appointment on. This MUST be taken from the result of the 'checkAvailability' function.
-        doctorName:
-          type: string
-          enum:
-          - Daniel
-          - James
-          - Metha
-          description: The doctor for this appointment (Daniel, James, or Metha)
+      type: object
     strict: false
   server:
     url: https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38

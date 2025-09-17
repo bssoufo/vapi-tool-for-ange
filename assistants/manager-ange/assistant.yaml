@@ -7,16 +7,16 @@ _vapi:
       id: null
       version: 0
     production:
-      deployed_at: '2025-09-17T12:35:12.284507+00:00'
-      deployed_by: sebr5550
+      deployed_at: '2025-09-17T13:53:35.399077+00:00'
+      deployed_by: PERSIDE
       id: 7c2c3640-c45b-4b32-93f1-5bc0752c872c
-      version: 14
+      version: 16
     staging:
       deployed_at: null
       deployed_by: null
       id: null
       version: 0
-  last_sync: '2025-09-17T12:35:12.284507+00:00'
+  last_sync: '2025-09-17T13:53:35.399109+00:00'
 analysisPlan:
   minMessagesThreshold: 2
   structuredDataPlan:

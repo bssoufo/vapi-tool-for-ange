@@ -1,0 +1,21 @@
+# Description: A data lookup tool for searching and retrieving information
+name: "patient-lookup"
+description: "Look up patient information by ID"
+server:
+  url: "https://api.clinic.com/patients/lookup"
+parameters:
+  type: object
+  required:
+    - searchTerm
+  properties:
+    searchTerm:
+      type: string
+      description: "The search term to look up"
+    limit:
+      type: integer
+      description: "Maximum number of results to return"
+      default: 10
+    includeDetails:
+      type: boolean
+      description: "Whether to include detailed information"
+      default: false

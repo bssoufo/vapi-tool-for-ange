@@ -11,6 +11,7 @@ from rich.tree import Tree
 from ..services import AssistantService, SquadService, AgentService
 from ..core.assistant_config import AssistantConfigLoader, AssistantBuilder
 from ..core.template_manager import TemplateManager
+from ..core.tool_template_manager import ToolTemplateManager
 from ..core.squad_template_manager import SquadTemplateManager
 from ..core.squad_config import SquadConfigLoader, SquadBuilder
 from ..core.squad_deployment_state import SquadDeploymentStateManager
@@ -1938,6 +1939,142 @@ def show_assistant_status(assistant_name=None, directory="assistants"):
             console.print(f"[red]Error getting summary: {e}[/red]")
 
 
+def create_tool_from_template(name, template="basic_webhook", description=None, url=None, force=False, dry_run=False):
+    """Create a new shared tool from a template."""
+    try:
+        manager = ToolTemplateManager()
+
+        # Prepare variables
+        variables = {}
+        if description:
+            variables['description'] = description
+        if url:
+            variables['url'] = url
+
+        success = manager.create_tool(
+            tool_name=name,
+            template_name=template,
+            force=force,
+            dry_run=dry_run,
+            variables=variables
+        )
+
+        return success
+
+    except Exception as e:
+        console.print(f"[red]Error creating tool: {e}[/red]")
+        return False
+
+
+def list_tool_templates():
+    """List available tool templates."""
+    try:
+        manager = ToolTemplateManager()
+        templates = manager.list_templates()
+
+        if not templates:
+            console.print("[yellow]No tool templates found[/yellow]")
+            console.print("[cyan]Create templates in templates/tools/[/cyan]")
+            return
+
+        table = Table(title="Available Tool Templates")
+        table.add_column("Template", style="cyan")
+        table.add_column("Description", style="green")
+        table.add_column("Variables", style="yellow")
+
+        for template in templates:
+            try:
+                info = manager.get_template_info(template)
+                description = info.get('description', 'No description')
+                variables = ', '.join(info.get('variables', []))
+                if not variables:
+                    variables = 'None'
+
+                table.add_row(template, description, variables)
+            except Exception as e:
+                table.add_row(template, f"Error: {e}", "Unknown")
+
+        console.print(table)
+
+    except Exception as e:
+        console.print(f"[red]Error listing templates: {e}[/red]")
+
+
+def show_tool_template_info(template_name):
+    """Show detailed information about a tool template."""
+    try:
+        manager = ToolTemplateManager()
+
+        if not manager.template_exists(template_name):
+            console.print(f"[red]Template '{template_name}' not found[/red]")
+            available = manager.list_templates()
+            if available:
+                console.print(f"[yellow]Available templates: {', '.join(available)}[/yellow]")
+            return False
+
+        info = manager.get_template_info(template_name)
+
+        console.print(f"[cyan]Template: {info['name']}[/cyan]")
+        console.print(f"[cyan]Path: {info['path']}[/cyan]")
+
+        if info.get('description'):
+            console.print(f"[green]Description: {info['description']}[/green]")
+
+        variables = info.get('variables', [])
+        if variables:
+            console.print(f"[yellow]Variables: {', '.join(variables)}[/yellow]")
+        else:
+            console.print("[yellow]No template variables[/yellow]")
+
+        # Show template content
+        console.print("\n[cyan]Template Content:[/cyan]")
+        try:
+            with open(info['path'], 'r', encoding='utf-8') as f:
+                content = f.read()
+                console.print(content)
+        except Exception as e:
+            console.print(f"[red]Error reading template: {e}[/red]")
+
+        return True
+
+    except Exception as e:
+        console.print(f"[red]Error getting template info: {e}[/red]")
+        return False
+
+
+def preview_tool_generation(name, template="basic_webhook", description=None, url=None):
+    """Preview tool generation without creating the file."""
+    try:
+        manager = ToolTemplateManager()
+
+        if not manager.template_exists(template):
+            console.print(f"[red]Template '{template}' not found[/red]")
+            available = manager.list_templates()
+            if available:
+                console.print(f"[yellow]Available templates: {', '.join(available)}[/yellow]")
+            return False
+
+        # Prepare variables
+        variables = {}
+        if description:
+            variables['description'] = description
+        if url:
+            variables['url'] = url
+
+        preview_content = manager.preview_tool(name, template, variables)
+
+        console.print(f"[cyan]Preview for tool '{name}' using template '{template}':[/cyan]")
+        console.print(f"[cyan]Variables: {variables}[/cyan]")
+        console.print("\n[cyan]Generated content:[/cyan]")
+        console.print(preview_content)
+
+        return True
+
+    except Exception as e:
+        console.print(f"[red]Error previewing tool: {e}[/red]")
+        return False
+
+
 def add_shared_tool_to_assistant(assistant_name, tool_ref_path, directory="assistants"):
     """Add a shared tool reference to an assistant's configuration."""
     try:
@@ -2244,6 +2381,29 @@ def main():
     file_backup_delete_parser.add_argument("backup_id", help="Backup ID to delete")
     file_backup_delete_parser.add_argument("--dir", default="assistants", help="Directory containing assistants")
 
+    # Tool commands
+    tool_parser = subparsers.add_parser("tool", help="Manage shared tools")
+    tool_subparsers = tool_parser.add_subparsers(dest="tool_command")
+
+    tool_create_parser = tool_subparsers.add_parser("create", help="Create a new shared tool from a template")
+    tool_create_parser.add_argument("name", help="Tool name (filename without .yaml)")
+    tool_create_parser.add_argument("--template", default="basic_webhook", help="Template to use")
+    tool_create_parser.add_argument("--description", help="Tool description")
+    tool_create_parser.add_argument("--url", help="Server webhook URL")
+    tool_create_parser.add_argument("--force", action="store_true", help="Overwrite if tool exists")
+    tool_create_parser.add_argument("--dry-run", action="store_true", help="Preview without creating")
+
+    tool_templates_parser = tool_subparsers.add_parser("templates", help="List available tool templates")
+
+    tool_template_info_parser = tool_subparsers.add_parser("template-info", help="Show template information")
+    tool_template_info_parser.add_argument("template", help="Template name")
+
+    tool_preview_parser = tool_subparsers.add_parser("preview", help="Preview tool generation")
+    tool_preview_parser.add_argument("name", help="Tool name")
+    tool_preview_parser.add_argument("--template", default="basic_webhook", help="Template to use")
+    tool_preview_parser.add_argument("--description", help="Tool description")
+    tool_preview_parser.add_argument("--url", help="Server webhook URL")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -2366,6 +2526,29 @@ def main():
                 asyncio.run(list_agents(args.limit))
             else:
                 agent_parser.print_help()
+        elif args.command == "tool":
+            if args.tool_command == "create":
+                create_tool_from_template(
+                    args.name,
+                    args.template,
+                    args.description,
+                    args.url,
+                    args.force,
+                    args.dry_run
+                )
+            elif args.tool_command == "templates":
+                list_tool_templates()
+            elif args.tool_command == "template-info":
+                show_tool_template_info(args.template)
+            elif args.tool_command == "preview":
+                preview_tool_generation(
+                    args.name,
+                    args.template,
+                    args.description,
+                    args.url
+                )
+            else:
+                tool_parser.print_help()
         elif args.command == "file":
             if args.file_command == "list":
                 list_file_assistants(args.dir)

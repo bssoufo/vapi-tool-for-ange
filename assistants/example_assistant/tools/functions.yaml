@@ -122,3 +122,4 @@ functions:
           default: refund
   - $ref: shared/tools/queryKnowledgeBase.yaml
   - $ref: shared/tools/bookAppointment_clinic.yaml
+  - $ref: shared/tools/appointment-reminder.yaml

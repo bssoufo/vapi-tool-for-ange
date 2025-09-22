@@ -1,0 +1,20 @@
+# Description: A status checking tool for tracking orders, appointments, or requests
+name: "{{tool_name}}"
+description: "{{description or 'Check the status of an item using ' + tool_name}}"
+server:
+  url: "{{url or '${' + tool_name_upper + '_STATUS_URL}'}}"
+parameters:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+      description: "The unique identifier to check"
+    phoneNumber:
+      type: string
+      description: "Phone number for verification"
+    includeHistory:
+      type: boolean
+      description: "Whether to include status history"
+      default: false

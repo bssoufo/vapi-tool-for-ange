@@ -1,0 +1,36 @@
+# Description: An appointment booking tool with common booking parameters
+name: "{{tool_name}}"
+description: "{{description or 'Book an appointment using ' + tool_name}}"
+server:
+  url: "{{url or '${' + tool_name_upper + '_BOOKING_URL}'}}"
+parameters:
+  type: object
+  required:
+    - firstName
+    - lastName
+    - phoneNumber
+    - email
+    - dateTime
+  properties:
+    firstName:
+      type: string
+      description: "Client's first name"
+    lastName:
+      type: string
+      description: "Client's last name"
+    phoneNumber:
+      type: string
+      description: "Client's phone number"
+    email:
+      type: string
+      description: "Client's email address"
+    dateTime:
+      type: string
+      format: date-time
+      description: "Preferred appointment date and time"
+    serviceType:
+      type: string
+      description: "Type of service requested"
+    notes:
+      type: string
+      description: "Additional notes or special requests"

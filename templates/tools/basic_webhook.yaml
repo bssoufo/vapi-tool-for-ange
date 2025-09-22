@@ -1,0 +1,13 @@
+# Description: A simple webhook tool for basic API calls
+name: "{{tool_name}}"
+description: "{{description or 'A webhook tool for ' + tool_name}}"
+server:
+  url: "{{url or '${' + tool_name_upper + '_WEBHOOK_URL}'}}"
+parameters:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+      description: "The unique identifier for the item"

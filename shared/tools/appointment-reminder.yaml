@@ -1,0 +1,13 @@
+# Description: A simple webhook tool for basic API calls
+name: "appointment-reminder"
+description: "Send appointment reminders to patients"
+server:
+  url: "https://api.clinic.com/reminders/send"
+parameters:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+      description: "The unique identifier for the item"

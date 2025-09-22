@@ -1,0 +1,19 @@
+name: cancelAppointment
+description: "Cancels an existing appointment after it has been found and confirmed with the user"
+server:
+  url: "${APPOINTMENT_WEBHOOK_URL}"
+parameters:
+  type: object
+  required:
+    - appointmentId
+    - phoneNumber
+  properties:
+    appointmentId:
+      type: string
+      description: "The ID of the appointment to cancel"
+    phoneNumber:
+      type: string
+      description: "Phone number for verification"
+    reason:
+      type: string
+      description: "Reason for cancellation (optional)"

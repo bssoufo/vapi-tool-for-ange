@@ -1,0 +1,27 @@
+$ref: "shared/tools/bookAppointment_base.yaml"
+
+overrides:
+  description: "Schedules a patient appointment for the dental clinic"
+  server:
+    url: "https://n8n-2-u19609.vm.elestio.app/webhook/appointment-booking"
+  parameters:
+    required:
+      - insuranceProvider
+      - treatmentType
+    properties:
+      insuranceProvider:
+        type: string
+        description: "The patient's insurance provider"
+      treatmentType:
+        type: string
+        description: "Type of dental treatment needed"
+        enum:
+          - "cleaning"
+          - "checkup"
+          - "filling"
+          - "root canal"
+          - "extraction"
+          - "crown"
+          - "whitening"
+          - "orthodontics"
+          - "other"

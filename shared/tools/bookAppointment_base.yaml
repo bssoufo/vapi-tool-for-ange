@@ -1,0 +1,32 @@
+name: bookAppointment
+description: "Schedules an appointment"
+server:
+  url: "${BOOKING_WEBHOOK_URL}"
+parameters:
+  type: object
+  required:
+    - firstName
+    - lastName
+    - phoneNumber
+    - email
+    - dateTime
+  properties:
+    firstName:
+      type: string
+      description: "Patient's first name"
+    lastName:
+      type: string
+      description: "Patient's last name"
+    phoneNumber:
+      type: string
+      description: "Patient's phone number"
+    email:
+      type: string
+      description: "Patient's email address"
+    dateTime:
+      type: string
+      format: date-time
+      description: "Appointment date and time"
+    notes:
+      type: string
+      description: "Additional notes or special requests"

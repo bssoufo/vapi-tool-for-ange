@@ -1938,6 +1938,72 @@ def show_assistant_status(assistant_name=None, directory="assistants"):
             console.print(f"[red]Error getting summary: {e}[/red]")
 
 
+def add_shared_tool_to_assistant(assistant_name, tool_ref_path, directory="assistants"):
+    """Add a shared tool reference to an assistant's configuration."""
+    try:
+        import ruamel.yaml
+        from pathlib import Path
+
+        # Check if assistant exists
+        assistant_path = Path(directory) / assistant_name
+        if not assistant_path.exists():
+            console.print(f"[red]Assistant '{assistant_name}' not found in {directory}[/red]")
+            return False
+
+        # Check if shared tool exists
+        project_root = Path.cwd()
+        tool_path = project_root / tool_ref_path
+        if not tool_path.exists():
+            console.print(f"[red]Shared tool not found: {tool_ref_path}[/red]")
+            return False
+
+        # Load or create functions.yaml
+        functions_file = assistant_path / "tools" / "functions.yaml"
+        functions_file.parent.mkdir(parents=True, exist_ok=True)
+
+        yaml = ruamel.yaml.YAML()
+        yaml.preserve_quotes = True
+        yaml.indent(mapping=2, sequence=4, offset=2)
+
+        if functions_file.exists():
+            with open(functions_file, 'r') as f:
+                config = yaml.load(f)
+            if not config:
+                config = {}
+        else:
+            config = {}
+
+        # Initialize functions list if not present
+        if 'functions' not in config:
+            config['functions'] = []
+
+        # Add the new tool reference
+        tool_reference = {"$ref": tool_ref_path}
+
+        # Check if this tool is already referenced
+        for existing_tool in config['functions']:
+            if isinstance(existing_tool, dict) and existing_tool.get('$ref') == tool_ref_path:
+                console.print(f"[yellow]Tool '{tool_ref_path}' is already referenced in {assistant_name}[/yellow]")
+                return True
+
+        config['functions'].append(tool_reference)
+
+        # Write back to file
+        with open(functions_file, 'w') as f:
+            yaml.dump(config, f)
+
+        console.print(f"[green]Successfully added shared tool '{tool_ref_path}' to assistant '{assistant_name}'[/green]")
+        console.print(f"[cyan]Updated: {functions_file}[/cyan]")
+        return True
+
+    except ImportError:
+        console.print("[red]Error: ruamel.yaml is required. Install with: pip install ruamel.yaml[/red]")
+        return False
+    except Exception as e:
+        console.print(f"[red]Error adding shared tool: {e}[/red]")
+        return False
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(description="VAPI Assistant and Squad Management Tool")
@@ -2000,6 +2066,11 @@ def main():
     assistant_restore_parser.add_argument("--vapi-only", action="store_true", help="Restore only VAPI data")
     assistant_restore_parser.add_argument("--dry-run", action="store_true", help="Preview restore without applying changes")
     assistant_restore_parser.add_argument("--dir", default="assistants", help="Directory for assistants")
+
+    assistant_add_tool_parser = assistant_subparsers.add_parser("add-tool", help="Add a shared tool to an assistant")
+    assistant_add_tool_parser.add_argument("name", help="Assistant name (directory name)")
+    assistant_add_tool_parser.add_argument("--tool", required=True, help="Path to shared tool (e.g., shared/tools/bookAppointment_clinic.yaml)")
+    assistant_add_tool_parser.add_argument("--dir", default="assistants", help="Directory containing assistants")
 
     # Squad commands
     squad_parser = subparsers.add_parser("squad", help="Manage squads")
@@ -2227,6 +2298,8 @@ def main():
                     args.dry_run,
                     args.dir
                 ))
+            elif args.assistant_command == "add-tool":
+                add_shared_tool_to_assistant(args.name, args.tool, args.dir)
             else:
                 assistant_parser.print_help()
         elif args.command == "squad":

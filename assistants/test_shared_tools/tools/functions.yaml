@@ -1,0 +1,5 @@
+functions:
+  - $ref: shared/tools/queryKnowledgeBase_test.yaml
+  - $ref: shared/tools/bookAppointment_clinic.yaml
+  - $ref: shared/tools/findAppointment_test.yaml
+  - $ref: shared/tools/cancelAppointment_test.yaml

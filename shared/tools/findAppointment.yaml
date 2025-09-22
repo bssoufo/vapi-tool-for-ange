@@ -1,0 +1,12 @@
+name: findAppointment
+description: "Searches for a user's upcoming appointments using their phone number. This is the required FIRST STEP before modifying or cancelling an appointment."
+server:
+  url: "${APPOINTMENT_WEBHOOK_URL}"
+parameters:
+  type: object
+  required:
+    - phoneNumber
+  properties:
+    phoneNumber:
+      type: string
+      description: "The user's phone number to search for existing appointments"

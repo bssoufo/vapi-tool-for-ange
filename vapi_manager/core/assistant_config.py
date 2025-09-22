@@ -9,7 +9,7 @@ import os
 import yaml
 import json
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Set
 from dataclasses import dataclass
 
 from ..core.models import (
@@ -21,6 +21,16 @@ from ..core.models import (
     Transcriber,
     Server
 )
+
+
+class CircularReferenceError(Exception):
+    """Raised when a circular reference is detected in tool definitions."""
+    pass
+
+
+class InvalidToolReferenceError(Exception):
+    """Raised when a tool reference is invalid or malformed."""
+    pass
 
 
 @dataclass
@@ -156,7 +166,7 @@ class AssistantConfigLoader:
         return schemas
 
     def _load_tools(self, tools_dir: Path) -> Dict[str, Any]:
-        """Load all tool configurations from the tools directory."""
+        """Load all tool configurations from the tools directory with support for shared tools."""
         tools = {}
 
         if not tools_dir.exists():
@@ -167,9 +177,26 @@ class AssistantConfigLoader:
                 tool_name = file_path.stem
                 with open(file_path, 'r', encoding='utf-8') as f:
                     if file_path.suffix in ['.yaml', '.yml']:
-                        tools[tool_name] = yaml.safe_load(f)
+                        tool_config = yaml.safe_load(f)
                     elif file_path.suffix == '.json':
-                        tools[tool_name] = json.load(f)
+                        tool_config = json.load(f)
+                    else:
+                        continue
+
+                    # Process shared tool references if functions exist
+                    if tool_config and 'functions' in tool_config:
+                        resolved_functions = []
+                        for tool_def in tool_config.get('functions', []):
+                            if isinstance(tool_def, dict) and '$ref' in tool_def:
+                                # Resolve the tool reference
+                                resolved_tool = self._resolve_tool_reference(tool_def, visited=set())
+                                resolved_functions.append(resolved_tool)
+                            else:
+                                # Standard locally-defined tool
+                                resolved_functions.append(tool_def)
+                        tool_config['functions'] = resolved_functions
+
+                    tools[tool_name] = tool_config
 
         return tools
 
@@ -186,6 +213,119 @@ class AssistantConfigLoader:
                 events[event_name] = f.read()
 
         return events
+
+    def _resolve_tool_reference(self, tool_def: Dict, visited: Set[Path]) -> Dict:
+        """
+        Resolve a tool reference recursively, handling $ref and overrides.
+
+        Args:
+            tool_def: Tool definition potentially containing $ref
+            visited: Set of already visited paths to detect circular references
+
+        Returns:
+            Resolved tool configuration
+
+        Raises:
+            CircularReferenceError: If circular reference detected
+            InvalidToolReferenceError: If reference is invalid
+            FileNotFoundError: If referenced file doesn't exist
+        """
+        ref_path_str = tool_def.get('$ref')
+        if not ref_path_str:
+            return tool_def
+
+        # Find project root (look for pyproject.toml or fallback to current directory)
+        project_root = Path.cwd()
+        current = Path.cwd()
+        while current != current.parent:
+            if (current / 'pyproject.toml').exists() or (current / '.git').exists():
+                project_root = current
+                break
+            current = current.parent
+
+        # Resolve the reference path
+        ref_path = project_root / ref_path_str
+
+        # Security check: ensure path doesn't escape project
+        try:
+            ref_path = ref_path.resolve()
+            if not str(ref_path).startswith(str(project_root)):
+                raise InvalidToolReferenceError(f"Reference path escapes project boundary: {ref_path}")
+        except Exception as e:
+            raise InvalidToolReferenceError(f"Invalid reference path: {ref_path_str}")
+
+        # Check for circular reference
+        if ref_path in visited:
+            raise CircularReferenceError(f"Circular reference detected: {ref_path}")
+
+        visited.add(ref_path)
+
+        # Load the referenced file
+        if not ref_path.exists():
+            raise FileNotFoundError(f"Shared tool reference not found: {ref_path}")
+
+        with open(ref_path, 'r', encoding='utf-8') as f:
+            if ref_path.suffix in ['.yaml', '.yml']:
+                base_tool_config = yaml.safe_load(f)
+            elif ref_path.suffix == '.json':
+                base_tool_config = json.load(f)
+            else:
+                raise InvalidToolReferenceError(f"Unsupported file format: {ref_path.suffix}")
+
+        # Recursively resolve if the base file also has a reference
+        if isinstance(base_tool_config, dict) and '$ref' in base_tool_config:
+            base_tool_config = self._resolve_tool_reference(base_tool_config, visited.copy())
+
+        # Deep merge with overrides if present
+        if 'overrides' in tool_def and tool_def['overrides']:
+            base_tool_config = self._deep_merge(base_tool_config, tool_def['overrides'])
+
+        return base_tool_config
+
+    def _deep_merge(self, base: dict, override: dict) -> dict:
+        """
+        Recursively merge two dictionaries. Arrays are combined and deduplicated.
+
+        Args:
+            base: Base dictionary
+            override: Override dictionary
+
+        Returns:
+            Merged dictionary
+        """
+        if not isinstance(base, dict) or not isinstance(override, dict):
+            return override
+
+        result = base.copy()
+
+        for key, value in override.items():
+            if key in result:
+                if isinstance(result[key], dict) and isinstance(value, dict):
+                    # Recursively merge nested dictionaries
+                    result[key] = self._deep_merge(result[key], value)
+                elif isinstance(result[key], list) and isinstance(value, list):
+                    # Combine lists and remove duplicates while preserving order
+                    combined = result[key] + value
+                    seen = set()
+                    deduplicated = []
+                    for item in combined:
+                        # For hashable items
+                        if isinstance(item, (str, int, float, bool, tuple)):
+                            if item not in seen:
+                                seen.add(item)
+                                deduplicated.append(item)
+                        else:
+                            # For non-hashable items (dicts, lists), include all
+                            deduplicated.append(item)
+                    result[key] = deduplicated
+                else:
+                    # Override with new value
+                    result[key] = value
+            else:
+                # Add new key
+                result[key] = value
+
+        return result
 
     def list_assistants(self) -> List[str]:
         """List all available assistant configurations."""

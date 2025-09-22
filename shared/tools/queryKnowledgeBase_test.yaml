@@ -1,0 +1,12 @@
+name: queryKnowledgeBase
+description: "Query the knowledge base for information about treatments, pricing, policies, insurance, and general questions"
+server:
+  url: "https://n8n-2-u19609.vm.elestio.app/webhook/cdda2586-cb51-472a-814f-34c4f2bbcf06"
+parameters:
+  type: object
+  required:
+    - query
+  properties:
+    query:
+      type: string
+      description: "The user's question or information request"

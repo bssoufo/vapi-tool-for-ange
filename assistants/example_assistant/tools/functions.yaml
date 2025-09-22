@@ -120,3 +120,5 @@ functions:
           enum: [refund, exchange]
           description: "Desired action"
           default: refund
+  - $ref: shared/tools/queryKnowledgeBase.yaml
+  - $ref: shared/tools/bookAppointment_clinic.yaml

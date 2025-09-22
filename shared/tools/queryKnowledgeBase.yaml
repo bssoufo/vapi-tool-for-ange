@@ -1,0 +1,12 @@
+name: queryKnowledgeBase
+description: "Query the knowledge base for information about treatments, pricing, policies, insurance, and general questions"
+server:
+  url: "${KNOWLEDGE_BASE_WEBHOOK_URL}"
+parameters:
+  type: object
+  required:
+    - query
+  properties:
+    query:
+      type: string
+      description: "The user's question or information request"

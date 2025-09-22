@@ -1,0 +1,29 @@
+_vapi:
+  current_environment: development
+  environments:
+    development:
+      deployed_at: '2025-09-22T15:11:56.778019+00:00'
+      deployed_by: sebr5550
+      id: dfd3adf4-e6f0-431f-bf1f-d87b247ea5cb
+      version: 1
+    production:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-09-22T15:11:56.778019+00:00'
+firstMessage: Hello! I'm testing shared tools functionality. How can I help you today?
+firstMessageMode: assistant-speaks-first
+model:
+  model: gpt-4
+  provider: openai
+  temperature: 0.7
+name: Shared Tools Test Assistant
+voice:
+  provider: 11labs
+  voiceId: sarah

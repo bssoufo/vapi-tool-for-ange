@@ -23,6 +23,7 @@ from ..core.backup_utils import BackupUtils
 from ..core.squad_backup_manager import SquadBackupManager
 from ..core.squad_backup_models import SquadBackupType, SquadRestoreOptions
 from ..core.squad_backup_utils import SquadBackupUtils
+from ..core.squad_member_manager import SquadMemberManager
 from ..core.exceptions.vapi_exceptions import VAPIException
 
 console = Console()
@@ -514,6 +515,106 @@ async def create_squad(squad_name, environment="development", force=False, direc
     except VAPIException as e:
         console.print(f"[red]Failed to create squad: {e}[/red]")
         raise
+
+
+async def add_member_to_squad(squad_name, assistant_name, environment="development", directory="squads", assistants_dir="assistants"):
+    """
+    Add a member to a squad and immediately sync with VAPI.
+
+    This command:
+    1. Validates that the squad and assistant exist locally
+    2. Validates that the assistant is deployed to the target environment
+    3. Adds the assistant to the squad's members.yaml file
+    4. Triggers the SquadUpdateStrategy to sync changes with VAPI
+    """
+    console.print(f"[cyan]Adding member to squad:[/cyan] {squad_name}")
+    console.print(f"[cyan]Assistant:[/cyan] {assistant_name}")
+    console.print(f"[cyan]Environment:[/cyan] {environment}")
+
+    try:
+        # Initialize managers
+        member_manager = SquadMemberManager(directory)
+        squad_state_manager = SquadDeploymentStateManager(directory)
+        assistant_state_manager = DeploymentStateManager(assistants_dir)
+        update_strategy = SquadUpdateStrategy(directory, assistants_dir)
+
+        # 1. Validate squad exists locally
+        if not member_manager.validate_squad_exists(squad_name):
+            console.print(f"[red]Error: Squad '{squad_name}' not found in {directory}/[/red]")
+            console.print(f"[cyan]Available squads:[/cyan]")
+            list_file_squads(directory)
+            return
+
+        # 2. Validate squad is deployed to the environment
+        if not squad_state_manager.is_deployed(squad_name, environment):
+            console.print(f"[red]Error: Squad '{squad_name}' is not deployed to {environment}[/red]")
+            console.print(f"[cyan]Deploy the squad first:[/cyan] vapi-manager squad create {squad_name} --env {environment}")
+            return
+
+        # 3. Validate assistant exists locally
+        assistant_config_path = Path(assistants_dir) / f"{assistant_name}.json"
+        if not assistant_config_path.exists():
+            console.print(f"[red]Error: Assistant '{assistant_name}' not found in {assistants_dir}/[/red]")
+            console.print(f"[cyan]Available assistants:[/cyan]")
+            list_assistants_from_files(assistants_dir)
+            return
+
+        # 4. Validate assistant is deployed to the environment
+        if not assistant_state_manager.is_deployed(assistant_name, environment):
+            console.print(f"[red]Error: Assistant '{assistant_name}' is not deployed to {environment}[/red]")
+            console.print(f"[cyan]Deploy the assistant first:[/cyan] vapi-manager assistant create {assistant_name} --env {environment}")
+            return
+
+        # 5. Check if assistant is already a member
+        current_members = member_manager.list_squad_members(squad_name)
+        if assistant_name in current_members:
+            console.print(f"[yellow]Assistant '{assistant_name}' is already a member of squad '{squad_name}'[/yellow]")
+            return
+
+        # 6. Add member to the squad's members.yaml
+        console.print(f"[cyan]Adding '{assistant_name}' to squad configuration...[/cyan]")
+        result = member_manager.add_member_to_squad(
+            squad_name=squad_name,
+            assistant_name=assistant_name,
+            description=f"Assistant {assistant_name} added via CLI"
+        )
+
+        if result.get('success'):
+            console.print(f"[green]✓ Added '{assistant_name}' to members.yaml[/green]")
+            console.print(f"[dim]Backup created: {result.get('backup_path')}[/dim]")
+
+            # 7. Immediately sync with VAPI using update strategy
+            console.print(f"[cyan]Syncing changes with VAPI...[/cyan]")
+            update_result = await update_strategy.update_squad(
+                squad_name=squad_name,
+                environment=environment,
+                dry_run=False,
+                force=False
+            )
+
+            # 8. Display update results
+            if update_result.status == 'success':
+                console.print(f"[bold green]✓ Successfully synced squad with VAPI![/bold green]")
+                console.print(f"[cyan]Squad ID:[/cyan] {update_result.squad_id}")
+                console.print(f"[cyan]Changes applied:[/cyan] {update_result.total_changes}")
+                console.print(f"[cyan]Version:[/cyan] {update_result.version}")
+            elif update_result.status == 'no_changes':
+                console.print(f"[yellow]No changes detected - squad is already up to date in VAPI[/yellow]")
+            else:
+                console.print(f"[red]Failed to sync with VAPI: {update_result.message}[/red]")
+                console.print(f"[yellow]The assistant was added locally but not synced to VAPI[/yellow]")
+                console.print(f"[cyan]Try manually updating:[/cyan] vapi-manager squad update {squad_name} --env {environment}")
+        else:
+            console.print(f"[red]Failed to add member: {result.get('message')}[/red]")
+
+    except FileNotFoundError as e:
+        console.print(f"[red]File not found: {e}[/red]")
+    except ValueError as e:
+        console.print(f"[red]Validation error: {e}[/red]")
+    except Exception as e:
+        console.print(f"[red]Error adding member to squad: {e}[/red]")
+        import traceback
+        traceback.print_exc()
 
 
 async def update_squad(squad_name, environment="development", dry_run=False, force=False, directory="squads"):
@@ -1951,6 +2052,14 @@ def main():
     squad_delete_parser.add_argument("--delete-assistants", action="store_true", help="Also delete all assistants that are members of this squad")
     squad_delete_parser.add_argument("--dir", default="squads", help="Directory containing squads")
 
+    # Squad member management commands
+    squad_add_member_parser = squad_subparsers.add_parser("add-member", help="Add a member to a squad and sync with VAPI")
+    squad_add_member_parser.add_argument("squad_name", help="Squad name")
+    squad_add_member_parser.add_argument("--assistant-name", required=True, help="Assistant name to add")
+    squad_add_member_parser.add_argument("--env", default="development", choices=["development", "staging", "production"], help="Environment to sync with")
+    squad_add_member_parser.add_argument("--dir", default="squads", help="Directory containing squads")
+    squad_add_member_parser.add_argument("--assistants-dir", default="assistants", help="Directory containing assistants")
+
     # Squad backup and restore commands
     squad_backup_parser = squad_subparsers.add_parser("backup", help="Create a backup of a squad with all related components")
     squad_backup_parser.add_argument("squad_name", help="Squad name to backup")
@@ -2142,6 +2251,8 @@ def main():
                 asyncio.run(show_squad_status(args.name, args.dir))
             elif args.squad_command == "delete":
                 asyncio.run(delete_squad(args.name, args.env, args.force, args.delete_assistants, args.dir))
+            elif args.squad_command == "add-member":
+                asyncio.run(add_member_to_squad(args.squad_name, args.assistant_name, args.env, args.dir, args.assistants_dir))
             elif args.squad_command == "backup":
                 asyncio.run(backup_squad(
                     args.squad_name,

@@ -22,6 +22,10 @@ members:
   overrides:
     model:
       temperature: 0.4
+- assistant_name: manager-ange
+  role: billing_support
+  priority: 3
+  description: Billing and insurance support assistant
 routing_rules:
 - name: emergency_priority
   description: Route medical emergencies immediately

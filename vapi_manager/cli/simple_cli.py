@@ -2451,12 +2451,14 @@ async def handle_squad_params_update(args):
         params = {}
 
         # Voice parameters
-        if args.voice_provider or args.voice_id:
+        if args.voice_provider or args.voice_id or args.voice_model:
             params['voice'] = {}
             if args.voice_provider:
                 params['voice']['provider'] = args.voice_provider
             if args.voice_id:
                 params['voice']['voiceId'] = args.voice_id
+            if args.voice_model:
+                params['voice']['model'] = args.voice_model
 
         # Model parameters
         if args.model_provider or args.model or args.temperature or args.max_tokens:
@@ -2817,6 +2819,7 @@ def main():
     squad_params_parser.add_argument("--voice-provider", choices=["vapi", "azure", "cartesia", "deepgram", "elevenlabs", "lmnt", "neets", "openai", "playht", "rime"],
                                       help="Voice provider")
     squad_params_parser.add_argument("--voice-id", help="Voice ID for the selected provider")
+    squad_params_parser.add_argument("--voice-model", help="Voice model (optional, provider-specific)")
 
     # Model parameters
     squad_params_parser.add_argument("--model-provider", choices=["openai", "anthropic", "azure", "google", "together", "anyscale", "openrouter", "perplexity", "deepinfra", "groq"],

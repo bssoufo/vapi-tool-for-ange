@@ -1,0 +1,7 @@
+members:
+- assistant_name: lead_qualifier
+  role: Handles initial lead qualification and routing
+  priority: 2
+- assistant_name: property_info
+  role: Provides detailed property information
+  priority: 2

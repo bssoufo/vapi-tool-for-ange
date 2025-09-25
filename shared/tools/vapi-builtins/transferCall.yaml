@@ -1,0 +1,37 @@
+name: transferCall
+type: vapi-builtin
+description: "Transfers the call to another destination"
+vapi_config:
+  type: transferCall
+  destinations: []  # Will be populated by the framework based on configuration
+parameters:
+  destinations:
+    type: array
+    description: "List of transfer destinations"
+    items:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["number", "assistant"]
+          description: "Type of destination"
+        number:
+          type: string
+          description: "Phone number (for number type)"
+        assistant_id:
+          type: string
+          description: "Assistant ID (for assistant type)"
+        description:
+          type: string
+          description: "Description of the transfer destination"
+metadata:
+  category: "call-control"
+  documentation: "Built-in VAPI tool to transfer calls to phone numbers or other assistants"
+  usage: "Configure destinations in the assistant's transfers configuration"
+  examples:
+    - type: "number"
+      number: "+12125551234"
+      description: "Transfer to emergency services"
+    - type: "assistant"
+      assistant_id: "assistant-uuid"
+      description: "Transfer to booking assistant"

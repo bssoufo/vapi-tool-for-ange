@@ -1,0 +1,10 @@
+members:
+- assistant_name: lead_qualifier
+  role: Lead qualification specialist
+  priority: 2
+- assistant_name: property_info
+  role: Property information assistant
+  priority: 2
+- assistant_name: scheduling_assistant
+  role: Appointment coordinator
+  priority: 2

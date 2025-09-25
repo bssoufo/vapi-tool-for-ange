@@ -1,0 +1,29 @@
+# Customer Support Squad Members
+members:
+  - assistant_id: "frontline_support"
+    role: "primary"
+    priority: 1
+    description: "First point of contact for customer inquiries"
+    skills:
+      - "general_support"
+      - "basic_troubleshooting"
+      - "account_management"
+
+  - assistant_id: "technical_specialist"
+    role: "specialist"
+    priority: 2
+    description: "Handles complex technical issues"
+    skills:
+      - "technical_support"
+      - "advanced_troubleshooting"
+      - "system_integration"
+      - "api_support"
+
+  - assistant_id: "escalation_manager"
+    role: "manager"
+    priority: 3
+    description: "Manages escalated cases and high-priority issues"
+    skills:
+      - "escalation_management"
+      - "priority_handling"
+      - "management_coordination"

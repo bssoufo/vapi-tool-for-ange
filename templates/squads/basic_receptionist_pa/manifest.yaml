@@ -1,0 +1,25 @@
+description: Basic receptionist with routing capabilities
+metadata:
+  version: '1.0'
+  author: VAPI Manager
+  created: '2025-01-25'
+assistants:
+- name: triage_assistant_pa
+  template: triage
+  role: receptionist
+  config_overrides: null
+  required_tools: null
+- name: booking_assistant_pa
+  template: booking
+  role: specialist
+  config_overrides: null
+  required_tools: null
+- name: info_assistant_pa
+  template: info
+  role: specialist
+  config_overrides: null
+  required_tools: null
+deployment:
+  strategy: rolling
+  rollback_on_failure: true
+  health_checks: true

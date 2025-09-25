@@ -1,0 +1,39 @@
+description: Real estate brokerage system using existing templates
+metadata:
+  version: '1.0'
+  author: VAPI Manager
+  created: '2025-01-25'
+tools:
+- name: crm-lookup
+  template: data_lookup
+  variables:
+    url: https://api.crm.com/clients
+  description: null
+- name: mls-search
+  template: data_lookup
+  variables:
+    url: https://api.mls.com/properties
+  description: null
+assistants:
+- name: lead_qualifier
+  template: vicky_dental_clinic
+  role: Lead qualification specialist
+  config_overrides: null
+  required_tools: null
+- name: property_info
+  template: vicky_dental_clinic
+  role: Property information assistant
+  config_overrides: null
+  required_tools: null
+- name: scheduling_assistant
+  template: vicky_dental_clinic
+  role: Appointment coordinator
+  config_overrides: null
+  required_tools: null
+deployment:
+  strategy: rolling
+  rollback_on_failure: true
+  health_checks: true
+environments:
+  development: {}
+  production: {}

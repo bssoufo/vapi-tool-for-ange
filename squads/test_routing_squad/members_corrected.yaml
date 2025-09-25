@@ -1,0 +1,49 @@
+# Correct Implementation of Squad Members with Routing
+members:
+  - assistant_name: real-estate-triage
+    role: primary_contact
+    priority: 1
+    # Destinations should be defined here for VAPI
+    assistant_overrides:
+      # These overrides get merged into the assistant configuration
+      transferDestinations:
+        - type: assistant
+          assistantName: real-estate-booking
+          message: "I'll connect you with our booking specialist to schedule your appointment."
+          description: "Transfer for booking and scheduling needs"
+        - type: assistant
+          assistantName: real-estate-info
+          message: "Let me transfer you to our property information specialist."
+          description: "Transfer for property information requests"
+
+  - assistant_name: real-estate-booking
+    role: booking_specialist
+    priority: 2
+    assistant_overrides:
+      transferDestinations:
+        - type: assistant
+          assistantName: real-estate-info
+          message: "I'll connect you with our property specialist for detailed information."
+          description: "Transfer for property details"
+        - type: assistant
+          assistantName: real-estate-triage
+          message: "Let me transfer you back to our main receptionist."
+          description: "Transfer back to triage"
+
+  - assistant_name: real-estate-info
+    role: information_specialist
+    priority: 2
+    assistant_overrides:
+      transferDestinations:
+        - type: assistant
+          assistantName: real-estate-booking
+          message: "I'll transfer you to our booking specialist to schedule a viewing."
+          description: "Transfer for booking after property info"
+        - type: assistant
+          assistantName: real-estate-triage
+          message: "Let me transfer you back to our main receptionist."
+          description: "Transfer back to triage"
+
+# Note: The routing/destinations.yaml and routing/rules.yaml files
+# are not used by VAPI. Routing must be configured within each
+# assistant's configuration.

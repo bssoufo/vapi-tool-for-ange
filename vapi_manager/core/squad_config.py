@@ -191,8 +191,16 @@ class SquadBuilder:
         members = self._build_members(config.members, config.overrides, environment)
 
         # Create the squad request
+        # Use the actual squad name (directory name) instead of template placeholder
+        squad_name = config.name  # This is the directory name
+
+        # Only use squad_config name if it's not a template placeholder
+        config_name = squad_config.get('name', '')
+        if not config_name.startswith('{{') and config_name:
+            squad_name = config_name
+
         request = SquadCreateRequest(
-            name=squad_config.get('name', config.name),
+            name=squad_name,
             members=members
         )
 
@@ -261,7 +269,8 @@ class SquadBuilder:
                     if assistant_id:
                         destination = {
                             'type': 'assistant',
-                            'assistantName': assistant_name
+                            'assistantName': assistant_name,
+                            'transferMode': 'rolling-history'  # Required by VAPI
                         }
 
                         # Always set message to empty string to prevent VAPI default messages

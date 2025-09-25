@@ -1,0 +1,15 @@
+members:
+- assistant_name: lead_qualifier
+  role: Handles initial lead qualification and routing - first point of contact for
+    all calls
+  priority: 2
+- assistant_name: property_info
+  role: Property information specialist - answers questions about listings, prices,
+    and availability
+  priority: 2
+- assistant_name: scheduling_assistant
+  role: Appointment and showing coordinator - books property viewings and agent meetings
+  priority: 2
+- assistant_name: client_manager
+  role: Client relationship manager - handles existing client inquiries and follow-ups
+  priority: 2

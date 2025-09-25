@@ -1,0 +1,19 @@
+functions:
+  - name: queryKnowledgeBase
+    description: "Query the knowledge base for information"
+    parameters:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: "The user's question or information request"
+    server:
+      url: "${KNOWLEDGE_BASE_WEBHOOK_URL}"
+
+  # Reference to shared VAPI core tools
+  - $ref: "shared/tools/vapi-core-tools.yaml"
+
+  # Or reference individual VAPI tools
+  - $ref: "shared/tools/vapi-builtins/dtmf.yaml"

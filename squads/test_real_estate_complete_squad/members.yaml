@@ -1,0 +1,10 @@
+members:
+- assistant_name: real-estate-triage
+  role: primary_contact
+  priority: 1
+- assistant_name: real-estate-booking
+  role: booking_specialist
+  priority: 2
+- assistant_name: real-estate-info
+  role: information_specialist
+  priority: 2

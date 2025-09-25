@@ -1,0 +1,133 @@
+# Customer Support Squad Bootstrap Manifest
+description: "A comprehensive customer support system with specialized assistants for ticket management, technical support, and escalations."
+
+metadata:
+  version: "1.0"
+  author: "VAPI Manager"
+  created: "2025-01-25"
+  category: "customer-support"
+
+# Tools to create before assistants
+tools:
+  - name: "ticket-management"
+    template: "data_lookup"
+    description: "Manage support tickets and customer inquiries"
+    variables:
+      url: "https://api.support.com/tickets"
+      auth_header: "Authorization"
+
+  - name: "knowledge-search"
+    template: "data_lookup"
+    description: "Search internal knowledge base for solutions"
+    variables:
+      url: "https://api.support.com/knowledge/search"
+
+  - name: "escalation-alerts"
+    template: "status_check"
+    description: "Send escalation alerts for high-priority issues"
+    variables:
+      webhook_url: "https://api.support.com/escalate"
+
+# Assistants that make up this squad
+assistants:
+  - name: "frontline_support"
+    template: "vicky_dental_clinic"
+    role: "Handles initial customer inquiries and basic troubleshooting"
+    required_tools:
+      - "shared/tools/ticket-management.yaml"
+      - "shared/tools/knowledge-search.yaml"
+    config_overrides:
+      name: "Frontline Support Assistant"
+      firstMessage: "Hello! I'm here to help with your support inquiry. How can I assist you today?"
+      model:
+        temperature: 0.3
+
+  - name: "technical_specialist"
+    template: "vicky_dental_clinic"
+    role: "Handles complex technical issues and advanced troubleshooting"
+    required_tools:
+      - "shared/tools/ticket-management.yaml"
+      - "shared/tools/knowledge-search.yaml"
+      - "shared/tools/escalation-alerts.yaml"
+    config_overrides:
+      name: "Technical Specialist"
+      firstMessage: "Hi! I'm the technical specialist. I can help with advanced technical issues and system troubleshooting."
+      model:
+        temperature: 0.2
+
+  - name: "escalation_manager"
+    template: "vicky_dental_clinic"
+    role: "Manages escalated cases and coordinates with management"
+    required_tools:
+      - "shared/tools/ticket-management.yaml"
+      - "shared/tools/escalation-alerts.yaml"
+    config_overrides:
+      name: "Escalation Manager"
+      firstMessage: "Hello, I'm the escalation manager. I handle priority issues and ensure they get the attention they need."
+      model:
+        temperature: 0.1
+
+# Deployment configuration
+deployment:
+  strategy: "blue_green"
+  rollback_on_failure: true
+  health_checks: true
+  validation_steps:
+    - "connectivity_check"
+    - "response_time_test"
+    - "knowledge_base_access"
+
+# Environment-specific configurations
+environments:
+  development:
+    assistants:
+      - name: "frontline_support"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+            temperature: 0.5
+      - name: "technical_specialist"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+      - name: "escalation_manager"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+
+  staging:
+    assistants:
+      - name: "frontline_support"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.4
+      - name: "technical_specialist"
+        config_overrides:
+          model:
+            model: "gpt-4"
+      - name: "escalation_manager"
+        config_overrides:
+          model:
+            model: "gpt-4"
+
+  production:
+    assistants:
+      - name: "frontline_support"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.3
+          serverUrl: "https://prod-api.support.com"
+      - name: "technical_specialist"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.2
+          serverUrl: "https://prod-api.support.com"
+      - name: "escalation_manager"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.1
+          serverUrl: "https://prod-api.support.com"

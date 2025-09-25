@@ -1,0 +1,81 @@
+routing_rules:
+  # Primary Contact - All calls start here
+  - name: "initial_contact"
+    conditions:
+      - type: "call_start"
+    destination: "real-estate-triage"
+    priority: 1
+    description: "All calls start with triage assistant for needs assessment"
+
+  # Booking-related routing
+  - name: "booking_requests"
+    conditions:
+      - type: "intent_detected"
+        intent: "booking"
+      - type: "keywords"
+        keywords: ["schedule", "appointment", "viewing", "tour", "consultation", "meet", "visit"]
+    destination: "real-estate-booking"
+    priority: 2
+    description: "Route booking and scheduling requests to booking specialist"
+
+  - name: "viewing_requests"
+    conditions:
+      - type: "intent_detected"
+        intent: "viewing"
+      - type: "keywords"
+        keywords: ["see property", "view house", "show home", "tour property", "open house"]
+    destination: "real-estate-booking"
+    priority: 2
+    description: "Route property viewing requests to booking specialist"
+
+  # Information-related routing
+  - name: "property_information"
+    conditions:
+      - type: "intent_detected"
+        intent: "information"
+      - type: "keywords"
+        keywords: ["price", "details", "features", "neighborhood", "market", "compare", "search", "find"]
+    destination: "real-estate-info"
+    priority: 2
+    description: "Route information requests to property information specialist"
+
+  - name: "market_analysis"
+    conditions:
+      - type: "intent_detected"
+        intent: "market_analysis"
+      - type: "keywords"
+        keywords: ["market trends", "property value", "investment", "roi", "analysis", "report"]
+    destination: "real-estate-info"
+    priority: 2
+    description: "Route market analysis requests to information specialist"
+
+  # Selling-related routing (can go to either booking for consultation or info for valuation)
+  - name: "selling_consultation"
+    conditions:
+      - type: "intent_detected"
+        intent: "selling"
+      - type: "keywords"
+        keywords: ["sell my house", "list property", "selling consultation", "market my home"]
+    destination: "real-estate-booking"
+    priority: 2
+    description: "Route selling consultations to booking specialist for appointment scheduling"
+
+  # Fallback to triage for complex or unclear requests
+  - name: "complex_requests"
+    conditions:
+      - type: "multiple_intents"
+      - type: "unclear_intent"
+    destination: "real-estate-triage"
+    priority: 3
+    description: "Route complex or unclear requests back to triage for clarification"
+
+  # Emergency or urgent requests
+  - name: "urgent_requests"
+    conditions:
+      - type: "urgency_detected"
+        level: "high"
+      - type: "keywords"
+        keywords: ["urgent", "emergency", "ASAP", "today", "now", "immediately"]
+    destination: "real-estate-triage"
+    priority: 1
+    description: "Route urgent requests to triage for immediate assessment"

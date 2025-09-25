@@ -1,0 +1,201 @@
+# E-commerce Squad Bootstrap Manifest
+description: "A complete e-commerce support system with assistants for sales, order management, and customer service."
+
+metadata:
+  version: "1.0"
+  author: "VAPI Manager"
+  created: "2025-01-25"
+  category: "ecommerce"
+
+# Tools to create before assistants
+tools:
+  - name: "product-catalog"
+    template: "data_lookup"
+    description: "Search and browse product catalog"
+    variables:
+      url: "https://api.ecommerce.com/products"
+      search_endpoint: "/search"
+
+  - name: "order-tracking"
+    template: "status_check"
+    description: "Track order status and shipping information"
+    variables:
+      url: "https://api.ecommerce.com/orders"
+      status_endpoint: "/status"
+
+  - name: "inventory-check"
+    template: "status_check"
+    description: "Check product availability and stock levels"
+    variables:
+      url: "https://api.ecommerce.com/inventory"
+
+  - name: "payment-processing"
+    template: "basic_webhook"
+    description: "Process payments and handle billing inquiries"
+    variables:
+      webhook_url: "https://api.ecommerce.com/payments/webhook"
+      auth_token: "ecom_payment_token"
+
+  - name: "return-management"
+    template: "cancellation"
+    description: "Handle returns and exchanges"
+    variables:
+      return_url: "https://api.ecommerce.com/returns"
+      policy_url: "https://ecommerce.com/return-policy"
+
+# Assistants that make up this squad
+assistants:
+  - name: "sales_assistant"
+    template: "vicky_dental_clinic"
+    role: "Helps customers find products and make purchasing decisions"
+    required_tools:
+      - "shared/tools/product-catalog.yaml"
+      - "shared/tools/inventory-check.yaml"
+    config_overrides:
+      name: "Sales Assistant"
+      firstMessage: "Welcome! I'm here to help you find the perfect products. What are you looking for today?"
+      model:
+        temperature: 0.7
+        maxTokens: 1000
+
+  - name: "order_manager"
+    template: "vicky_dental_clinic"
+    role: "Manages orders, tracking, and shipping inquiries"
+    required_tools:
+      - "shared/tools/order-tracking.yaml"
+      - "shared/tools/inventory-check.yaml"
+      - "shared/tools/return-management.yaml"
+    config_overrides:
+      name: "Order Management Assistant"
+      firstMessage: "Hi! I can help you with your orders, tracking, and any shipping questions. How can I assist you?"
+      model:
+        temperature: 0.4
+
+  - name: "payment_support"
+    template: "vicky_dental_clinic"
+    role: "Handles billing, payments, and financial inquiries"
+    required_tools:
+      - "shared/tools/payment-processing.yaml"
+      - "shared/tools/order-tracking.yaml"
+    config_overrides:
+      name: "Payment Support Assistant"
+      firstMessage: "Hello! I'm here to help with billing, payments, and any financial questions you may have."
+      model:
+        temperature: 0.2
+
+  - name: "customer_service"
+    template: "vicky_dental_clinic"
+    role: "Provides general customer support and resolves issues"
+    required_tools:
+      - "shared/tools/order-tracking.yaml"
+      - "shared/tools/return-management.yaml"
+      - "shared/tools/product-catalog.yaml"
+    config_overrides:
+      name: "Customer Service Assistant"
+      firstMessage: "Hi there! I'm your customer service assistant. I'm here to help resolve any issues or answer questions about your experience."
+      model:
+        temperature: 0.5
+
+# Deployment configuration
+deployment:
+  strategy: "rolling"
+  rollback_on_failure: true
+  health_checks: true
+  validation_steps:
+    - "api_connectivity"
+    - "payment_gateway_test"
+    - "inventory_sync_check"
+    - "order_processing_test"
+
+# Environment-specific configurations
+environments:
+  development:
+    tools:
+      - name: "product-catalog"
+        variables:
+          url: "https://dev-api.ecommerce.com/products"
+      - name: "order-tracking"
+        variables:
+          url: "https://dev-api.ecommerce.com/orders"
+    assistants:
+      - name: "sales_assistant"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+            temperature: 0.8
+      - name: "order_manager"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+      - name: "payment_support"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+      - name: "customer_service"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+
+  staging:
+    tools:
+      - name: "product-catalog"
+        variables:
+          url: "https://staging-api.ecommerce.com/products"
+      - name: "order-tracking"
+        variables:
+          url: "https://staging-api.ecommerce.com/orders"
+    assistants:
+      - name: "sales_assistant"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.7
+      - name: "order_manager"
+        config_overrides:
+          model:
+            model: "gpt-4"
+      - name: "payment_support"
+        config_overrides:
+          model:
+            model: "gpt-4"
+      - name: "customer_service"
+        config_overrides:
+          model:
+            model: "gpt-4"
+
+  production:
+    tools:
+      - name: "product-catalog"
+        variables:
+          url: "https://api.ecommerce.com/products"
+      - name: "order-tracking"
+        variables:
+          url: "https://api.ecommerce.com/orders"
+      - name: "payment-processing"
+        variables:
+          webhook_url: "https://secure.ecommerce.com/payments/webhook"
+    assistants:
+      - name: "sales_assistant"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.7
+          serverUrl: "https://prod.ecommerce.com"
+      - name: "order_manager"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.4
+          serverUrl: "https://prod.ecommerce.com"
+      - name: "payment_support"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.2
+          serverUrl: "https://prod.ecommerce.com"
+      - name: "customer_service"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.5
+          serverUrl: "https://prod.ecommerce.com"

@@ -1,0 +1,41 @@
+# E-commerce Squad Members
+members:
+  - assistant_id: "sales_assistant"
+    role: "sales"
+    priority: 1
+    description: "Helps customers find and purchase products"
+    skills:
+      - "product_recommendations"
+      - "sales_conversion"
+      - "upselling"
+      - "cross_selling"
+
+  - assistant_id: "order_manager"
+    role: "operations"
+    priority: 2
+    description: "Manages orders, tracking, and fulfillment"
+    skills:
+      - "order_management"
+      - "shipping_tracking"
+      - "inventory_management"
+      - "returns_processing"
+
+  - assistant_id: "payment_support"
+    role: "finance"
+    priority: 3
+    description: "Handles payments, billing, and financial inquiries"
+    skills:
+      - "payment_processing"
+      - "billing_support"
+      - "refund_management"
+      - "financial_troubleshooting"
+
+  - assistant_id: "customer_service"
+    role: "support"
+    priority: 4
+    description: "Provides general customer support"
+    skills:
+      - "customer_service"
+      - "issue_resolution"
+      - "general_inquiries"
+      - "feedback_collection"

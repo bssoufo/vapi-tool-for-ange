@@ -1,0 +1,75 @@
+# Dental Clinic Squad Bootstrap Manifest
+description: "A complete dental clinic reception system with specialized assistants for scheduling, triage, and billing."
+
+metadata:
+  version: "1.0"
+  author: "VAPI Manager"
+  created: "2025-01-25"
+
+# Tools to create before assistants
+tools:
+  - name: "patient-lookup"
+    template: "data_lookup"
+    description: "Look up patient information and medical history"
+    variables:
+      url: "https://api.clinic.com/patients/lookup"
+
+  - name: "appointment-booking"
+    template: "appointment_booking"
+    description: "Book dental appointments with insurance verification"
+    variables:
+      url: "https://api.clinic.com/appointments/book"
+
+# Assistants that make up this squad
+assistants:
+  - name: "scheduler_bot"
+    template: "vicky_dental_clinic"
+    role: "Handles new appointment scheduling and calendar management"
+    required_tools:
+      - "shared/tools/appointment-booking.yaml"
+      - "shared/tools/patient-lookup.yaml"
+    config_overrides:
+      name: "Dental Scheduler Assistant"
+      firstMessage: "Hello! I'm here to help you schedule your dental appointment. What type of service do you need?"
+
+  - name: "triage_assistant"
+    template: "vicky_dental_clinic"
+    role: "Assesses medical urgency and answers health questions"
+    required_tools:
+      - "shared/tools/patient-lookup.yaml"
+    config_overrides:
+      name: "Dental Triage Assistant"
+      firstMessage: "Hi! I'm the triage assistant. I can help assess your dental needs and determine urgency. How can I help you today?"
+
+  - name: "billing_assistant"
+    template: "vicky_dental_clinic"
+    role: "Handles payments, insurance claims, and billing inquiries"
+    required_tools:
+      - "shared/tools/patient-lookup.yaml"
+    config_overrides:
+      name: "Dental Billing Assistant"
+      firstMessage: "Hello! I'm here to help with billing questions, insurance claims, and payment processing. How can I assist you?"
+
+# Deployment configuration
+deployment:
+  strategy: "rolling"
+  rollback_on_failure: true
+  health_checks: true
+
+# Environment-specific configurations
+environments:
+  development:
+    assistants:
+      - name: "scheduler_bot"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+            temperature: 0.7
+
+  production:
+    assistants:
+      - name: "scheduler_bot"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.5

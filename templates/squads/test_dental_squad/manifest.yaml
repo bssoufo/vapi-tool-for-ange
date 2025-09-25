@@ -1,0 +1,28 @@
+description: Test dental clinic squad
+metadata:
+  version: '1.0'
+  author: VAPI Manager
+  created: '2025-01-25'
+tools:
+- name: patient-lookup
+  template: data_lookup
+  variables:
+    url: https://api.clinic.com/patients
+  description: null
+assistants:
+- name: scheduler
+  template: vicky_dental_clinic
+  role: Scheduler assistant
+  config_overrides: null
+  required_tools: null
+- name: triage
+  template: vicky_dental_clinic
+  role: Triage assistant
+  config_overrides: null
+  required_tools: null
+deployment:
+  strategy: rolling
+  rollback_on_failure: true
+  health_checks: true
+environments:
+  development: {}

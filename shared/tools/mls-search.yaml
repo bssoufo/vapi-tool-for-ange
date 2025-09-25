@@ -1,0 +1,21 @@
+# Description: A data lookup tool for searching and retrieving information
+name: "mls-search"
+description: "Look up information using mls-search"
+server:
+  url: "https://api.mls.com/properties"
+parameters:
+  type: object
+  required:
+    - searchTerm
+  properties:
+    searchTerm:
+      type: string
+      description: "The search term to look up"
+    limit:
+      type: integer
+      description: "Maximum number of results to return"
+      default: 10
+    includeDetails:
+      type: boolean
+      description: "Whether to include detailed information"
+      default: false

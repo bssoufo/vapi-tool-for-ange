@@ -1,0 +1,22 @@
+_vapi:
+  current_environment: development
+  environments:
+    development:
+      deployed_at: '2025-09-23T02:13:51.480116+00:00'
+      deployed_by: sebr5550
+      id: 1a68142c-a6fd-462c-ba06-2263464cf4c0
+      version: 2
+    production:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-09-23T02:13:51.480116+00:00'
+description: '{{description|Complete real estate squad with triage, booking, and information
+  assistants}}'
+name: '{{squad_name}}'

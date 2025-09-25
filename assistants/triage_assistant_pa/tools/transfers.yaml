@@ -1,0 +1,30 @@
+transfers:
+- type: number
+  number: "+14182640300"
+  description: "Transfer to general support (use: transferToSupport)"
+  prompt_name: "transferToSupport"
+  message: "I'm connecting you to our general support team"
+
+- type: number
+  number: "+14182640301"
+  description: "Transfer to emergency services (use: transferToEmergency)"
+  prompt_name: "transferToEmergency"
+  message: "Connecting you to emergency services immediately"
+
+- type: number
+  number: "+14182640302"
+  description: "Transfer to technical support (use: transferToTech)"
+  prompt_name: "transferToTech"
+  message: "Transferring you to our technical support team"
+
+- type: number
+  number: "+14182640303"
+  description: "Transfer to billing department (use: transferToBilling)"
+  prompt_name: "transferToBilling"
+  message: "Connecting you to our billing department"
+
+- type: number
+  number: "+14182640304"
+  description: "Transfer to appointment scheduling (use: transferToScheduling)"
+  prompt_name: "transferToScheduling"
+  message: "Transferring you to our scheduling team"

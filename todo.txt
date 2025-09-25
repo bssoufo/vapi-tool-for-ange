@@ -1,0 +1,17 @@
+route after creation
+Independant tools to install
+Deploy squad create tool if not exist
+Delete squad with all assistant
+Command to deploy sqaud with all assistant, if the assistant is not deployed, force, if the assitant is deployer updated
+Command to update swaud will all assistant  if the assistant is not deployed, force, if the assitant is deployer updated
+ovveride api key when deployed or created squad, an assistant
+
+
+ ☒ Create real-estate-triage assistant template with greeting and triage tools
+     ☒ Create real-estate-booking assistant template with booking tools
+     ☒ Create real-estate-info assistant template with property search tools
+     ☒ Create squad template with proper routing configuration
+     ☒ Deploy squad to development environment
+     ☒ Verify squad deployment in VAPI
+     ☒ Delete squad and verify complete cleanup
+     ☐ Write complete step-by-step tutorial

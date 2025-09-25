@@ -1,0 +1,16 @@
+routing:
+  destinations:
+    real-estate-triage:
+      destination_type: assistant
+      assistant_name: real-estate-triage
+      message: "Transferring you to our triage specialist who will help identify your needs and direct you to the right expert."
+
+    real-estate-booking:
+      destination_type: assistant
+      assistant_name: real-estate-booking
+      message: "Connecting you with our booking specialist to schedule your property viewing or consultation."
+
+    real-estate-info:
+      destination_type: assistant
+      assistant_name: real-estate-info
+      message: "Transferring you to our property information specialist who can provide detailed property and market insights."

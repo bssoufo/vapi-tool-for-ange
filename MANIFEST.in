@@ -1,0 +1,65 @@
+# Include important documentation files
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+
+# Include requirements files
+include requirements*.txt
+include pyproject.toml
+include poetry.lock
+
+# Include package data
+recursive-include vapi_manager *.py
+recursive-include vapi_manager/templates *.yaml *.yml *.md *.txt *.json
+recursive-include vapi_manager/shared *.yaml *.yml *.md *.txt *.json
+
+# Include template directories
+recursive-include templates *.yaml *.yml *.md *.txt *.json
+recursive-include shared *.yaml *.yml *.md *.txt *.json
+
+# Include test data (optional, remove if not needed in package)
+recursive-include tests *.py *.yaml *.yml *.json
+recursive-include tests/fixtures *.yaml *.yml *.json
+
+# Include documentation source files
+recursive-include docs *.md *.rst *.txt
+
+# Exclude compiled Python files
+global-exclude *.py[cod]
+global-exclude __pycache__
+
+# Exclude backup files
+global-exclude *~
+global-exclude *.bak
+global-exclude *.swp
+
+# Exclude OS-specific files
+global-exclude .DS_Store
+global-exclude Thumbs.db
+
+# Exclude version control
+global-exclude .git*
+global-exclude .svn
+
+# Exclude IDE files
+global-exclude .idea
+global-exclude .vscode
+global-exclude *.sublime-*
+
+# Exclude build artifacts
+global-exclude *.egg-info
+global-exclude dist
+global-exclude build
+
+# Exclude test coverage reports
+global-exclude .coverage
+global-exclude htmlcov
+global-exclude .pytest_cache
+global-exclude .tox
+
+# Exclude environment files
+global-exclude .env
+global-exclude .env.*
+global-exclude venv
+global-exclude env

@@ -1,0 +1,189 @@
+# Restaurant Squad Bootstrap Manifest
+description: "A restaurant management system with assistants for reservations, orders, and customer service."
+
+metadata:
+  version: "1.0"
+  author: "VAPI Manager"
+  created: "2025-01-25"
+  category: "hospitality"
+
+# Tools to create before assistants
+tools:
+  - name: "reservation-booking"
+    template: "appointment_booking"
+    description: "Handle table reservations and dining bookings"
+    variables:
+      calendar_id: "restaurant_reservations"
+      booking_url: "https://api.restaurant.com/reservations/book"
+      time_zone: "America/New_York"
+
+  - name: "menu-lookup"
+    template: "data_lookup"
+    description: "Search menu items, ingredients, and pricing"
+    variables:
+      url: "https://api.restaurant.com/menu"
+      search_endpoint: "/search"
+
+  - name: "order-placement"
+    template: "basic_webhook"
+    description: "Process food orders and delivery requests"
+    variables:
+      webhook_url: "https://api.restaurant.com/orders/place"
+      delivery_zones_url: "https://api.restaurant.com/delivery/zones"
+
+  - name: "loyalty-program"
+    template: "data_lookup"
+    description: "Manage customer loyalty points and rewards"
+    variables:
+      url: "https://api.restaurant.com/loyalty"
+      points_endpoint: "/points"
+
+# Assistants that make up this squad
+assistants:
+  - name: "reservation_host"
+    template: "vicky_dental_clinic"
+    role: "Handles table reservations and dining inquiries"
+    required_tools:
+      - "shared/tools/reservation-booking.yaml"
+      - "shared/tools/menu-lookup.yaml"
+    config_overrides:
+      name: "Reservation Host"
+      firstMessage: "Welcome! I'd be happy to help you with a table reservation. What date and time were you thinking?"
+      model:
+        temperature: 0.6
+
+  - name: "order_assistant"
+    template: "vicky_dental_clinic"
+    role: "Takes orders for dine-in, takeout, and delivery"
+    required_tools:
+      - "shared/tools/menu-lookup.yaml"
+      - "shared/tools/order-placement.yaml"
+      - "shared/tools/loyalty-program.yaml"
+    config_overrides:
+      name: "Order Assistant"
+      firstMessage: "Hi! I'm here to help you place an order. Would you like to dine in, order takeout, or get delivery?"
+      model:
+        temperature: 0.5
+
+  - name: "customer_care"
+    template: "vicky_dental_clinic"
+    role: "Handles complaints, feedback, and general inquiries"
+    required_tools:
+      - "shared/tools/reservation-booking.yaml"
+      - "shared/tools/order-placement.yaml"
+      - "shared/tools/loyalty-program.yaml"
+    config_overrides:
+      name: "Customer Care Assistant"
+      firstMessage: "Hello! I'm here to help with any questions or concerns you may have about your dining experience."
+      model:
+        temperature: 0.4
+
+# Deployment configuration
+deployment:
+  strategy: "rolling"
+  rollback_on_failure: true
+  health_checks: true
+  validation_steps:
+    - "reservation_system_check"
+    - "menu_availability_check"
+    - "order_processing_test"
+    - "loyalty_system_sync"
+
+# Environment-specific configurations
+environments:
+  development:
+    tools:
+      - name: "reservation-booking"
+        variables:
+          booking_url: "https://dev-api.restaurant.com/reservations/book"
+          calendar_id: "dev_restaurant_reservations"
+      - name: "order-placement"
+        variables:
+          webhook_url: "https://dev-api.restaurant.com/orders/place"
+    assistants:
+      - name: "reservation_host"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+            temperature: 0.7
+      - name: "order_assistant"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+            temperature: 0.6
+      - name: "customer_care"
+        config_overrides:
+          model:
+            model: "gpt-3.5-turbo"
+
+  staging:
+    tools:
+      - name: "reservation-booking"
+        variables:
+          booking_url: "https://staging-api.restaurant.com/reservations/book"
+          calendar_id: "staging_restaurant_reservations"
+      - name: "order-placement"
+        variables:
+          webhook_url: "https://staging-api.restaurant.com/orders/place"
+    assistants:
+      - name: "reservation_host"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.6
+      - name: "order_assistant"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.5
+      - name: "customer_care"
+        config_overrides:
+          model:
+            model: "gpt-4"
+
+  production:
+    tools:
+      - name: "reservation-booking"
+        variables:
+          booking_url: "https://api.restaurant.com/reservations/book"
+          calendar_id: "restaurant_reservations"
+      - name: "order-placement"
+        variables:
+          webhook_url: "https://secure.restaurant.com/orders/place"
+    assistants:
+      - name: "reservation_host"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.6
+          serverUrl: "https://prod.restaurant.com"
+      - name: "order_assistant"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.5
+          serverUrl: "https://prod.restaurant.com"
+      - name: "customer_care"
+        config_overrides:
+          model:
+            model: "gpt-4"
+            temperature: 0.4
+          serverUrl: "https://prod.restaurant.com"
+
+# Special configuration for restaurant-specific features
+restaurant_config:
+  hours:
+    monday: "11:00-22:00"
+    tuesday: "11:00-22:00"
+    wednesday: "11:00-22:00"
+    thursday: "11:00-22:00"
+    friday: "11:00-23:00"
+    saturday: "10:00-23:00"
+    sunday: "10:00-21:00"
+
+  features:
+    - table_reservations
+    - online_ordering
+    - delivery_service
+    - loyalty_program
+    - special_dietary_accommodations

@@ -1,0 +1,73 @@
+_vapi:
+  current_environment: development
+  environments:
+    development:
+      deployed_at: '2025-09-23T01:37:43.443263+00:00'
+      deployed_by: 1
+      id: d4213214-bc82-4c5f-9881-66e6292e0830
+      version: 1
+    production:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-09-23T01:37:43.443263+00:00'
+analysisPlan:
+  minMessagesThreshold: 2
+  structuredDataPlan:
+    enabled: true
+    timeoutSeconds: 15
+  summaryPlan:
+    enabled: true
+    timeoutSeconds: 15
+description: AI assistant for providing detailed property information and market insights
+environments:
+  development:
+    firstMessageMode: assistant-speaks-first
+    model:
+      model: gpt-3.5-turbo
+      temperature: 0.6
+  production:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    model:
+      model: gpt-4o-mini
+      temperature: 0.3
+  staging:
+    firstMessageMode: wait-for-user
+    voice:
+      voiceId: business_female_1_v1
+features:
+  enableAnalytics: true
+  enableRecording: true
+  enableTranscription: true
+firstMessageMode: assistant-speaks-first-with-model-generated-message
+metadata:
+  author: Real Estate Team
+  tags:
+  - real-estate
+  - information
+  - property-search
+  template: real_estate_info
+  version: 1.0.0
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0.4
+name: real-estate-info
+server:
+  timeoutSeconds: 30
+  url: https://n8n-2-u19609.vm.elestio.app/webhook/real-estate-info
+serverMessages:
+- end-of-call-report
+transcriber:
+  language: en
+  model: nova-2
+  provider: deepgram
+voice:
+  provider: minimax
+  voiceId: business_female_1_v1

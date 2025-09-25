@@ -1,0 +1,85 @@
+# Routing Rules Configuration
+# Define intelligent routing logic for the basic_receptionist squad
+
+priority_rules:
+  urgent_inquiries:
+    priority: 1
+    description: Handle urgent inquiries with high priority
+    triggers:
+    - type: keyword
+      keywords:
+      - urgent
+      - emergency
+      - immediate
+      - ASAP
+      - critical
+    - type: sentiment
+      threshold: -0.7
+    action:
+      destination: triage_assistant_basic
+      bypass_queue: true
+      immediate_transfer: true
+time_based_rules:
+  business_hours:
+    description: Normal business hours routing
+    schedule:
+      days:
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      hours: 09:00-18:00
+      timezone: America/New_York
+    routing:
+      default: triage_assistant_basic
+intent_rules: {}
+load_balancing:
+  strategy: skill_based
+  skill_based_routing:
+    triage_assistant_basic:
+      skills:
+      - general_assistance
+      capacity: 5
+    booking_assistant_basic:
+      skills:
+      - general_assistance
+      capacity: 5
+    info_assistant_basic:
+      skills:
+      - general_assistance
+      capacity: 5
+  fallback_strategy:
+    primary: skill_based
+    secondary: least_busy
+    ultimate: triage_assistant_basic
+escalation_rules:
+  client_dissatisfaction:
+    triggers:
+    - type: sentiment
+      threshold: -0.6
+    - type: keyword
+      keywords:
+      - angry
+      - frustrated
+      - manager
+      - complaint
+      - unhappy
+    - type: call_duration
+      threshold: 900
+    action:
+      destination: manager
+      context_transfer: true
+      priority_boost: true
+  technical_difficulties:
+    triggers:
+    - type: system_error
+      error_types:
+      - connection_failure
+      - assistant_unavailable
+    - type: retry_limit
+      max_retries: 3
+    action:
+      destination: triage_assistant_basic
+      message: I apologize for the technical difficulties. Let me connect you with
+        our manager.

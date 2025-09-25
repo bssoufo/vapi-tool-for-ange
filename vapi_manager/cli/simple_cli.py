@@ -13,6 +13,8 @@ from ..core.assistant_config import AssistantConfigLoader, AssistantBuilder
 from ..core.template_manager import TemplateManager
 from ..core.tool_template_manager import ToolTemplateManager
 from ..core.squad_template_manager import SquadTemplateManager
+from ..core.squad_template_creator import SquadTemplateCreator, SquadTemplateCreatorError
+from ..core.bootstrap_manager import BootstrapManager
 from ..core.squad_config import SquadConfigLoader, SquadBuilder
 from ..core.squad_deployment_state import SquadDeploymentStateManager
 from ..core.deployment_state import DeploymentStateManager
@@ -26,6 +28,7 @@ from ..core.squad_backup_models import SquadBackupType, SquadRestoreOptions
 from ..core.squad_backup_utils import SquadBackupUtils
 from ..core.squad_member_manager import SquadMemberManager
 from ..core.exceptions.vapi_exceptions import VAPIException
+from ..core.squad_parameter_updater import SquadParameterUpdater
 
 console = Console()
 
@@ -289,7 +292,7 @@ async def update_assistant(assistant_name, environment="development", scope="ful
             if result['changes']:
                 console.print("\n[bold]Changes to be applied:[/bold]")
                 for change in result['changes']:
-                    console.print(f"  [cyan]•[/cyan] {change['field']}: {change['change_type']}")
+                    console.print(f"  [cyan]-[/cyan] {change['field']}: {change['change_type']}")
                     if change['change_type'] == 'modified':
                         console.print(f"    [red]- {change['old_value']}[/red]")
                         console.print(f"    [green]+ {change['new_value']}[/green]")
@@ -441,7 +444,7 @@ def list_file_squads(directory="squads"):
             for member in squad_config.members:
                 role = member.get('role', 'assistant')
                 assistant_name = member.get('assistant_name', 'Unknown')
-                console.print(f"    • {assistant_name} ([blue]{role}[/blue])")
+                console.print(f"    - {assistant_name} ([blue]{role}[/blue])")
 
             console.print()
 
@@ -449,9 +452,12 @@ def list_file_squads(directory="squads"):
             console.print(f"  [red]Error reading squad: {e}[/red]\n")
 
 
-async def create_squad(squad_name, environment="development", force=False, directory="squads"):
+async def create_squad(squad_name, environment="development", force=False, auto_deploy_assistants=False, directory="squads", assistants_directory="assistants"):
     """Create a squad in VAPI and track its ID."""
     squad_state_manager = SquadDeploymentStateManager(directory)
+
+    # Import dependency resolver
+    from ..core.dependency_resolver import SquadDependencyResolver
 
     console.print(f"[cyan]Creating squad:[/cyan] {squad_name}")
     console.print(f"[cyan]Environment:[/cyan] {environment}")
@@ -475,6 +481,16 @@ async def create_squad(squad_name, environment="development", force=False, direc
             console.print(f"  • Use 'squad status' to see all deployments")
             return
 
+        # Check and resolve assistant dependencies
+        dependency_resolver = SquadDependencyResolver(directory, assistants_directory)
+        dependencies_met = await dependency_resolver.ensure_squad_dependencies(
+            squad_name, environment, auto_deploy_assistants, force
+        )
+
+        if not dependencies_met:
+            console.print(f"[red]Squad creation aborted: Missing assistant dependencies[/red]")
+            return
+
         # Load squad configuration
         loader = SquadConfigLoader(directory)
         squad_config = loader.load_squad(squad_name, environment)
@@ -485,12 +501,12 @@ async def create_squad(squad_name, environment="development", force=False, direc
             return
 
         # Build squad request
-        builder = SquadBuilder()
+        builder = SquadBuilder(assistants_directory)
         try:
             squad_request = builder.build_from_config(squad_config, environment)
         except ValueError as e:
             console.print(f"[red]Squad build failed: {e}[/red]")
-            console.print(f"[yellow]Ensure all referenced assistants are deployed to {environment}[/yellow]")
+            console.print(f"[yellow]This shouldn't happen after dependency resolution. Please check the logs.[/yellow]")
             return
 
         # Create squad via VAPI
@@ -581,7 +597,7 @@ async def add_member_to_squad(squad_name, assistant_name, environment="developme
         )
 
         if result.get('success'):
-            console.print(f"[green]✓ Added '{assistant_name}' to members.yaml[/green]")
+            console.print(f"[green][OK] Added '{assistant_name}' to members.yaml[/green]")
             console.print(f"[dim]Backup created: {result.get('backup_path')}[/dim]")
 
             # 7. Immediately sync with VAPI using update strategy
@@ -595,7 +611,7 @@ async def add_member_to_squad(squad_name, assistant_name, environment="developme
 
             # 8. Display update results
             if update_result.status == 'success':
-                console.print(f"[bold green]✓ Successfully synced squad with VAPI![/bold green]")
+                console.print(f"[bold green][OK] Successfully synced squad with VAPI![/bold green]")
                 console.print(f"[cyan]Squad ID:[/cyan] {update_result.squad_id}")
                 console.print(f"[cyan]Changes applied:[/cyan] {update_result.total_changes}")
                 console.print(f"[cyan]Version:[/cyan] {update_result.version}")
@@ -1634,6 +1650,11 @@ async def deploy_assistant(assistant_name, environment="default", directory="ass
         service = AssistantService()
         assistant = await service.create_assistant(request)
 
+        # Track deployment state
+        from ..core.deployment_state import DeploymentStateManager
+        state_manager = DeploymentStateManager(directory)
+        state_manager.mark_deployed(assistant_name, environment, assistant.id)
+
         console.print(f"[green]+ Assistant deployed successfully![/green]")
         console.print(f"[cyan]Assistant ID:[/cyan] {assistant.id}")
         console.print(f"[cyan]Name:[/cyan] {assistant.name}")
@@ -2075,6 +2096,471 @@ def preview_tool_generation(name, template="basic_webhook", description=None, ur
         return False
 
 
+def bootstrap_squad(
+    squad_name,
+    template="dental_clinic_squad",
+    deploy=False,
+    environment="development",
+    dry_run=False,
+    force=False,
+    validate_only=False
+):
+    """Bootstrap a complete squad system from template."""
+    try:
+        manager = BootstrapManager()
+
+        if validate_only:
+            console.print(f"[cyan]Validating squad template: {template}[/cyan]")
+            result = manager.validate_manifest(template)
+
+            if result["valid"]:
+                console.print(f"[green][OK] Template '{template}' is valid for bootstrap[/green]")
+                console.print(f"[cyan]Description: {result['description']}[/cyan]")
+                console.print(f"[cyan]Assistants: {result['assistants']}[/cyan]")
+                console.print(f"[cyan]Tools: {result['tools']}[/cyan]")
+                return True
+            else:
+                console.print(f"[red]✗ Template validation failed: {result['error']}[/red]")
+                return False
+
+        # Run bootstrap
+        checkpoint = manager.bootstrap_squad(
+            squad_name=squad_name,
+            template_name=template,
+            deploy=deploy,
+            environment=environment,
+            dry_run=dry_run,
+            force=force
+        )
+
+        if dry_run:
+            console.print(f"[cyan]Dry run completed successfully[/cyan]")
+        else:
+            console.print(f"[green]Squad '{squad_name}' bootstrapped successfully![/green]")
+
+            if deploy:
+                console.print(f"[green]Deployed to {environment} environment[/green]")
+
+        return True
+
+    except Exception as e:
+        console.print(f"[red]Bootstrap failed: {e}[/red]")
+        return False
+
+
+def rollback_squad(squad_name, directory="squads"):
+    """Rollback a previously bootstrapped squad."""
+    try:
+        manager = BootstrapManager(squads_dir=directory)
+        success = manager.rollback_squad(squad_name)
+        return success
+    except Exception as e:
+        console.print(f"[red]Rollback failed: {e}[/red]")
+        return False
+
+
+def update_existing_squad(squad_name, template, environment="development"):
+    """Update an existing squad with new configuration."""
+    try:
+        manager = BootstrapManager()
+        success = manager.update_existing_squad(squad_name, template, environment)
+        return success
+    except Exception as e:
+        console.print(f"[red]Update failed: {e}[/red]")
+        return False
+
+
+def create_squad_template(
+    template_name,
+    description,
+    assistants=None,
+    tools=None,
+    environments=None,
+    deployment_strategy="rolling",
+    force=False,
+    preview_only=False,
+    output_dir="templates/squads",
+    auto_create_assistants=True,
+    assistants_dir="templates/assistants",
+    validate_strict=False
+):
+    """Create a new squad template with manifest using builder pattern."""
+    try:
+        # Initialize template creator with validation options
+        creator = SquadTemplateCreator(
+            template_name,
+            auto_create_assistants=auto_create_assistants,
+            assistants_dir=assistants_dir
+        )
+
+        if output_dir != "templates/squads":
+            creator.set_output_directory(output_dir)
+
+        # Set description
+        creator.with_description(description)
+
+        # Add metadata
+        creator.with_metadata(
+            version="1.0",
+            author="VAPI Manager",
+            created="2025-01-25"
+        )
+
+        # Parse and add assistants
+        if assistants:
+            for assistant_spec in assistants:
+                # Parse assistant specification: "name:template:role" or "name:template"
+                parts = assistant_spec.split(":")
+                if len(parts) < 2:
+                    console.print(f"[yellow]Warning: Skipping invalid assistant spec '{assistant_spec}'. Expected format: 'name:template' or 'name:template:role'[/yellow]")
+                    continue
+
+                name = parts[0]
+                template = parts[1]
+                role = parts[2] if len(parts) > 2 else None
+
+                creator.add_assistant(name=name, template=template, role=role)
+
+        # Parse and add tools
+        if tools:
+            for tool_spec in tools:
+                # Parse tool specification: "name:template" or "name:template:var1=val1,var2=val2"
+                parts = tool_spec.split(":", 2)
+                if len(parts) < 2:
+                    console.print(f"[yellow]Warning: Skipping invalid tool spec '{tool_spec}'. Expected format: 'name:template' or 'name:template:var1=val1,var2=val2'[/yellow]")
+                    continue
+
+                name = parts[0]
+                template = parts[1]
+                variables = {}
+
+                if len(parts) > 2:
+                    # Parse variables: "var1=val1,var2=val2"
+                    var_pairs = parts[2].split(",")
+                    for pair in var_pairs:
+                        if "=" in pair:
+                            key, value = pair.split("=", 1)
+                            variables[key.strip()] = value.strip()
+
+                creator.add_tool(name=name, template=template, **variables)
+
+        # Add deployment configuration
+        creator.with_deployment_config(
+            strategy=deployment_strategy,
+            rollback_on_failure=True,
+            health_checks=True
+        )
+
+        # Add environments
+        if environments:
+            for env in environments:
+                creator.add_environment(env)
+
+        # Preview mode
+        if preview_only:
+            console.print(f"[cyan]Preview for squad template '{template_name}':[/cyan]\n")
+            console.print(creator.preview())
+            return
+
+        # Validate assistant dependencies
+        console.print(f"[cyan]Validating assistant dependencies...[/cyan]")
+        validation_result = creator.validate_assistant_dependencies()
+
+        if not validation_result.is_valid and validate_strict:
+            console.print(f"[red]Strict validation failed:[/red]")
+            console.print(creator.get_validation_summary())
+            return
+
+        if validation_result.created_assistants:
+            console.print(f"[green]Created {len(validation_result.created_assistants)} assistant templates[/green]")
+
+        # Validate overall configuration
+        errors = creator.validate()
+        if errors:
+            console.print(f"[red]Validation failed:[/red]")
+            for error in errors:
+                console.print(f"  • {error}")
+            return
+
+        # Create the template
+        template_path = creator.create(force=force)
+        console.print(f"[green]Squad template created successfully![/green]")
+        console.print(f"[cyan]Template location:[/cyan] {template_path}")
+
+        # Print validation summary if there were any assistant operations
+        if validation_result.created_assistants or validation_result.warnings:
+            console.print(f"\n[cyan]Assistant Validation Summary:[/cyan]")
+            console.print(creator.get_validation_summary())
+
+        # Show next steps
+        console.print(f"\n[cyan]Next steps:[/cyan]")
+        console.print(f"  1. Review template files in: {template_path}")
+        console.print(f"  2. Test bootstrap: [cyan]vapi-manager squad bootstrap test_{template_name} --template {template_name} --dry-run[/cyan]")
+        console.print(f"  3. Customize routing destinations in: {template_path}/routing/destinations.yaml")
+
+    except SquadTemplateCreatorError as e:
+        console.print(f"[red]Template creation failed: {e}[/red]")
+    except Exception as e:
+        console.print(f"[red]Unexpected error: {e}[/red]")
+
+
+# Phase 3: Enterprise Feature Handlers
+
+async def handle_bootstrap_pipeline(args):
+    """Handle bootstrap pipeline deployment."""
+    try:
+        from ..core.bootstrap_manager import BootstrapManager, BootstrapStrategy
+
+        manager = BootstrapManager()
+
+        # Map strategy string to enum
+        strategy_map = {
+            "rolling": BootstrapStrategy.ROLLING,
+            "blue_green": BootstrapStrategy.BLUE_GREEN,
+            "all_at_once": BootstrapStrategy.ALL_AT_ONCE
+        }
+        strategy = strategy_map[args.strategy]
+
+        console.print(f"[cyan]Starting deployment pipeline for '{args.squad_name}'[/cyan]")
+
+        result = await manager.deploy_pipeline(
+            squad_name=args.squad_name,
+            environments=args.environments,
+            strategy=strategy,
+            approval_required=args.approval
+        )
+
+        # Display pipeline summary
+        console.print(f"\n[cyan]Pipeline Summary:[/cyan]")
+        console.print(f"  Squad: {result['squad_name']}")
+        console.print(f"  Strategy: {result['strategy']}")
+        console.print(f"  Duration: {result['total_duration']:.1f}s")
+        console.print(f"  Overall Success: {'[OK]' if result['overall_success'] else '[FAIL]'}")
+
+        # Display stage details
+        console.print(f"\n[cyan]Stage Results:[/cyan]")
+        for i, stage in enumerate(result['stages']):
+            status = "[OK]" if stage['success'] else "[FAIL]"
+            console.print(f"  {i+1}. {stage['environment']}: {status} ({stage['duration']:.1f}s)")
+            if not stage['success'] and 'error' in stage:
+                console.print(f"     Error: {stage['error']}")
+
+        return result['overall_success']
+
+    except Exception as e:
+        console.print(f"[red]Pipeline deployment failed: {e}[/red]")
+        return False
+
+
+async def handle_squad_health_check(args):
+    """Handle squad health check."""
+    try:
+        from ..core.bootstrap_manager import BootstrapManager
+
+        manager = BootstrapManager()
+
+        console.print(f"[cyan]Running health check for '{args.squad_name}' in {args.env}[/cyan]")
+
+        health_status = await manager.health_check_squad(args.squad_name, args.env)
+
+        if health_status:
+            console.print(f"[green][OK] Squad '{args.squad_name}' is healthy in {args.env}[/green]")
+        else:
+            console.print(f"[red][FAIL] Squad '{args.squad_name}' health check failed in {args.env}[/red]")
+
+        return health_status
+
+    except Exception as e:
+        console.print(f"[red]Health check failed: {e}[/red]")
+        return False
+
+
+def handle_squad_deployment_status(args):
+    """Handle squad deployment status check."""
+    try:
+        from ..core.bootstrap_manager import BootstrapManager
+
+        manager = BootstrapManager()
+
+        status = manager.get_deployment_status(args.squad_name)
+
+        # Display detailed status
+        console.print(f"\n[cyan]Deployment Status for '{args.squad_name}':[/cyan]")
+        console.print(f"  Last Updated: {status['last_updated']}")
+
+        console.print(f"\n[cyan]Environment Status:[/cyan]")
+        for env_name, env_status in status['environments'].items():
+            if env_status.get('deployed'):
+                health = env_status.get('health', 'unknown')
+                version = env_status.get('version', 'unknown')
+                last_deploy = env_status.get('last_deployment', 'unknown')
+                console.print(f"  {env_name}: [green]Deployed[/green] (v{version}, {health})")
+                console.print(f"    Last Deployment: {last_deploy}")
+
+                if 'assistants' in env_status:
+                    console.print(f"    Assistants:")
+                    for assistant, assistant_status in env_status['assistants'].items():
+                        status_color = "green" if assistant_status == "healthy" else "red"
+                        console.print(f"      - {assistant}: [{status_color}]{assistant_status}[/{status_color}]")
+            else:
+                reason = env_status.get('error', 'Not deployed')
+                console.print(f"  {env_name}: [red]{reason}[/red]")
+
+        return True
+
+    except Exception as e:
+        console.print(f"[red]Status check failed: {e}[/red]")
+        return False
+
+
+async def handle_squad_promote(args):
+    """Handle squad promotion between environments."""
+    try:
+        from ..core.bootstrap_manager import BootstrapManager
+
+        manager = BootstrapManager()
+
+        console.print(f"[cyan]Promoting '{args.squad_name}' from {args.from_env} to {args.to_env}[/cyan]")
+
+        success = await manager.promote_squad(
+            squad_name=args.squad_name,
+            from_environment=args.from_env,
+            to_environment=args.to_env,
+            run_tests=not args.skip_tests,
+            approval_required=not args.auto_approve
+        )
+
+        if success:
+            console.print(f"[green][OK] Successfully promoted '{args.squad_name}' to {args.to_env}[/green]")
+        else:
+            console.print(f"[red][FAIL] Promotion failed[/red]")
+
+        return success
+
+    except Exception as e:
+        console.print(f"[red]Promotion failed: {e}[/red]")
+        return False
+
+
+async def handle_squad_params_update(args):
+    """Handle squad-wide parameter updates for all assistants."""
+    try:
+        console.print(f"[cyan]Updating parameters for all assistants in squad '{args.squad_name}'[/cyan]")
+
+        # Collect parameters to update
+        params = {}
+
+        # Voice parameters
+        if args.voice_provider or args.voice_id:
+            params['voice'] = {}
+            if args.voice_provider:
+                params['voice']['provider'] = args.voice_provider
+            if args.voice_id:
+                params['voice']['voiceId'] = args.voice_id
+
+        # Model parameters
+        if args.model_provider or args.model or args.temperature or args.max_tokens:
+            params['model'] = {}
+            if args.model_provider:
+                params['model']['provider'] = args.model_provider
+            if args.model:
+                params['model']['model'] = args.model
+            if args.temperature is not None:
+                params['model']['temperature'] = args.temperature
+            if args.max_tokens:
+                params['model']['maxTokens'] = args.max_tokens
+
+        # Transcriber parameters
+        if args.transcriber_provider or args.transcriber_model or args.transcriber_language:
+            params['transcriber'] = {}
+            if args.transcriber_provider:
+                params['transcriber']['provider'] = args.transcriber_provider
+            if args.transcriber_model:
+                params['transcriber']['model'] = args.transcriber_model
+            if args.transcriber_language:
+                params['transcriber']['language'] = args.transcriber_language
+
+        # General parameters
+        if args.first_message_mode:
+            params['firstMessageMode'] = args.first_message_mode
+        if args.server_timeout:
+            params['server'] = {'timeoutSeconds': args.server_timeout}
+        if args.enable_recording is not None:
+            params.setdefault('features', {})['enableRecording'] = args.enable_recording
+        if args.enable_transcription is not None:
+            params.setdefault('features', {})['enableTranscription'] = args.enable_transcription
+
+        if not params:
+            console.print("[yellow]No parameters specified. Use --help to see available options.[/yellow]")
+            return False
+
+        # Initialize the updater
+        updater = SquadParameterUpdater()
+
+        # Execute update
+        success = await updater.update_squad_parameters(
+            squad_name=args.squad_name,
+            parameters=params,
+            environment=args.env,
+            dry_run=args.dry_run,
+            update_vapi=args.update_vapi
+        )
+
+        if success:
+            if args.dry_run:
+                console.print(f"[green][OK] Dry run completed. No changes were made.[/green]")
+            else:
+                console.print(f"[green][OK] Successfully updated parameters for squad '{args.squad_name}'[/green]")
+        else:
+            console.print(f"[red][FAIL] Failed to update parameters[/red]")
+
+        return success
+
+    except Exception as e:
+        console.print(f"[red]Parameter update failed: {e}[/red]")
+        return False
+
+
+def list_bootstrap_templates():
+    """List available squad templates with bootstrap support."""
+    try:
+        manager = BootstrapManager()
+        templates = manager.list_bootstrap_templates()
+
+        if not templates:
+            console.print("[yellow]No squad templates found[/yellow]")
+            return
+
+        from rich.table import Table
+        table = Table(title="Bootstrap-Ready Squad Templates")
+        table.add_column("Template", style="cyan")
+        table.add_column("Bootstrap Ready", style="green")
+        table.add_column("Description", style="yellow")
+        table.add_column("Components", style="magenta")
+
+        for template in templates:
+            status = "[OK] Yes" if template["bootstrap_ready"] else "[NO] No"
+            description = template.get("description", "No description")[:50] + "..." if len(template.get("description", "")) > 50 else template.get("description", "No description")
+
+            components = ""
+            if template["bootstrap_ready"]:
+                assistants = template.get("assistants_count", 0)
+                tools = template.get("tools_count", 0)
+                components = f"{assistants} assistants, {tools} tools"
+
+            table.add_row(
+                template["name"],
+                status,
+                description,
+                components
+            )
+
+        console.print(table)
+
+    except Exception as e:
+        console.print(f"[red]Error listing templates: {e}[/red]")
+
+
 def add_shared_tool_to_assistant(assistant_name, tool_ref_path, directory="assistants"):
     """Add a shared tool reference to an assistant's configuration."""
     try:
@@ -2232,7 +2718,9 @@ def main():
     squad_create_parser.add_argument("name", help="Squad name (directory name)")
     squad_create_parser.add_argument("--env", default="development", choices=["development", "staging", "production"], help="Environment to deploy to")
     squad_create_parser.add_argument("--force", action="store_true", help="Force recreation if already deployed")
+    squad_create_parser.add_argument("--auto-deploy-assistants", action="store_true", help="Automatically deploy missing assistants")
     squad_create_parser.add_argument("--dir", default="squads", help="Directory containing squads")
+    squad_create_parser.add_argument("--assistants-dir", default="assistants", help="Directory containing assistants")
 
     squad_file_list_parser = squad_subparsers.add_parser("file-list", help="List file-based squads")
     squad_file_list_parser.add_argument("--dir", default="squads", help="Directory containing squads")
@@ -2242,11 +2730,34 @@ def main():
     squad_template_info_parser = squad_subparsers.add_parser("template-info", help="Show squad template information")
     squad_template_info_parser.add_argument("template", help="Template name")
 
+    # Squad Template Creation
+    squad_create_template_parser = squad_subparsers.add_parser("create-template", help="Create a new squad template with manifest")
+    squad_create_template_parser.add_argument("template_name", help="Name of the template to create")
+    squad_create_template_parser.add_argument("--description", required=True, help="Template description")
+    squad_create_template_parser.add_argument("--assistant", action="append", dest="assistants",
+                                              help="Assistant specification: 'name:template:role' (can be used multiple times)")
+    squad_create_template_parser.add_argument("--tool", action="append", dest="tools",
+                                              help="Tool specification: 'name:template:var1=val1,var2=val2' (can be used multiple times)")
+    squad_create_template_parser.add_argument("--environment", action="append", dest="environments",
+                                              help="Environment to include (can be used multiple times)")
+    squad_create_template_parser.add_argument("--deployment-strategy", choices=["rolling", "blue_green", "all_at_once"],
+                                              default="rolling", help="Deployment strategy")
+    squad_create_template_parser.add_argument("--force", action="store_true", help="Overwrite existing template")
+    squad_create_template_parser.add_argument("--preview", action="store_true", help="Preview template without creating")
+    squad_create_template_parser.add_argument("--output-dir", default="templates/squads", help="Output directory for template")
+    squad_create_template_parser.add_argument("--no-auto-create-assistants", action="store_true",
+                                              help="Disable automatic creation of missing assistant templates")
+    squad_create_template_parser.add_argument("--assistants-dir", default="templates/assistants",
+                                              help="Directory containing assistant templates")
+    squad_create_template_parser.add_argument("--validate-strict", action="store_true",
+                                              help="Fail if any assistant validation errors occur")
+
     squad_update_parser = squad_subparsers.add_parser("update", help="Update an existing squad with change detection")
     squad_update_parser.add_argument("name", help="Squad name (directory name)")
     squad_update_parser.add_argument("--env", default="development", choices=["development", "staging", "production"], help="Environment to update")
     squad_update_parser.add_argument("--dry-run", action="store_true", help="Preview changes without applying them")
     squad_update_parser.add_argument("--force", action="store_true", help="Force update even if no changes detected")
+    squad_update_parser.add_argument("--update-assistants", action="store_true", default=True, help="Also update all assistants in the squad (default: True)")
     squad_update_parser.add_argument("--dir", default="squads", help="Directory containing squads")
 
     squad_status_parser = squad_subparsers.add_parser("status", help="Show squad deployment status")
@@ -2296,9 +2807,87 @@ def main():
     squad_backup_info_parser.add_argument("backup_id", help="Squad backup ID to show details for")
     squad_backup_info_parser.add_argument("--dir", default="squads", help="Directory containing squads")
 
+    # Squad-wide parameter update command
+    squad_params_parser = squad_subparsers.add_parser("set-params", help="Update parameters for all assistants in a squad")
+    squad_params_parser.add_argument("squad_name", help="Name of the squad")
+    squad_params_parser.add_argument("--env", default="development", choices=["development", "staging", "production"],
+                                      help="Environment to update")
+
+    # Voice parameters
+    squad_params_parser.add_argument("--voice-provider", choices=["vapi", "azure", "cartesia", "deepgram", "elevenlabs", "lmnt", "neets", "openai", "playht", "rime"],
+                                      help="Voice provider")
+    squad_params_parser.add_argument("--voice-id", help="Voice ID for the selected provider")
+
+    # Model parameters
+    squad_params_parser.add_argument("--model-provider", choices=["openai", "anthropic", "azure", "google", "together", "anyscale", "openrouter", "perplexity", "deepinfra", "groq"],
+                                      help="Model provider")
+    squad_params_parser.add_argument("--model", help="Model name (e.g., gpt-4o-mini, claude-3-haiku)")
+    squad_params_parser.add_argument("--temperature", type=float, help="Model temperature (0.0-2.0)")
+    squad_params_parser.add_argument("--max-tokens", type=int, help="Maximum tokens for model responses")
+
+    # Transcriber parameters
+    squad_params_parser.add_argument("--transcriber-provider", choices=["deepgram", "assembly", "azure", "google", "groq"],
+                                      help="Transcriber provider")
+    squad_params_parser.add_argument("--transcriber-model", help="Transcriber model (e.g., nova-2, whisper-large-v3)")
+    squad_params_parser.add_argument("--transcriber-language", help="Transcriber language (e.g., en, es, fr)")
+
+    # General parameters
+    squad_params_parser.add_argument("--first-message-mode", choices=["assistant-speaks-first", "assistant-waits-for-user", "assistant-speaks-first-with-model-generated-message"],
+                                      help="First message mode")
+    squad_params_parser.add_argument("--server-timeout", type=int, help="Server timeout in seconds")
+    squad_params_parser.add_argument("--enable-recording", type=bool, help="Enable call recording")
+    squad_params_parser.add_argument("--enable-transcription", type=bool, help="Enable call transcription")
+
+    squad_params_parser.add_argument("--dry-run", action="store_true", help="Show what would be updated without making changes")
+    squad_params_parser.add_argument("--update-vapi", action="store_true", help="Also update assistants in VAPI after local changes")
+    squad_params_parser.set_defaults(func=handle_squad_params_update)
+
     squad_backup_delete_parser = squad_subparsers.add_parser("backup-delete", help="Delete a squad backup")
     squad_backup_delete_parser.add_argument("backup_id", help="Squad backup ID to delete")
     squad_backup_delete_parser.add_argument("--dir", default="squads", help="Directory containing squads")
+
+    # Squad Bootstrap Commands
+    squad_bootstrap_parser = squad_subparsers.add_parser("bootstrap", help="Bootstrap a complete squad system from template")
+    squad_bootstrap_parser.add_argument("squad_name", help="Name of the squad to create")
+    squad_bootstrap_parser.add_argument("--template", default="dental_clinic_squad", help="Squad template to use")
+    squad_bootstrap_parser.add_argument("--deploy", action="store_true", help="Deploy after creation")
+    squad_bootstrap_parser.add_argument("--env", default="development", choices=["development", "staging", "production"], help="Target environment for deployment")
+    squad_bootstrap_parser.add_argument("--dry-run", action="store_true", help="Preview without executing")
+    squad_bootstrap_parser.add_argument("--force", action="store_true", help="Overwrite existing components")
+    squad_bootstrap_parser.add_argument("--validate-only", action="store_true", help="Only validate template")
+
+    squad_bootstrap_templates_parser = squad_subparsers.add_parser("bootstrap-templates", help="List bootstrap-ready squad templates")
+
+    # Phase 2: Enhanced Bootstrap Commands
+    squad_bootstrap_rollback_parser = squad_subparsers.add_parser("bootstrap-rollback", help="Rollback a previously bootstrapped squad")
+    squad_bootstrap_rollback_parser.add_argument("squad_name", help="Name of the squad to rollback")
+    squad_bootstrap_rollback_parser.add_argument("--dir", default="squads", help="Directory containing squads")
+
+    squad_bootstrap_update_parser = squad_subparsers.add_parser("bootstrap-update", help="Update an existing squad with new configuration")
+    squad_bootstrap_update_parser.add_argument("squad_name", help="Name of the squad to update")
+    squad_bootstrap_update_parser.add_argument("--template", required=True, help="Squad template to use for update")
+    squad_bootstrap_update_parser.add_argument("--env", default="development", choices=["development", "staging", "production"], help="Target environment")
+
+    # Phase 3: Enterprise Features
+    squad_bootstrap_pipeline_parser = squad_subparsers.add_parser("bootstrap-pipeline", help="Deploy squad through multi-environment pipeline")
+    squad_bootstrap_pipeline_parser.add_argument("squad_name", help="Name of the squad to deploy")
+    squad_bootstrap_pipeline_parser.add_argument("--environments", nargs="+", default=["development", "staging", "production"], help="Environments in deployment order")
+    squad_bootstrap_pipeline_parser.add_argument("--strategy", choices=["rolling", "blue_green", "all_at_once"], default="rolling", help="Deployment strategy")
+    squad_bootstrap_pipeline_parser.add_argument("--approval", action="store_true", help="Require manual approval between stages")
+
+    squad_health_check_parser = squad_subparsers.add_parser("health-check", help="Run health checks on deployed squad")
+    squad_health_check_parser.add_argument("squad_name", help="Name of the squad to check")
+    squad_health_check_parser.add_argument("--env", default="development", choices=["development", "staging", "production"], help="Environment to check")
+
+    squad_status_parser = squad_subparsers.add_parser("deployment-status", help="Get deployment status across all environments")
+    squad_status_parser.add_argument("squad_name", help="Name of the squad to check")
+
+    squad_promote_parser = squad_subparsers.add_parser("promote", help="Promote squad from one environment to another")
+    squad_promote_parser.add_argument("squad_name", help="Name of the squad to promote")
+    squad_promote_parser.add_argument("--from-env", required=True, choices=["development", "staging", "production"], help="Source environment")
+    squad_promote_parser.add_argument("--to-env", required=True, choices=["development", "staging", "production"], help="Target environment")
+    squad_promote_parser.add_argument("--skip-tests", action="store_true", help="Skip running tests before promotion")
+    squad_promote_parser.add_argument("--auto-approve", action="store_true", help="Skip manual approval")
 
     # Agent commands
     agent_parser = subparsers.add_parser("agent", help="Manage agents")
@@ -2471,13 +3060,35 @@ def main():
                 assistants = args.assistants.split(',') if args.assistants else None
                 init_squad(args.name, args.template, assistants, args.description, args.force, args.dir)
             elif args.squad_command == "create":
-                asyncio.run(create_squad(args.name, args.env, args.force, args.dir))
+                asyncio.run(create_squad(
+                    args.name,
+                    args.env,
+                    args.force,
+                    args.auto_deploy_assistants,
+                    args.dir,
+                    args.assistants_dir
+                ))
             elif args.squad_command == "file-list":
                 list_file_squads(args.dir)
             elif args.squad_command == "templates":
                 list_squad_templates()
             elif args.squad_command == "template-info":
                 show_squad_template_info(args.template)
+            elif args.squad_command == "create-template":
+                create_squad_template(
+                    template_name=args.template_name,
+                    description=args.description,
+                    assistants=args.assistants,
+                    tools=args.tools,
+                    environments=args.environments,
+                    deployment_strategy=args.deployment_strategy,
+                    force=args.force,
+                    preview_only=args.preview,
+                    output_dir=args.output_dir,
+                    auto_create_assistants=not args.no_auto_create_assistants,
+                    assistants_dir=args.assistants_dir,
+                    validate_strict=args.validate_strict
+                )
             elif args.squad_command == "update":
                 asyncio.run(update_squad(args.name, args.env, args.dry_run, args.force, args.dir))
             elif args.squad_command == "status":
@@ -2519,6 +3130,32 @@ def main():
                 show_squad_backup_details(args.backup_id, args.dir)
             elif args.squad_command == "backup-delete":
                 delete_squad_backup(args.backup_id, args.dir)
+            elif args.squad_command == "set-params":
+                asyncio.run(handle_squad_params_update(args))
+            elif args.squad_command == "bootstrap":
+                bootstrap_squad(
+                    args.squad_name,
+                    args.template,
+                    args.deploy,
+                    args.env,
+                    args.dry_run,
+                    args.force,
+                    args.validate_only
+                )
+            elif args.squad_command == "bootstrap-templates":
+                list_bootstrap_templates()
+            elif args.squad_command == "bootstrap-rollback":
+                rollback_squad(args.squad_name, args.dir)
+            elif args.squad_command == "bootstrap-update":
+                update_existing_squad(args.squad_name, args.template, args.env)
+            elif args.squad_command == "bootstrap-pipeline":
+                asyncio.run(handle_bootstrap_pipeline(args))
+            elif args.squad_command == "health-check":
+                asyncio.run(handle_squad_health_check(args))
+            elif args.squad_command == "deployment-status":
+                handle_squad_deployment_status(args)
+            elif args.squad_command == "promote":
+                asyncio.run(handle_squad_promote(args))
             else:
                 squad_parser.print_help()
         elif args.command == "agent":

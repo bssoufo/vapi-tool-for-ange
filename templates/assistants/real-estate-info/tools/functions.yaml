@@ -1,0 +1,205 @@
+functions:
+  - name: search_properties
+    description: Search for properties based on specific criteria
+    parameters:
+      type: object
+      properties:
+        location:
+          type: string
+          description: City, neighborhood, or ZIP code
+        property_type:
+          type: string
+          enum: ["house", "condo", "townhouse", "land", "commercial", "multi_family"]
+          description: Type of property
+        price_min:
+          type: number
+          description: Minimum price
+        price_max:
+          type: number
+          description: Maximum price
+        bedrooms:
+          type: number
+          description: Number of bedrooms
+        bathrooms:
+          type: number
+          description: Number of bathrooms
+        square_feet_min:
+          type: number
+          description: Minimum square footage
+        square_feet_max:
+          type: number
+          description: Maximum square footage
+        lot_size_min:
+          type: number
+          description: Minimum lot size in square feet
+        keywords:
+          type: array
+          items:
+            type: string
+          description: Keywords like "pool", "garage", "waterfront"
+      required: ["location"]
+
+  - name: get_property_details
+    description: Get comprehensive details for a specific property
+    parameters:
+      type: object
+      properties:
+        property_id:
+          type: string
+          description: Property identifier or MLS number
+        address:
+          type: string
+          description: Full property address
+        include_history:
+          type: boolean
+          description: Include price and ownership history
+        include_comps:
+          type: boolean
+          description: Include comparable properties
+      required: ["property_id"]
+
+  - name: analyze_market_trends
+    description: Provide market analysis and trends for a specific area
+    parameters:
+      type: object
+      properties:
+        location:
+          type: string
+          description: Area to analyze (city, neighborhood, ZIP)
+        property_type:
+          type: string
+          enum: ["all", "residential", "commercial", "condo", "single_family"]
+          description: Property type to analyze
+        time_period:
+          type: string
+          enum: ["3_months", "6_months", "1_year", "2_years", "5_years"]
+          description: Time period for analysis
+        analysis_type:
+          type: array
+          items:
+            type: string
+            enum: ["price_trends", "inventory_levels", "days_on_market", "price_per_sqft"]
+          description: Types of analysis to include
+      required: ["location", "time_period"]
+
+  - name: compare_properties
+    description: Compare multiple properties side-by-side
+    parameters:
+      type: object
+      properties:
+        property_ids:
+          type: array
+          items:
+            type: string
+          description: List of property identifiers to compare
+        comparison_criteria:
+          type: array
+          items:
+            type: string
+            enum: ["price", "size", "location", "features", "value", "investment_potential"]
+          description: Criteria to use for comparison
+        include_financing:
+          type: boolean
+          description: Include financing comparison
+      required: ["property_ids"]
+
+  - name: get_neighborhood_info
+    description: Get detailed information about a neighborhood or area
+    parameters:
+      type: object
+      properties:
+        location:
+          type: string
+          description: Neighborhood, city, or ZIP code
+        info_categories:
+          type: array
+          items:
+            type: string
+            enum: ["demographics", "schools", "amenities", "transportation", "safety", "development"]
+          description: Categories of information to retrieve
+        radius:
+          type: number
+          description: Radius in miles for nearby amenities
+      required: ["location"]
+
+  - name: calculate_roi
+    description: Calculate return on investment for properties
+    parameters:
+      type: object
+      properties:
+        property_price:
+          type: number
+          description: Property purchase price
+        down_payment:
+          type: number
+          description: Down payment amount
+        rental_income:
+          type: number
+          description: Expected monthly rental income
+        expenses:
+          type: object
+          properties:
+            property_tax:
+              type: number
+            insurance:
+              type: number
+            maintenance:
+              type: number
+            management:
+              type: number
+            hoa:
+              type: number
+          description: Monthly expenses
+        appreciation_rate:
+          type: number
+          description: Expected annual appreciation rate (percentage)
+        hold_period:
+          type: number
+          description: Expected hold period in years
+      required: ["property_price", "down_payment"]
+
+  - name: get_financing_info
+    description: Get financing information and mortgage calculations
+    parameters:
+      type: object
+      properties:
+        loan_amount:
+          type: number
+          description: Loan amount needed
+        down_payment:
+          type: number
+          description: Down payment amount
+        credit_score_range:
+          type: string
+          enum: ["excellent", "good", "fair", "poor"]
+          description: Borrower's credit score range
+        loan_type:
+          type: string
+          enum: ["conventional", "fha", "va", "jumbo", "investment"]
+          description: Type of loan program
+        property_type:
+          type: string
+          enum: ["primary", "secondary", "investment"]
+          description: Property use type
+      required: ["loan_amount"]
+
+  - name: schedule_market_report
+    description: Schedule delivery of a detailed market report
+    parameters:
+      type: object
+      properties:
+        client_email:
+          type: string
+          description: Client's email address
+        report_type:
+          type: string
+          enum: ["market_trends", "property_analysis", "investment_report", "neighborhood_report"]
+          description: Type of report to generate
+        location:
+          type: string
+          description: Geographic area for the report
+        delivery_preference:
+          type: string
+          enum: ["immediate", "weekly", "monthly"]
+          description: Report delivery frequency
+      required: ["client_email", "report_type", "location"]

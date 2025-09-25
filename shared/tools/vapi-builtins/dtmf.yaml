@@ -1,0 +1,19 @@
+name: dtmf
+type: vapi-builtin
+description: "Sends DTMF tones during the call"
+vapi_config:
+  type: dtmf
+parameters:
+  value:
+    type: string
+    description: "DTMF sequence to send (digits 0-9, *, #)"
+    pattern: "^[0-9*#]+$"
+metadata:
+  category: "call-control"
+  documentation: "Built-in VAPI tool to send DTMF (touch-tone) signals"
+  usage: "Use to interact with phone systems that require touch-tone input"
+  examples:
+    - value: "1"
+      description: "Press 1"
+    - value: "*0#"
+      description: "Press star, zero, pound"

@@ -1,0 +1,31 @@
+# Restaurant Squad Configuration
+name: "{{ squad_name }}"
+description: "Restaurant management squad with reservation host, order assistant, and customer care"
+
+# Squad-level configuration
+routing:
+  strategy: "time_based"
+  fallback_assistant: "customer_care"
+  peak_hours_routing:
+    lunch: "11:00-14:00"
+    dinner: "18:00-21:00"
+    assistant: "order_assistant"  # Prioritize orders during peak
+
+# Operating hours (matches restaurant hours)
+schedule:
+  timezone: "America/New_York"
+  business_hours:
+    monday: "11:00-22:00"
+    tuesday: "11:00-22:00"
+    wednesday: "11:00-22:00"
+    thursday: "11:00-22:00"
+    friday: "11:00-23:00"
+    saturday: "10:00-23:00"
+    sunday: "10:00-21:00"
+
+# Restaurant-specific metrics
+monitoring:
+  table_booking_sla: 60  # 1 minute
+  order_processing_sla: 180  # 3 minutes
+  customer_satisfaction_target: 4.7
+  peak_hour_response_time: 15  # seconds

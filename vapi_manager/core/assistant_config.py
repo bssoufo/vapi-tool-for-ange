@@ -510,6 +510,25 @@ class AssistantBuilder:
                     }
                     tools.append(tool)
 
+        # Process VAPI built-in tools from tool configs
+        for tool_name, tool_config in tools_config.items():
+            if isinstance(tool_config, dict) and tool_config.get('type') == 'vapi-builtin-collection':
+                vapi_tool_configs = tool_config.get('vapi_tools', {})
+                for vapi_tool_name, vapi_tool_config in vapi_tool_configs.items():
+                    if not vapi_tool_config.get('enabled', False):
+                        continue
+
+                    # Skip endCall and transferCall as they're handled elsewhere
+                    if vapi_tool_name in ['endCall', 'transferCall']:
+                        continue
+
+                    vapi_tool = {"type": vapi_tool_config.get('type', vapi_tool_name)}
+
+                    if vapi_tool_name == 'voicemail' and 'message' in vapi_tool_config:
+                        vapi_tool['message'] = vapi_tool_config['message']
+
+                    tools.append(vapi_tool)
+
         # Add standard tools
         tools.append({"type": "endCall"})
 

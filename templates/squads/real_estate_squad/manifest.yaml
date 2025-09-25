@@ -1,0 +1,34 @@
+description: Real estate reception system for lead qualification and property info
+metadata:
+  version: '1.0'
+  author: VAPI Manager
+  created: '2025-01-25'
+tools:
+- name: crm-lookup
+  template: data_lookup
+  variables:
+    url: https://api.crm.com/clients
+  description: null
+- name: property-search
+  template: data_lookup
+  variables:
+    url: https://api.mls.com/properties
+  description: null
+assistants:
+- name: lead_qualifier
+  template: real_estate_lead_qualifier
+  role: Handles initial lead qualification and routing
+  config_overrides: null
+  required_tools: null
+- name: property_info
+  template: real_estate_property_info
+  role: Provides detailed property information
+  config_overrides: null
+  required_tools: null
+deployment:
+  strategy: rolling
+  rollback_on_failure: true
+  health_checks: true
+environments:
+  development: {}
+  production: {}

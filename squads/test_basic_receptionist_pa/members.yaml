@@ -1,0 +1,70 @@
+members:
+- assistant_name: triage_assistant_pa
+  role: receptionist
+  priority: 2
+  description: Specialized assistant for triage_assistant_pa related tasks
+  destinations:
+  - type: assistant
+    assistant_name: booking_assistant_pa
+    message: ''
+    conditions:
+    - intent: general_help
+    - keywords:
+      - help
+      - assistance
+      - support
+  - type: assistant
+    assistant_name: info_assistant_pa
+    message: ''
+    conditions:
+    - intent: general_help
+    - keywords:
+      - help
+      - assistance
+      - support
+- assistant_name: booking_assistant_pa
+  role: specialist
+  priority: 2
+  description: Specialized assistant for booking_assistant_pa related tasks
+  destinations:
+  - type: assistant
+    assistant_name: triage_assistant_pa
+    message: ''
+    conditions:
+    - intent: general_help
+    - keywords:
+      - help
+      - assistance
+      - support
+  - type: assistant
+    assistant_name: info_assistant_pa
+    message: ''
+    conditions:
+    - intent: general_help
+    - keywords:
+      - help
+      - assistance
+      - support
+- assistant_name: info_assistant_pa
+  role: specialist
+  priority: 2
+  description: Specialized assistant for info_assistant_pa related tasks
+  destinations:
+  - type: assistant
+    assistant_name: triage_assistant_pa
+    message: ''
+    conditions:
+    - intent: general_help
+    - keywords:
+      - help
+      - assistance
+      - support
+  - type: assistant
+    assistant_name: booking_assistant_pa
+    message: ''
+    conditions:
+    - intent: general_help
+    - keywords:
+      - help
+      - assistance
+      - support

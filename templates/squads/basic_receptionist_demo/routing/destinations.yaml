@@ -1,0 +1,109 @@
+# Routing Destinations Configuration
+# Define how assistants can transfer to each other or external systems
+
+assistant_destinations:
+  triage_assistant_demo_to_booking_assistant_demo:
+    type: assistant
+    source: triage_assistant_demo
+    target: booking_assistant_demo
+    conditions:
+    - keywords:
+      - help
+      - assistance
+    - intent: general_help
+    message: ''
+  triage_assistant_demo_to_info_assistant_demo:
+    type: assistant
+    source: triage_assistant_demo
+    target: info_assistant_demo
+    conditions:
+    - keywords:
+      - help
+      - assistance
+    - intent: general_help
+    message: ''
+  booking_assistant_demo_to_triage_assistant_demo:
+    type: assistant
+    source: booking_assistant_demo
+    target: triage_assistant_demo
+    conditions:
+    - keywords:
+      - help
+      - assistance
+    - intent: general_help
+    message: ''
+  booking_assistant_demo_to_info_assistant_demo:
+    type: assistant
+    source: booking_assistant_demo
+    target: info_assistant_demo
+    conditions:
+    - keywords:
+      - help
+      - assistance
+    - intent: general_help
+    message: ''
+  info_assistant_demo_to_triage_assistant_demo:
+    type: assistant
+    source: info_assistant_demo
+    target: triage_assistant_demo
+    conditions:
+    - keywords:
+      - help
+      - assistance
+    - intent: general_help
+    message: ''
+  info_assistant_demo_to_booking_assistant_demo:
+    type: assistant
+    source: info_assistant_demo
+    target: booking_assistant_demo
+    conditions:
+    - keywords:
+      - help
+      - assistance
+    - intent: general_help
+    message: ''
+external_destinations:
+  manager:
+    type: number
+    number: ${MANAGER_PHONE}
+    sources:
+    - triage_assistant_demo
+    - booking_assistant_demo
+    - info_assistant_demo
+    conditions:
+    - keywords:
+      - manager
+      - supervisor
+      - complaint
+      - escalate
+    - intent: escalation
+    message: ''
+  emergency_line:
+    type: number
+    number: ${EMERGENCY_CONTACT}
+    sources:
+    - triage_assistant_demo
+    conditions:
+    - keywords:
+      - emergency
+      - urgent
+      - immediate help
+    - urgency: critical
+    message: ''
+after_hours_destinations:
+  after_hours_voicemail:
+    type: voicemail
+    number: ${MAIN_VOICEMAIL}
+    active_hours: 18:01-08:59
+    message: ''
+  weekend_routing:
+    type: assistant
+    target: triage_assistant_demo
+    active_days:
+    - saturday
+    - sunday
+    conditions:
+    - keywords:
+      - urgent
+      - emergency
+    message: ''

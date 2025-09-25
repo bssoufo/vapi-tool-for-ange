@@ -1,0 +1,38 @@
+members:
+- assistant_name: triage_assistant_demo
+  role: receptionist
+  priority: 2
+  description: Specialized assistant for triage_assistant_demo related tasks
+  destinations: []
+- assistant_name: booking_assistant_demo
+  role: specialist
+  priority: 2
+  description: Specialized assistant for booking_assistant_demo related tasks
+  destinations:
+  - type: assistant
+    assistant_name: triage_assistant_demo
+    message: ''
+    conditions:
+    - intent: general_help
+    - keywords:
+      - other questions
+      - different help
+      - main menu
+      - receptionist
+      - general
+- assistant_name: info_assistant_demo
+  role: specialist
+  priority: 2
+  description: Specialized assistant for info_assistant_demo related tasks
+  destinations:
+  - type: assistant
+    assistant_name: triage_assistant_demo
+    message: ''
+    conditions:
+    - intent: general_help
+    - keywords:
+      - other questions
+      - different help
+      - main menu
+      - receptionist
+      - general

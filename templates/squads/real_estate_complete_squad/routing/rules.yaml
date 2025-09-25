@@ -1,0 +1,193 @@
+# Routing Rules Configuration
+# Define intelligent routing logic for the real estate squad
+
+# Priority-based routing rules
+priority_rules:
+  emergency_property_issues:
+    priority: 1  # Highest priority
+    description: "Handle urgent property-related emergencies"
+    triggers:
+      - type: keyword
+        keywords: ["emergency", "urgent", "property emergency", "immediate help", "crisis"]
+      - type: sentiment
+        threshold: -0.8  # Very distressed caller
+      - type: urgency_detection
+        level: "critical"
+    action:
+      destination: "real-estate-triage"
+      bypass_queue: true
+      immediate_transfer: true
+      escalation_path: "broker_manager"
+
+  time_sensitive_opportunities:
+    priority: 2
+    description: "Handle time-sensitive property opportunities"
+    triggers:
+      - type: keyword
+        keywords: ["today only", "expires today", "limited time", "first come", "last chance"]
+      - type: intent
+        intent: "urgent_opportunity"
+    action:
+      destination: "real-estate-info"
+      escalation_path: "real-estate-booking"
+      max_wait_time: 30  # seconds
+
+  high_value_clients:
+    priority: 3
+    description: "Route high-value client inquiries with priority"
+    triggers:
+      - type: keyword
+        keywords: ["luxury", "premium", "high-end", "million", "estate", "exclusive"]
+      - type: intent
+        intent: "high_value_inquiry"
+    action:
+      destination: "real-estate-triage"
+      context_transfer: true
+      special_handling: true
+
+# Time-based routing rules
+time_based_rules:
+  business_hours:
+    description: "Normal business hours routing"
+    schedule:
+      days: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      hours: "09:00-18:00"
+      timezone: "America/New_York"
+    routing:
+      default: "real-estate-triage"
+      booking: "real-estate-booking"
+      information: "real-estate-info"
+
+  extended_hours:
+    description: "Extended hours for urgent matters"
+    schedule:
+      days: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      hours: "18:01-21:00"
+      timezone: "America/New_York"
+    routing:
+      default: "real-estate-triage"  # Screen for urgency
+      urgent: "real-estate-triage"
+      non_urgent: "after_hours_voicemail"
+
+  weekends:
+    description: "Weekend emergency and urgent inquiries only"
+    schedule:
+      days: ["saturday", "sunday"]
+      hours: "10:00-16:00"
+    routing:
+      default: "real-estate-triage"
+      urgent: "real-estate-triage"
+      non_urgent: "weekend_voicemail"
+
+# Intent-based routing rules
+intent_rules:
+  property_viewing_requests:
+    description: "Route property viewing requests to booking specialist"
+    triggers:
+      - type: intent
+        intents: ["schedule_viewing", "property_tour", "open_house"]
+      - type: keyword
+        keywords: ["viewing", "tour", "see property", "show house", "walk through"]
+    action:
+      destination: "real-estate-booking"
+      context_required: ["property_address", "preferred_time", "contact_info"]
+
+  property_information_requests:
+    description: "Route information requests to property specialist"
+    triggers:
+      - type: intent
+        intents: ["property_details", "market_analysis", "price_inquiry"]
+      - type: keyword
+        keywords: ["price", "details", "market value", "neighborhood", "investment"]
+    action:
+      destination: "real-estate-info"
+      context_required: ["property_interest", "location_preference"]
+
+  selling_inquiries:
+    description: "Route selling inquiries to consultation booking"
+    triggers:
+      - type: intent
+        intents: ["sell_property", "home_valuation", "listing_consultation"]
+      - type: keyword
+        keywords: ["sell my house", "list property", "home value", "market my home"]
+    action:
+      destination: "real-estate-booking"
+      context_required: ["property_address", "selling_timeline", "contact_info"]
+
+  buying_inquiries:
+    description: "Route buying inquiries to information specialist first"
+    triggers:
+      - type: intent
+        intents: ["buy_property", "property_search", "investment_opportunity"]
+      - type: keyword
+        keywords: ["buying", "purchase", "looking for", "property search", "investment"]
+    action:
+      destination: "real-estate-info"
+      context_required: ["budget_range", "location_preference", "property_type"]
+
+# Load balancing rules
+load_balancing:
+  strategy: "skill_based"  # Options: round_robin, skill_based, least_busy
+
+  skill_based_routing:
+    real-estate-triage:
+      skills: ["customer_service", "needs_assessment", "call_routing", "general_inquiry"]
+      capacity: 8  # Max concurrent calls
+
+    real-estate-booking:
+      skills: ["appointment_scheduling", "calendar_management", "consultation_booking"]
+      capacity: 5  # Moderate capacity for scheduling coordination
+
+    real-estate-info:
+      skills: ["market_analysis", "property_research", "investment_advice", "data_analysis"]
+      capacity: 6  # Higher capacity for information delivery
+
+  fallback_strategy:
+    primary: "skill_based"  # Primary routing method
+    secondary: "least_busy"  # If skill-based fails
+    ultimate: "real-estate-triage"  # Ultimate fallback
+
+# Escalation rules
+escalation_rules:
+  client_dissatisfaction:
+    triggers:
+      - type: sentiment
+        threshold: -0.6  # Negative sentiment
+      - type: keyword
+        keywords: ["angry", "frustrated", "manager", "complaint", "unhappy", "terrible"]
+      - type: call_duration
+        threshold: 900  # 15 minutes without resolution
+    action:
+      destination: "broker_manager"
+      context_transfer: true
+      priority_boost: true
+
+  complex_legal_matters:
+    triggers:
+      - type: keyword
+        keywords: ["legal", "contract dispute", "lawsuit", "attorney", "legal advice"]
+      - type: complexity
+        level: "legal"
+    action:
+      destination: "legal_department"
+      message: "This involves legal matters. I'm connecting you with our legal department..."
+
+  technical_difficulties:
+    triggers:
+      - type: system_error
+        error_types: ["connection_failure", "assistant_unavailable", "booking_system_down"]
+      - type: retry_limit
+        max_retries: 3
+    action:
+      destination: "broker_manager"
+      message: "I'm experiencing technical difficulties. Let me connect you with our manager who can assist you directly..."
+
+  high_value_transactions:
+    triggers:
+      - type: keyword
+        keywords: ["million", "luxury", "commercial", "investment portfolio"]
+      - type: value_threshold
+        amount: 1000000  # $1M+
+    action:
+      destination: "broker_manager"
+      message: "For this type of transaction, I'll connect you directly with our senior broker..."

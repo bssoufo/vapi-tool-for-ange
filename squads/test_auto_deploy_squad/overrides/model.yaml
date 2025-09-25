@@ -1,0 +1,42 @@
+# Model Override Configurations
+# Different AI model configurations for different roles
+
+# Precise configuration for scheduling tasks
+scheduling_model:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.3  # Very precise for appointment scheduling
+  max_tokens: 500
+  top_p: 0.9
+  frequency_penalty: 0.0
+  presence_penalty: 0.0
+
+# Medical-focused configuration for triage
+medical_model:
+  provider: openai
+  model: gpt-4o  # Full model for medical reasoning
+  temperature: 0.2  # Very conservative for medical decisions
+  max_tokens: 800
+  top_p: 0.8
+  frequency_penalty: 0.1
+  presence_penalty: 0.0
+
+# Customer service configuration for billing
+customer_service_model:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.6  # Balanced for customer interaction
+  max_tokens: 600
+  top_p: 0.9
+  frequency_penalty: 0.2  # Reduce repetition
+  presence_penalty: 0.1
+
+# Emergency configuration - fast and decisive
+emergency_model:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.1  # Very decisive
+  max_tokens: 300  # Concise responses
+  top_p: 0.7
+  frequency_penalty: 0.0
+  presence_penalty: 0.0

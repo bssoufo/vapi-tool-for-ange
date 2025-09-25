@@ -1,0 +1,25 @@
+description: Complete real estate squad with triage, booking, and information assistants
+metadata:
+  version: '1.0'
+  author: VAPI Manager
+  created: '2025-01-25'
+assistants:
+- name: real-estate-triage
+  template: real-estate-triage
+  role: primary_contact
+  config_overrides: null
+  required_tools: null
+- name: real-estate-booking
+  template: real-estate-booking
+  role: booking_specialist
+  config_overrides: null
+  required_tools: null
+- name: real-estate-info
+  template: real-estate-info
+  role: information_specialist
+  config_overrides: null
+  required_tools: null
+deployment:
+  strategy: rolling
+  rollback_on_failure: true
+  health_checks: true

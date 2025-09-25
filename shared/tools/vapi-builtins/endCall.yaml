@@ -1,0 +1,9 @@
+name: endCall
+type: vapi-builtin
+description: "Ends the current call"
+vapi_config:
+  type: endCall
+metadata:
+  category: "call-control"
+  documentation: "Built-in VAPI tool to terminate the current call"
+  usage: "Automatically ends the call when invoked by the assistant"

@@ -1,0 +1,21 @@
+_vapi:
+  current_environment: development
+  environments:
+    development:
+      deployed_at: '2025-09-23T16:21:35.495767+00:00'
+      deployed_by: sebr5550
+      id: fe71ef7b-6428-4570-941d-e47b17606785
+      version: 1
+    production:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-09-23T16:21:35.495767+00:00'
+description: Basic receptionist with routing capabilities
+name: basic_receptionist

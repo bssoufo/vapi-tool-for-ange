@@ -1,0 +1,13 @@
+name: voicemail
+type: vapi-builtin
+description: "Transfers the call to voicemail"
+vapi_config:
+  type: voicemail
+parameters:
+  message:
+    type: string
+    description: "Custom voicemail message (optional)"
+metadata:
+  category: "call-control"
+  documentation: "Built-in VAPI tool to transfer calls to voicemail"
+  usage: "Automatically transfers to the configured voicemail system"

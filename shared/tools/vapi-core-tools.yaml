@@ -1,0 +1,36 @@
+name: vapi-core-tools
+description: "Core VAPI built-in tools for call management"
+type: vapi-builtin-collection
+
+# Built-in VAPI tools configuration
+vapi_tools:
+  endCall:
+    type: endCall
+    description: "Ends the current call"
+    enabled: true
+
+  transferCall:
+    type: transferCall
+    description: "Transfers the call to another destination"
+    enabled: true
+    destinations_from_config: true  # Will use destinations from transfers.yaml
+
+  dtmf:
+    type: dtmf
+    description: "Sends DTMF tones during the call"
+    enabled: false  # Optional, can be enabled as needed
+
+  voicemail:
+    type: voicemail
+    description: "Transfers the call to voicemail"
+    enabled: false  # Optional, can be enabled as needed
+
+metadata:
+  category: "call-control"
+  documentation: "Collection of essential VAPI built-in tools"
+  usage: |
+    Include this tool in your assistant to get access to core VAPI functionality:
+    - endCall: Essential for proper call termination
+    - transferCall: Essential for routing calls to appropriate destinations
+    - dtmf: Optional for phone system interaction
+    - voicemail: Optional for voicemail routing

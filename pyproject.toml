@@ -1,13 +1,54 @@
 [tool.poetry]
-name = "vapi-tool-for-ange"
-version = "0.1.0"
-description = "VAPI Assistant and Squad Management Tool"
-authors = ["Your Name <you@example.com>"]
+name = "vapi-manager"
+version = "1.0.0"
+description = "A comprehensive CLI tool for managing VAPI assistants and squads with support for templates, deployments, and team collaboration"
+authors = ["VAPI Manager Team <support@vapi-manager.io>"]
+license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/vapi-ai/vapi-manager"
+repository = "https://github.com/vapi-ai/vapi-manager"
+documentation = "https://docs.vapi-manager.io"
+keywords = [
+    "vapi",
+    "assistant",
+    "squad",
+    "cli",
+    "management",
+    "ai",
+    "automation",
+    "deployment",
+    "voice",
+    "telephony"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Communications :: Telephony",
+    "Topic :: System :: Systems Administration",
+    "Typing :: Typed"
+]
 packages = [{include = "vapi_manager"}]
+include = [
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "templates/**/*",
+    "shared/**/*"
+]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.8"
 pydantic = "^2.8.0"
 httpx = "^0.27.0"
 python-dotenv = "^1.0.0"
@@ -15,6 +56,7 @@ typer = "^0.9.0"
 rich = "^13.7.0"
 pydantic-settings = "^2.4.0"
 pyyaml = "^6.0"
+jinja2 = "^3.1.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
@@ -26,8 +68,15 @@ mypy = "^1.11.0"
 
 [tool.poetry.scripts]
 vapi-manager = "vapi_manager.cli.simple_cli:main"
+vapi = "vapi_manager.cli.simple_cli:main"
+vapictl = "vapi_manager.cli.simple_cli:main"
 
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/vapi-ai/vapi-manager/issues"
+"Changelog" = "https://github.com/vapi-ai/vapi-manager/blob/main/CHANGELOG.md"
+"Discussions" = "https://github.com/vapi-ai/vapi-manager/discussions"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,31 @@
+# Customer Support Squad Configuration
+name: "{{ squad_name }}"
+description: "Customer support squad with frontline support, technical specialist, and escalation manager"
+
+# Squad-level configuration
+routing:
+  strategy: "skill_based"
+  fallback_assistant: "frontline_support"
+  escalation_path:
+    - "frontline_support"
+    - "technical_specialist"
+    - "escalation_manager"
+
+# Operating hours and availability
+schedule:
+  timezone: "UTC"
+  business_hours:
+    monday: "09:00-17:00"
+    tuesday: "09:00-17:00"
+    wednesday: "09:00-17:00"
+    thursday: "09:00-17:00"
+    friday: "09:00-17:00"
+    saturday: "10:00-16:00"
+    sunday: "closed"
+
+# Metrics and monitoring
+monitoring:
+  response_time_sla: 30  # seconds
+  resolution_time_sla: 3600  # 1 hour
+  escalation_threshold: 300  # 5 minutes
+  satisfaction_target: 4.5  # out of 5

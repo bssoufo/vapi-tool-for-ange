@@ -1,0 +1,51 @@
+description: Complete real estate brokerage reception system with lead qualification,
+  property information, scheduling, and client management
+metadata:
+  version: '1.0'
+  author: VAPI Manager
+  created: '2025-01-25'
+tools:
+- name: crm-lookup
+  template: data_lookup
+  variables:
+    url: https://api.realestatecrm.com/clients
+    api_key: ${CRM_API_KEY}
+  description: null
+- name: mls-search
+  template: data_lookup
+  variables:
+    url: https://api.mls.com/properties
+    api_key: ${MLS_API_KEY}
+  description: null
+- name: calendar-booking
+  template: appointment_booking
+  variables:
+    url: https://api.calendar.com/book
+  description: null
+assistants:
+- name: lead_qualifier
+  template: real_estate_lead_qualifier
+  role: Handles initial lead qualification and routing - first point of contact for
+    all calls
+  config_overrides: null
+  required_tools: null
+- name: property_info
+  template: real_estate_property_info
+  role: Property information specialist - answers questions about listings, prices,
+    and availability
+  config_overrides: null
+  required_tools: null
+- name: scheduling_assistant
+  template: real_estate_scheduler
+  role: Appointment and showing coordinator - books property viewings and agent meetings
+  config_overrides: null
+  required_tools: null
+- name: client_manager
+  template: real_estate_client_manager
+  role: Client relationship manager - handles existing client inquiries and follow-ups
+  config_overrides: null
+  required_tools: null
+deployment:
+  strategy: rolling
+  rollback_on_failure: true
+  health_checks: true

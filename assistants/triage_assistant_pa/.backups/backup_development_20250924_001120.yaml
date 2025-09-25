@@ -1,0 +1,64 @@
+_vapi:
+  current_environment: development
+  environments:
+    development:
+      deployed_at: '2025-09-24T03:12:35.768222+00:00'
+      deployed_by: sebr5550
+      id: d7b983f0-af0d-441e-b5af-de40d4a52c7b
+      version: 7
+    production:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-09-24T03:12:35.768222+00:00'
+description: AI assistant for handling user inquiries
+environments:
+  development:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    model:
+      model: gpt-3.5-turbo
+      temperature: 0.8
+  production:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    model:
+      model: gpt-4o-mini
+      temperature: 0.6
+  staging:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    voice:
+      provider: vapi
+      voiceId: Elliot
+features:
+  enableAnalytics: true
+  enableRecording: true
+  enableTranscription: true
+firstMessageMode: assistant-speaks-first-with-model-generated-message
+metadata:
+  author: Squad Template Creator
+  tags:
+  - auto-generated
+  template: auto_created
+  version: 1.0.0
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0.7
+name: triage_assistant_pa
+server:
+  timeoutSeconds: 20
+  url: https://n8n-2-u19609.vm.elestio.app/webhook/triage_assistant_pa
+serverMessages:
+- end-of-call-report
+transcriber:
+  language: en
+  model: nova-2
+  provider: deepgram
+voice:
+  provider: vapi
+  voiceId: Elliot

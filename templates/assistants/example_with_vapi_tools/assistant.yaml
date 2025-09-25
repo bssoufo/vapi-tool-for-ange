@@ -1,0 +1,32 @@
+name: example_with_vapi_tools
+description: "Example assistant demonstrating VAPI built-in tools integration"
+
+model:
+  model: gpt-4o-mini
+  temperature: 0.7
+  provider: openai
+
+voice:
+  provider: minimax
+  voiceId: business_female_1_v1
+
+transcriber:
+  provider: deepgram
+  model: nova-2
+  language: en
+
+firstMessageMode: assistant-speaks-first-with-model-generated-message
+
+server:
+  url: "${ASSISTANT_WEBHOOK_URL}"
+  timeoutSeconds: 20
+
+serverMessages:
+  - end-of-call-report
+
+metadata:
+  author: VAPI Framework
+  version: 1.0.0
+  tags:
+    - example
+    - vapi-tools

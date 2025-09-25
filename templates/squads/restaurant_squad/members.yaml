@@ -1,0 +1,31 @@
+# Restaurant Squad Members
+members:
+  - assistant_id: "reservation_host"
+    role: "host"
+    priority: 1
+    description: "Manages table reservations and guest inquiries"
+    skills:
+      - "reservation_management"
+      - "table_booking"
+      - "guest_services"
+      - "availability_check"
+
+  - assistant_id: "order_assistant"
+    role: "service"
+    priority: 2
+    description: "Takes orders for dine-in, takeout, and delivery"
+    skills:
+      - "order_taking"
+      - "menu_knowledge"
+      - "dietary_accommodations"
+      - "delivery_coordination"
+
+  - assistant_id: "customer_care"
+    role: "support"
+    priority: 3
+    description: "Handles feedback, complaints, and general inquiries"
+    skills:
+      - "customer_service"
+      - "complaint_resolution"
+      - "feedback_collection"
+      - "loyalty_program_management"

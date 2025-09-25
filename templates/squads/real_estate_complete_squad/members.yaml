@@ -1,0 +1,114 @@
+# Squad Members Configuration
+members:
+  - assistant_name: "real-estate-triage"
+    role: "primary_contact"
+    priority: 1
+    description: "First point of contact - greets clients, assesses needs, and routes to appropriate specialist"
+    overrides:
+      model:
+        temperature: 0.7  # Friendly and conversational for greeting
+    destinations:
+      - type: assistant
+        assistant_name: "real-estate-booking"
+        message: ""
+        conditions:
+          - intent: "booking"
+          - keywords: ["schedule", "appointment", "viewing", "tour", "consultation", "meet", "visit", "see property"]
+      - type: assistant
+        assistant_name: "real-estate-info"
+        message: ""
+        conditions:
+          - intent: "information"
+          - keywords: ["price", "details", "features", "neighborhood", "market", "compare", "search", "find", "value"]
+      - type: assistant
+        assistant_name: "real-estate-booking"
+        message: ""
+        conditions:
+          - intent: "selling"
+          - keywords: ["sell my house", "list property", "selling consultation", "market my home", "home value"]
+
+  - assistant_name: "real-estate-booking"
+    role: "booking_specialist"
+    priority: 2
+    description: "Handles all scheduling - property viewings, consultations, and appointments"
+    overrides:
+      model:
+        temperature: 0.5  # Precise for scheduling coordination
+    destinations:
+      - type: assistant
+        assistant_name: "real-estate-info"
+        message: ""
+        conditions:
+          - intent: "information_needed"
+          - keywords: ["details", "more info", "market trends", "property history", "neighborhood", "compare properties"]
+      - type: assistant
+        assistant_name: "real-estate-triage"
+        message: ""
+        conditions:
+          - intent: "general_help"
+          - keywords: ["other questions", "different help", "main menu", "receptionist"]
+
+  - assistant_name: "real-estate-info"
+    role: "information_specialist"
+    priority: 2
+    description: "Provides detailed property information, market insights, and investment analysis"
+    overrides:
+      model:
+        temperature: 0.4  # Factual and precise for information delivery
+    destinations:
+      - type: assistant
+        assistant_name: "real-estate-booking"
+        message: ""
+        conditions:
+          - intent: "schedule_after_info"
+          - keywords: ["schedule viewing", "book appointment", "see the property", "schedule consultation", "meet agent"]
+      - type: assistant
+        assistant_name: "real-estate-triage"
+        message: ""
+        conditions:
+          - intent: "general_help"
+          - keywords: ["other questions", "different help", "main menu", "receptionist"]
+
+# Routing Rules
+routing_rules:
+  - name: "urgent_property_inquiries"
+    description: "Route urgent property inquiries with time sensitivity"
+    trigger:
+      type: "keyword"
+      keywords: ["urgent", "today", "ASAP", "immediately", "time sensitive"]
+    action:
+      destination: "real-estate-triage"
+      priority: "high"
+
+  - name: "buying_intent_routing"
+    description: "Route buying-related inquiries to appropriate specialist"
+    trigger:
+      type: "intent"
+      intent: "buying_interest"
+    action:
+      destination: "real-estate-info"
+      priority: "normal"
+
+  - name: "selling_intent_routing"
+    description: "Route selling-related inquiries to booking for consultation"
+    trigger:
+      type: "intent"
+      intent: "selling_interest"
+    action:
+      destination: "real-estate-booking"
+      priority: "normal"
+
+  - name: "information_requests"
+    description: "Route detailed information requests to property specialist"
+    trigger:
+      type: "intent"
+      intent: "information_request"
+    action:
+      destination: "real-estate-info"
+      priority: "normal"
+
+# Fallback Configuration
+fallback:
+  default_assistant: "real-estate-triage"
+  max_retries: 3
+  escalation_message: "I'm having difficulty understanding your request. Let me connect you with our main receptionist who can better assist you."

@@ -1,0 +1,88 @@
+functions:
+  - name: collect_client_info
+    description: Collect and store client contact information and basic preferences
+    parameters:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Client's full name
+        phone:
+          type: string
+          description: Client's phone number
+        email:
+          type: string
+          description: Client's email address
+        preferred_contact:
+          type: string
+          enum: ["phone", "email", "text"]
+          description: Client's preferred contact method
+        location_preference:
+          type: string
+          description: Preferred location or area of interest
+        budget_range:
+          type: string
+          description: Budget range if provided
+      required: ["name", "phone"]
+
+  - name: assess_client_needs
+    description: Determine and categorize the client's primary real estate needs
+    parameters:
+      type: object
+      properties:
+        inquiry_type:
+          type: string
+          enum: ["buying", "selling", "information", "booking", "other"]
+          description: Primary type of inquiry
+        property_type:
+          type: string
+          enum: ["residential", "commercial", "rental", "investment"]
+          description: Type of property interest
+        urgency:
+          type: string
+          enum: ["immediate", "within_month", "within_quarter", "exploring"]
+          description: Timeline urgency
+        specific_needs:
+          type: string
+          description: Specific requirements or questions
+      required: ["inquiry_type"]
+
+  - name: schedule_callback
+    description: Schedule a callback appointment with client
+    parameters:
+      type: object
+      properties:
+        client_name:
+          type: string
+          description: Client's name
+        preferred_time:
+          type: string
+          description: Client's preferred callback time
+        callback_reason:
+          type: string
+          description: Reason for the callback
+        priority:
+          type: string
+          enum: ["high", "medium", "low"]
+          description: Priority level of the callback
+      required: ["client_name", "preferred_time", "callback_reason"]
+
+  - name: transfer_to_specialist
+    description: Transfer client to appropriate specialist based on their needs
+    parameters:
+      type: object
+      properties:
+        specialist_type:
+          type: string
+          enum: ["booking", "info", "manager"]
+          description: Type of specialist to transfer to
+        client_summary:
+          type: string
+          description: Brief summary of client needs and conversation
+        transfer_reason:
+          type: string
+          description: Reason for the transfer
+        collected_info:
+          type: object
+          description: Client information collected during triage
+      required: ["specialist_type", "client_summary", "transfer_reason"]

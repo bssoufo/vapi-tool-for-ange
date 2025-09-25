@@ -1,0 +1,11 @@
+functions:
+- description: Get general information to help users
+  name: get_information
+  parameters:
+    properties:
+      query:
+        description: The information request from the user
+        type: string
+    required:
+    - query
+    type: object

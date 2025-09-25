@@ -17,7 +17,7 @@ console = Console()
 class TemplateManager:
     """Manages assistant templates and initialization."""
 
-    def __init__(self, templates_dir: str = "templates", assistants_dir: str = "assistants"):
+    def __init__(self, templates_dir: str = "templates/assistants", assistants_dir: str = "assistants"):
         self.templates_dir = Path(templates_dir)
         self.assistants_dir = Path(assistants_dir)
 

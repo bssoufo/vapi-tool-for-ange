@@ -1,0 +1,40 @@
+# Transcriber Override Configurations
+# These configurations can be applied to specific squad members
+
+# High-accuracy configuration for medical contexts
+medical_transcriber:
+  provider: deepgram
+  model: nova-2-medical  # Enhanced medical vocabulary
+  language: en-US
+  punctuate: true
+  profanity_filter: false  # Medical terms might be flagged
+  redact:
+    - credit_card_number
+    - ssn
+  keywords:
+    - "dental emergency"
+    - "tooth pain"
+    - "insurance claim"
+    - "appointment"
+  smart_format: true
+
+# Standard configuration for general customer service
+standard_transcriber:
+  provider: deepgram
+  model: nova-2
+  language: en
+  punctuate: true
+  profanity_filter: true
+  smart_format: true
+
+# Multilingual support for diverse clientele
+multilingual_transcriber:
+  provider: deepgram
+  model: nova-2
+  language: en
+  detect_language: true
+  alternatives: 2
+  supported_languages:
+    - en-US
+    - es-US
+    - fr-CA

@@ -1,0 +1,143 @@
+# Vicky Dental Clinic - Call Data Extraction Schema
+
+type: object
+required:
+  - call_type
+  - transferred_to
+  - sentimentAnalysis
+  - leadScoring
+
+properties:
+  # Patient Information
+  firstName:
+    type: string
+    description: "Patient's first name if collected"
+
+  lastName:
+    type: string
+    description: "Patient's last name if collected"
+
+  phoneNumber:
+    type: string
+    description: "Patient's phone number if collected"
+
+  # Call Classification
+  call_type:
+    type: string
+    enum:
+      - emergency
+      - informational
+      - booking
+      - management
+    description: "Primary purpose of the call"
+
+  # Transfer Routing
+  transferred_to:
+    type: string
+    enum:
+      - emergency_line
+      - scheduler
+      - manager
+      - none
+    description: "Where the call was transferred"
+
+  # Appointment Details
+  appointmentType:
+    type: string
+    enum:
+      - cleaning
+      - checkup
+      - consultation
+      - procedure
+      - emergency
+      - not_specified
+    description: "Type of appointment discussed"
+
+  appointmentDateTime:
+    type: string
+    description: "Appointment date/time if discussed (format: YYYY-MM-DD HH:MM)"
+
+  doctorName:
+    type: string
+    enum:
+      - Daniel
+      - James
+      - Metha
+      - not_specified
+    description: "Doctor preference mentioned or suggested"
+
+  # Sentiment Analysis
+  sentimentAnalysis:
+    type: object
+    required:
+      - urgency
+      - hesitation
+      - positivity
+    properties:
+      urgency:
+        type: string
+        enum:
+          - low
+          - medium
+          - high
+          - emergency
+        description: "Level of urgency expressed by patient"
+
+      hesitation:
+        type: string
+        enum:
+          - none
+          - slight
+          - moderate
+          - significant
+        description: "Patient's hesitation level about booking"
+
+      positivity:
+        type: string
+        enum:
+          - negative
+          - neutral
+          - positive
+          - very_positive
+        description: "Overall emotional tone of the patient"
+
+  # Lead Scoring
+  leadScoring:
+    type: string
+    enum:
+      - hot
+      - warm
+      - cold
+    description: "Lead quality: hot=booked, warm=rescheduled/interested, cold=not_booked"
+
+  # Dental-Specific Information
+  dentalConcern:
+    type: string
+    description: "Primary dental concern or reason for calling"
+
+  painLevel:
+    type: integer
+    minimum: 0
+    maximum: 10
+    description: "Pain level on scale of 0-10 if mentioned"
+
+  insuranceProvider:
+    type: string
+    description: "Insurance provider if mentioned"
+
+  lastVisit:
+    type: string
+    description: "When patient last visited the clinic"
+
+  # Call Outcome
+  callSuccessful:
+    type: boolean
+    description: "Whether the call achieved the desired outcome"
+
+  followUpRequired:
+    type: boolean
+    description: "Whether follow-up is needed"
+
+  notes:
+    type: string
+    description: "Additional notes about the call"

@@ -1,0 +1,92 @@
+# Routing Destinations Configuration
+# Define how assistants can transfer to each other or external systems
+
+# Assistant-to-Assistant transfers
+assistant_destinations:
+  scheduler_to_triage:
+    type: assistant
+    source: "scheduler_bot"
+    target: "triage_assistant"
+    conditions:
+      - keywords: ["pain", "emergency", "urgent", "symptoms"]
+      - intent: "medical_question"
+    message: ""
+
+  scheduler_to_billing:
+    type: assistant
+    source: "scheduler_bot"
+    target: "billing_assistant"
+    conditions:
+      - keywords: ["payment", "insurance", "cost", "billing"]
+      - intent: "financial_question"
+    message: ""
+
+  triage_to_scheduler:
+    type: assistant
+    source: "triage_assistant"
+    target: "scheduler_bot"
+    conditions:
+      - intent: "appointment_needed"
+      - assessment: "non_emergency"
+    message: ""
+
+  billing_to_scheduler:
+    type: assistant
+    source: "billing_assistant"
+    target: "scheduler_bot"
+    conditions:
+      - intent: "schedule_after_payment"
+      - status: "payment_resolved"
+    message: ""
+
+# External system transfers
+external_destinations:
+  emergency_services:
+    type: number
+    number: "${EMERGENCY_LINE}"
+    sources: ["triage_assistant"]
+    conditions:
+      - keywords: ["severe", "bleeding", "unconscious", "chest pain"]
+      - urgency: "critical"
+    message: ""
+
+  dentist_emergency:
+    type: number
+    number: "${DENTIST_EMERGENCY_LINE}"
+    sources: ["triage_assistant", "scheduler_bot"]
+    conditions:
+      - keywords: ["tooth knocked out", "severe dental trauma", "dental emergency"]
+      - urgency: "high"
+    message: ""
+
+  office_manager:
+    type: number
+    number: "${MANAGER_PHONE}"
+    sources: ["scheduler_bot", "billing_assistant"]
+    conditions:
+      - keywords: ["manager", "supervisor", "complaint", "escalate"]
+      - intent: "escalation"
+    message: ""
+
+  billing_department:
+    type: number
+    number: "${BILLING_DEPT_PHONE}"
+    sources: ["billing_assistant"]
+    conditions:
+      - keywords: ["complex billing", "insurance dispute", "billing manager"]
+      - complexity: "high"
+    message: ""
+
+# Voicemail destinations for after-hours
+voicemail_destinations:
+  after_hours_general:
+    type: voicemail
+    number: "${MAIN_VOICEMAIL}"
+    active_hours: "17:01-07:59"
+    message: ""
+
+  weekend_emergency_screening:
+    type: assistant
+    target: "triage_assistant"
+    active_days: ["saturday", "sunday"]
+    message: ""

@@ -1,0 +1,2 @@
+name: '{{squad_name}}'
+description: '{{description|Real estate brokerage system using existing templates}}'

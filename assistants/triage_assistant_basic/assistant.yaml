@@ -1,0 +1,63 @@
+_vapi:
+  current_environment: development
+  environments:
+    development:
+      deployed_at: '2025-09-23T16:21:34.183205+00:00'
+      deployed_by: 1
+      id: 7951d5c6-9188-4b54-ae3c-10dfa92a004e
+      version: 1
+    production:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-09-23T16:21:34.183205+00:00'
+description: AI assistant for handling user inquiries
+environments:
+  development:
+    firstMessageMode: assistant-speaks-first
+    model:
+      model: gpt-3.5-turbo
+      temperature: 0.8
+  production:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    model:
+      model: gpt-4o-mini
+      temperature: 0.6
+  staging:
+    firstMessageMode: wait-for-user
+    voice:
+      voiceId: business_female_1_v1
+features:
+  enableAnalytics: true
+  enableRecording: true
+  enableTranscription: true
+firstMessageMode: assistant-speaks-first-with-model-generated-message
+metadata:
+  author: Squad Template Creator
+  tags:
+  - auto-generated
+  template: auto_created
+  version: 1.0.0
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0.7
+name: triage
+server:
+  timeoutSeconds: 20
+  url: https://n8n-2-u19609.vm.elestio.app/webhook/triage_assistant_basic
+serverMessages:
+- end-of-call-report
+transcriber:
+  language: en
+  model: nova-2
+  provider: deepgram
+voice:
+  provider: minimax
+  voiceId: business_female_1_v1

@@ -10,11 +10,12 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
 
-from ..services import SquadService
+from ..services import SquadService, AssistantService
 from ..core.squad_config import SquadConfigLoader, SquadBuilder
 from ..core.squad_validator import SquadValidator
 from ..core.squad_deployment_state import SquadDeploymentStateManager
 from ..core.models import SquadUpdateRequest
+from ..core.update_strategy import UpdateStrategy, UpdateOptions, UpdateScope
 
 
 class ChangeType(Enum):
@@ -58,10 +59,12 @@ class SquadUpdateStrategy:
         self.squads_dir = squads_dir
         self.assistants_dir = assistants_dir
         self.squad_service = SquadService()
+        self.assistant_service = AssistantService()
         self.config_loader = SquadConfigLoader(squads_dir)
         self.squad_builder = SquadBuilder(assistants_dir)
         self.validator = SquadValidator(squads_dir, assistants_dir)
         self.state_manager = SquadDeploymentStateManager(squads_dir)
+        self.assistant_update_strategy = UpdateStrategy(assistants_dir)
 
     async def update_squad(
         self,
@@ -113,11 +116,20 @@ class SquadUpdateStrategy:
             # 3. Detect changes
             changes = await self._detect_changes(current_squad, new_squad_request, new_config)
 
-            # 4. Handle no changes scenario
+            # 4. Handle no changes scenario - but still update assistants
             if not changes and not force:
+                # Even if squad hasn't changed, update the assistants
+                assistant_updates = await self._update_squad_assistants(new_config, environment)
+
+                success_msg = f"No changes detected for squad '{squad_name}' in {environment}"
+                if assistant_updates:
+                    success_msg += f"\nAssistant updates: {', '.join(assistant_updates)}"
+                else:
+                    success_msg += "\nNo assistant updates were needed"
+
                 return UpdateResult(
                     status="no_changes",
-                    message=f"No changes detected for squad '{squad_name}' in {environment}",
+                    message=success_msg,
                     squad_id=squad_id
                 )
 
@@ -138,13 +150,21 @@ class SquadUpdateStrategy:
 
             updated_squad = await self.squad_service.update_squad(squad_id, update_request)
 
-            # 7. Update deployment state
+            # 7. Update all assistants in the squad
+            assistant_updates = await self._update_squad_assistants(new_config, environment)
+
+            # 8. Update deployment state
             self.state_manager.mark_updated(squad_name, environment)
             deployment_info = self.state_manager.get_deployment_info(squad_name, environment)
 
+            # Prepare success message
+            success_msg = f"Squad '{squad_name}' updated successfully in {environment}"
+            if assistant_updates:
+                success_msg += f"\nAssistant updates: {', '.join(assistant_updates)}"
+
             return UpdateResult(
                 status="success",
-                message=f"Squad '{squad_name}' updated successfully in {environment}",
+                message=success_msg,
                 squad_id=updated_squad.id,
                 changes=changes,
                 version=deployment_info.version
@@ -241,6 +261,44 @@ class SquadUpdateStrategy:
         # For now, consider any change in destinations as a modification
         # In a more sophisticated implementation, we could compare individual destination properties
         return json.dumps(current_destinations, sort_keys=True) != json.dumps(new_destinations, sort_keys=True)
+
+    async def _update_squad_assistants(self, squad_config, environment: str) -> List[str]:
+        """Update all assistants that are part of the squad."""
+        updated_assistants = []
+
+        # Get list of assistants from squad members
+        members = squad_config.members
+
+        for member in members:
+            assistant_name = member.get('assistant_name')
+            if not assistant_name:
+                continue
+
+            try:
+                # Create update options for the assistant
+                update_options = UpdateOptions(
+                    environment=environment,
+                    scope=UpdateScope.FULL,
+                    force=True,  # Force update to ensure latest configuration is applied
+                    backup=False,
+                    dry_run=False
+                )
+
+                # Update the assistant using the existing update strategy
+                result = await self.assistant_update_strategy.update_assistant(
+                    assistant_name,
+                    update_options
+                )
+
+                if result.get('status') == 'success':
+                    updated_assistants.append(assistant_name)
+                else:
+                    print(f"Warning: Failed to update assistant {assistant_name}: {result.get('message')}")
+
+            except Exception as e:
+                print(f"Warning: Error updating assistant {assistant_name}: {str(e)}")
+
+        return updated_assistants
 
     async def preview_changes(
         self,

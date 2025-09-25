@@ -1,0 +1,7 @@
+members:
+- assistant_name: scheduler
+  role: Scheduler assistant
+  priority: 2
+- assistant_name: triage
+  role: Triage assistant
+  priority: 2

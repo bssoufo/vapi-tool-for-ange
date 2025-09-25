@@ -1,0 +1,63 @@
+_vapi:
+  current_environment: development
+  environments:
+    development:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    production:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: null
+description: AI assistant for handling user inquiries
+model:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.7
+voice:
+  provider: minimax
+  voiceId: business_female_1_v1
+transcriber:
+  provider: deepgram
+  model: nova-2
+  language: en
+firstMessageMode: assistant-speaks-first-with-model-generated-message
+server:
+  url: https://n8n-2-u19609.vm.elestio.app/webhook/{{assistant_name}}
+  timeoutSeconds: 20
+serverMessages:
+- end-of-call-report
+environments:
+  development:
+    model:
+      model: gpt-3.5-turbo
+      temperature: 0.8
+    firstMessageMode: assistant-speaks-first
+  staging:
+    firstMessageMode: wait-for-user
+    voice:
+      voiceId: business_female_1_v1
+  production:
+    model:
+      model: gpt-4o-mini
+      temperature: 0.6
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+features:
+  enableAnalytics: true
+  enableRecording: true
+  enableTranscription: true
+metadata:
+  author: Squad Template Creator
+  tags:
+  - auto-generated
+  template: auto_created
+  version: 1.0.0
+name: property_info

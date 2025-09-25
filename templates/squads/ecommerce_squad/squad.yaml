@@ -1,0 +1,32 @@
+# E-commerce Squad Configuration
+name: "{{ squad_name }}"
+description: "E-commerce support squad with sales, order management, payments, and customer service"
+
+# Squad-level configuration
+routing:
+  strategy: "round_robin"
+  fallback_assistant: "customer_service"
+  business_flow:
+    - "sales_assistant"      # Initial product inquiry
+    - "order_manager"        # Order processing
+    - "payment_support"      # Payment issues
+    - "customer_service"     # General support
+
+# Operating hours
+schedule:
+  timezone: "UTC"
+  business_hours:
+    monday: "00:00-23:59"    # 24/7 e-commerce
+    tuesday: "00:00-23:59"
+    wednesday: "00:00-23:59"
+    thursday: "00:00-23:59"
+    friday: "00:00-23:59"
+    saturday: "00:00-23:59"
+    sunday: "00:00-23:59"
+
+# E-commerce specific metrics
+monitoring:
+  conversion_rate_target: 0.15  # 15%
+  cart_abandonment_threshold: 300  # 5 minutes
+  order_completion_sla: 120  # 2 minutes
+  refund_processing_sla: 86400  # 24 hours

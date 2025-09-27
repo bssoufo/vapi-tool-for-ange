@@ -227,8 +227,7 @@ class SquadParameterUpdater:
             return
 
         # Build and update assistant
-        builder = AssistantBuilder(base_dir=str(self.assistants_dir))
-        assistant_config = await builder.build_assistant(config, environment)
+        assistant_config = AssistantBuilder.build_from_config(config)
 
         service = AssistantService()
         strategy = UpdateStrategy(service, state_manager, base_dir=str(self.assistants_dir))
@@ -310,8 +309,9 @@ class SquadParameterUpdater:
         if 'voice' in parameters:
             voice = parameters['voice']
             if 'provider' in voice:
-                valid_providers = ['vapi', 'azure', 'cartesia', 'deepgram', 'elevenlabs',
-                                  'lmnt', 'neets', 'openai', 'playht', 'rime']
+                # Accept both CLI names and VAPI API names
+                valid_providers = ['vapi', 'azure', 'cartesia', 'deepgram', 'elevenlabs', '11labs',
+                                  'lmnt', 'neets', 'openai', 'playht', 'rime', 'rime-ai']
                 if voice['provider'] not in valid_providers:
                     errors.setdefault('voice', []).append(
                         f"Invalid voice provider: {voice['provider']}"

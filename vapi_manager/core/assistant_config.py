@@ -364,12 +364,24 @@ class AssistantBuilder:
         # Build Voice configuration
         voice_config = assistant_config.get('voice', {})
 
+        # Map provider names from config to VAPI API names
+        provider = voice_config.get('provider')
+        if provider:
+            provider_mapping = {
+                'elevenlabs': '11labs',
+                'rime': 'rime-ai',
+                # Other providers remain the same
+            }
+            provider = provider_mapping.get(provider, provider)
+
         # Create voice dict for direct VAPI API
         voice_data = {
-            'provider': voice_config.get('provider')
+            'provider': provider
         }
         if voice_config.get('voiceId'):
             voice_data['voiceId'] = voice_config['voiceId']
+        if voice_config.get('model'):
+            voice_data['model'] = voice_config['model']
 
         voice = voice_data
 

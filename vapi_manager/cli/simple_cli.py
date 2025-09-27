@@ -2454,7 +2454,14 @@ async def handle_squad_params_update(args):
         if args.voice_provider or args.voice_id or args.voice_model:
             params['voice'] = {}
             if args.voice_provider:
-                params['voice']['provider'] = args.voice_provider
+                # Map CLI provider names to VAPI API names
+                provider_mapping = {
+                    'elevenlabs': '11labs',
+                    'rime': 'rime-ai',
+                    # Other providers remain the same
+                }
+                provider = provider_mapping.get(args.voice_provider, args.voice_provider)
+                params['voice']['provider'] = provider
             if args.voice_id:
                 params['voice']['voiceId'] = args.voice_id
             if args.voice_model:

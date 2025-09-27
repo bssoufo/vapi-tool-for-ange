@@ -15,3 +15,146 @@ ovveride api key when deployed or created squad, an assistant
      ☒ Verify squad deployment in VAPI
      ☒ Delete squad and verify complete cleanup
      ☐ Write complete step-by-step tutorial
+
+
+     Existing 3-Step Workflow:
+
+  Step 1: Create Squad Manifest
+  vapi-manager squad create-template receptionist_squad --description "Basic receptionist system"
+  This creates the manifest with YAML configuration files.
+
+  Step 2: Bootstrap Squad from Manifest
+  vapi-manager squad bootstrap my_receptionist --template receptionist_squad
+  This creates the squad structure from the manifest template.
+
+  Step 3: Deploy Squad with Assistants
+  vapi-manager squad create my_receptionist --env development --auto-deploy-assistants
+  This deploys the squad and all its assistants to VAPI.
+
+  For Your Simple Receptionist Request:
+
+  Here's the complete sequence for a basic receptionist:
+
+  # Step 1: Create manifest template
+  vapi-manager squad create-template basic_receptionist \
+    --description "Basic receptionist with routing capabilities" \
+    --assistant "triage:default:receptionist" \
+    --assistant "booking:default:specialist" \
+    --assistant "info:default:specialist"
+
+  # Step 2: Create squad from template
+  vapi-manager squad bootstrap my_receptionist --template basic_receptionist
+
+  # Step 3: Deploy to VAPI
+  vapi-manager squad create my_receptionist --env development --auto-deploy-assistants
+
+  The framework already has all the features you wanted - it just needed proper documentation of the workflow!
+
+
+
+/cpsess9657701876/3rdparty/roundcube/?_task=settings&amp;_framed=1&amp;_from=edit-identity&amp;_action=upload-display&amp;_file=rcmfile11758638001003658700
+
+
+
+ vapi-manager squad create-template basic_receptionist_so \
+    --description "Basic receptionist with routing capabilities" \
+    --assistant "triage_assistant_so:triage:receptionist" \
+    --assistant "booking_assistant_so:booking:specialist" \
+    --assistant "info_assistant_so:info:specialist" \
+    --force
+
+
+Step 1: Create Squad Manifest
+
+  vapi-manager squad create-template basic_receptionist \
+    --description "Basic receptionist with routing capabilities" \
+    --assistant "triage_assistant:triage:receptionist" \
+    --assistant "booking_assistant:booking:specialist" \
+    --assistant "info_assistant:info:specialist" \
+    --force
+
+  Step 2: Bootstrap Squad from Template
+
+  vapi-manager squad bootstrap my_receptionist --template basic_receptionist
+
+  Step 3: Deploy Squad with Assistants
+
+  vapi-manager squad create my_receptionist --env development --auto-deploy-assistants
+
+  Step 4: Verify Deployment
+
+  vapi-manager squad list
+  vapi-manager assistant list --env development
+
+  Try Step 1 first and let me know what happens. This will create the manifest template using the existing assistant templates (triage, booking,
+  info) that we can see in templates/assistants/.
+
+  vapi-manager squad create test_basic_receptionist_pa --env development --auto-deploy-assistants
+
+
+    vapi-manager squad bootstrap my_brokerage --template real_estate_broker_squad --dry-run
+
+vapi-manager squad create-template real_estate_broker_squad \
+  --description "Complete real estate brokerage reception system with lead qualification, property information, scheduling, and client management" \
+  --assistant "lead_qualifier:real_estate_lead_qualifier:Handles initial lead qualification and routing - first point of contact for all calls" \
+  --assistant "property_info:real_estate_property_info:Property information specialist - answers questions about listings, prices, and availability" \
+  --assistant "scheduling_assistant:real_estate_scheduler:Appointment and showing coordinator - books property viewings and agent meetings" \
+  --assistant "client_manager:real_estate_client_manager:Client relationship manager - handles existing client inquiries and follow-ups" \
+  --tool "crm-lookup:data_lookup:url=https://api.realestatecrm.com/clients,api_key=\${CRM_API_KEY}" \
+  --tool "mls-search:data_lookup:url=https://api.mls.com/properties,api_key=\${MLS_API_KEY}" \
+  --tool "calendar-booking:appointment_booking:url=https://api.calendar.com/book" \
+  --preview
+
+
+  vapi-manager squad bootstrap-update acme_realty \
+    --template real_estate_broker_squad \
+    --env production
+
+  vapi-manager squad bootstrap-update acme_realty \
+    --template real_estate_broker_squad \
+    --dry-run
+
+  I've implemented a single flexible CLI command (squad set-params) that allows updating parameters across all assistants in a squad. This approach offers the best balance of power and simplicity.
+
+  Key Features:
+
+  1. Comprehensive Parameter Support:
+    - Voice settings (provider, voice ID)
+    - Model configuration (provider, model name, temperature, max tokens)
+    - Transcriber settings (provider, model, language)
+    - General settings (first message mode, timeouts, recording options)
+  2. Smart Update Logic:
+    - Merges updates with existing configurations
+    - Preserves unmodified settings
+    - Handles both base and environment-specific configurations
+  3. Operational Features:
+    - --dry-run mode for safe previews
+    - --update-vapi flag for immediate deployment
+    - Environment selection with --env
+    - Progress tracking and detailed output
+
+  Usage Example:
+
+  # Preview changes
+  vapi-manager squad set-params my_squad --model gpt-4 --voice-id Jennifer --dry-run
+
+  # Apply updates
+  vapi-manager squad set-params my_squad --model gpt-4 --voice-id Jennifer
+
+  # Update and deploy to VAPI
+  vapi-manager squad set-params my_squad --model gpt-4 --update-vapi
+
+  Architecture Decision:
+
+  I chose a single command with multiple flags over individual commands because it:
+  - Reduces command complexity
+  - Enables batch updates efficiently
+  - Provides better atomicity
+  - Simplifies scripting and automation
+
+  The command is now fully integrated and tested with your existing squads.
+
+  pip install git+https://github.com/bssoufo/vapi-tool-for-ange.git
+
+
+ vapi-manager squad set-params test_basic_receptionist_so --voice-id a249eaff-1e96-4d2c-b23b-12efa4f66f41 --voice-model sonic-2 --voice-provider cartesia

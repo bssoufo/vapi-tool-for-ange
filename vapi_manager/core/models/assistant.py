@@ -75,7 +75,7 @@ class ModelConfig(BaseModel):
 class Transcriber(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    model: str
+    model: Optional[str] = None
     provider: TranscriberProvider
     language: Optional[str] = None
 

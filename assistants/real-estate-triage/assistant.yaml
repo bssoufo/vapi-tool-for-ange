@@ -2,10 +2,10 @@ _vapi:
   current_environment: development
   environments:
     development:
-      deployed_at: '2025-10-01T16:16:48.931220+00:00'
+      deployed_at: '2025-10-01T16:58:43.728099+00:00'
       deployed_by: sebr5550
       id: 2b0b36ef-f9e8-40fa-8db4-24efd0920dc8
-      version: 5
+      version: 7
     production:
       deployed_at: null
       deployed_by: null
@@ -16,7 +16,7 @@ _vapi:
       deployed_by: null
       id: null
       version: 0
-  last_sync: '2025-10-01T16:16:48.932249+00:00'
+  last_sync: '2025-10-01T16:58:43.728099+00:00'
 analysisPlan:
   minMessagesThreshold: 2
   structuredDataPlan:

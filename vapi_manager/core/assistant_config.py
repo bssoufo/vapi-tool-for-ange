@@ -433,6 +433,11 @@ class AssistantBuilder:
         # Get serverMessages value
         server_messages = assistant_config.get('serverMessages')
 
+        # Build AnalysisPlan if present in configuration
+        analysis_plan = None
+        if 'analysisPlan' in assistant_config:
+            analysis_plan = AssistantBuilder._build_analysis_plan(assistant_config['analysisPlan'], config.schemas, config.base_path)
+
         # Create the assistant request
         # Build the request data as a dictionary first to use aliases properly
         request_data = {
@@ -443,6 +448,7 @@ class AssistantBuilder:
             'firstMessage': config.first_message or assistant_config.get('firstMessage'),
             'firstMessageMode': first_message_mode_value,  # Use the original string value with alias
             'serverMessages': server_messages,  # Add server messages support
+            'analysisPlan': analysis_plan,  # Add analysis plan support
             'server': server
         }
 
@@ -451,11 +457,6 @@ class AssistantBuilder:
 
         # Create request using model_validate
         request = AssistantCreateRequest.model_validate(request_data)
-
-        # Add structured data schema if available
-        if 'structured_data' in config.schemas:
-            # This would be added to analysis_plan in a full implementation
-            pass
 
         return request
 
@@ -560,3 +561,124 @@ class AssistantBuilder:
             return os.environ.get(env_var, match.group(0))
 
         return re.sub(pattern, replacer, value)
+
+    @staticmethod
+    def _load_prompt_template(assistant_path: Path, prompt_name: str) -> Optional[str]:
+        """
+        Load a prompt template from the assistant's prompts directory.
+
+        Args:
+            assistant_path: Path to the assistant directory
+            prompt_name: Name of the prompt file (e.g., 'summary-system-prompt.md')
+
+        Returns:
+            Prompt content or None if not found
+        """
+        prompts_dir = assistant_path / "prompts"
+
+        if not prompts_dir.exists():
+            return None
+
+        prompt_path = prompts_dir / prompt_name
+
+        if not prompt_path.exists():
+            return None
+
+        try:
+            with open(prompt_path, 'r', encoding='utf-8') as f:
+                return f.read().strip()
+        except Exception:
+            return None
+
+    @staticmethod
+    def _build_analysis_plan(analysis_config: Dict[str, Any], schemas: Dict[str, Any], assistant_path: Optional[Path] = None) -> Dict[str, Any]:
+        """
+        Build AnalysisPlan from configuration and schemas.
+
+        Args:
+            analysis_config: analysisPlan section from YAML config
+            schemas: Loaded schemas from schemas/ directory
+            assistant_path: Path to assistant directory for loading prompt files
+
+        Returns:
+            Dictionary representing the AnalysisPlan for VAPI API
+        """
+        from ..core.models.assistant import AnalysisPlan, SummaryPlan, StructuredDataPlan
+
+        analysis_plan_data = {}
+
+        # Add minMessagesThreshold
+        if 'minMessagesThreshold' in analysis_config:
+            analysis_plan_data['minMessagesThreshold'] = analysis_config['minMessagesThreshold']
+
+        # Build SummaryPlan
+        if 'summaryPlan' in analysis_config:
+            summary_config = analysis_config['summaryPlan']
+            summary_plan_data = {
+                'enabled': summary_config.get('enabled', False)
+            }
+
+            if 'timeoutSeconds' in summary_config:
+                summary_plan_data['timeoutSeconds'] = summary_config['timeoutSeconds']
+
+            # Check for prompt files first, fall back to config messages
+            if assistant_path:
+                system_prompt = AssistantBuilder._load_prompt_template(assistant_path, 'summary-system-prompt.md')
+                user_prompt = AssistantBuilder._load_prompt_template(assistant_path, 'summary-user-prompt.md')
+
+                if system_prompt and user_prompt:
+                    summary_plan_data['messages'] = [
+                        {
+                            'role': 'system',
+                            'content': system_prompt
+                        },
+                        {
+                            'role': 'user',
+                            'content': user_prompt
+                        }
+                    ]
+                elif 'messages' in summary_config:
+                    summary_plan_data['messages'] = summary_config['messages']
+            elif 'messages' in summary_config:
+                summary_plan_data['messages'] = summary_config['messages']
+
+            analysis_plan_data['summaryPlan'] = summary_plan_data
+
+        # Build StructuredDataPlan
+        if 'structuredDataPlan' in analysis_config:
+            structured_config = analysis_config['structuredDataPlan']
+            structured_plan_data = {
+                'enabled': structured_config.get('enabled', False)
+            }
+
+            if 'timeoutSeconds' in structured_config:
+                structured_plan_data['timeoutSeconds'] = structured_config['timeoutSeconds']
+
+            # Check for prompt files first, fall back to config messages
+            if assistant_path:
+                system_prompt = AssistantBuilder._load_prompt_template(assistant_path, 'extraction-system-prompt.md')
+                user_prompt = AssistantBuilder._load_prompt_template(assistant_path, 'extraction-user-prompt.md')
+
+                if system_prompt and user_prompt:
+                    structured_plan_data['messages'] = [
+                        {
+                            'role': 'system',
+                            'content': system_prompt
+                        },
+                        {
+                            'role': 'user',
+                            'content': user_prompt
+                        }
+                    ]
+                elif 'messages' in structured_config:
+                    structured_plan_data['messages'] = structured_config['messages']
+            elif 'messages' in structured_config:
+                structured_plan_data['messages'] = structured_config['messages']
+
+            # Include schema from schemas/structured_data.yaml if available
+            if 'structured_data' in schemas:
+                structured_plan_data['schema'] = schemas['structured_data']
+
+            analysis_plan_data['structuredDataPlan'] = structured_plan_data
+
+        return analysis_plan_data if analysis_plan_data else None

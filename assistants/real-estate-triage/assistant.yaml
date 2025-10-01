@@ -2,10 +2,10 @@ _vapi:
   current_environment: development
   environments:
     development:
-      deployed_at: '2025-09-23T01:35:24.942602+00:00'
-      deployed_by: 1
-      id: 4901148e-454b-4441-8bfb-6c4f939dc21b
-      version: 1
+      deployed_at: '2025-10-01T16:16:48.931220+00:00'
+      deployed_by: sebr5550
+      id: 2b0b36ef-f9e8-40fa-8db4-24efd0920dc8
+      version: 5
     production:
       deployed_at: null
       deployed_by: null
@@ -16,14 +16,105 @@ _vapi:
       deployed_by: null
       id: null
       version: 0
-  last_sync: '2025-09-23T01:35:24.942602+00:00'
+  last_sync: '2025-10-01T16:16:48.932249+00:00'
 analysisPlan:
   minMessagesThreshold: 2
   structuredDataPlan:
     enabled: true
+    messages:
+    - content: 'You are a data extraction specialist for Michelle''s real estate brokerage.
+
+        Extract structured information from French real estate conversations according
+        to the provided schema.
+
+        Pay special attention to:
+
+        - Whether phone numbers were explicitly validated (validation principle)
+
+        - The sequence of assistants involved (Alex for triage, Sophie for properties,
+        Alex for booking)
+
+        - Silent transfers (no announcement) vs announced transfers
+
+        - Discovery call pitch for beginner buyers (they get pitched before transfer)
+
+        - Customer journey stage (first-time, beginner, informed, etc.)
+
+        - Property details (address, MLS, price range, features)
+
+        Identify whether this is a phone call or web call based on customer number
+        availability.
+
+        '
+      role: system
+    - content: 'Extract ALL information from this real estate conversation:
+
+        1. Customer information (validated_phone is critical, first_name, last_name,
+        email, customer_known status)
+
+        2. Call type (property_inquiry_specific, property_inquiry_beginner, appointment_booking,
+        etc.)
+
+        3. Customer journey stage (first_time_buyer, beginner_buyer, informed_buyer,
+        etc.)
+
+        4. Transfer routing (transferred_to, transfer_reason, was it silent?)
+
+        5. Property details if discussed (address, type, MLS, price_range, bedrooms,
+        search_sector)
+
+        6. Appointment details if scheduled (type, date, time, status)
+
+        7. Sentiment analysis (overall_sentiment, urgency_level, readiness_to_act)
+
+        8. Lead quality scoring (hot/warm/cool/cold with factors)
+
+        9. Discovery pitch details for beginners (was pitch made? customer response?)
+
+        10. Messages taken for broker if any
+
+        11. System actions and tools triggered
+
+        12. Follow-up requirements
+
+        Return as JSON matching the schema exactly. Use null for missing values.
+
+        '
+      role: user
     timeoutSeconds: 15
   summaryPlan:
     enabled: true
+    messages:
+    - content: 'You are an AI assistant specialized in summarizing real estate customer
+        interactions in French.
+
+        Focus on capturing the customer''s intent, property requirements, and next
+        steps.
+
+        Be concise and action-oriented. Structure your summary clearly.
+
+        '
+      role: system
+    - content: 'Provide a summary IN FRENCH of this real estate conversation including:
+
+        1. Type de client (acheteur/vendeur/curieux) et étape du parcours
+
+        2. Exigences ou intérêts immobiliers mentionnés (adresse, type, prix, caractéristiques)
+
+        3. Détails du rendez-vous si planifié (type, date, heure)
+
+        4. Actions effectuées (transferts, réservations, informations fournies)
+
+        5. Exigences de suivi et calendrier
+
+        6. Sentiment du client et niveau d''urgence
+
+        7. Préoccupations ou objections principales soulevées
+
+        Format the summary with clear sections and bullet points where appropriate.
+
+        '
+      role: user
     timeoutSeconds: 15
 description: AI assistant for greeting and triaging real estate inquiries
 environments:
@@ -65,7 +156,7 @@ server:
 serverMessages:
 - end-of-call-report
 transcriber:
-  language: en
+  language: fr
   model: nova-2
   provider: deepgram
 voice:

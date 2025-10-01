@@ -7,23 +7,38 @@ _vapi:
       id: null
       version: 0
     production:
-      deployed_at: '2025-09-17T13:53:54.343996+00:00'
-      deployed_by: PERSIDE
+      deployed_at: '2025-10-01T11:28:35.577602+00:00'
+      deployed_by: sebr5550
       id: 8bc27fdc-d15d-4fe8-bf78-e6ffe837be7f
-      version: 4
+      version: 5
     staging:
       deployed_at: null
       deployed_by: null
       id: null
       version: 0
-  last_sync: '2025-09-17T13:53:54.344032+00:00'
+  last_sync: '2025-10-01T11:28:35.577602+00:00'
 analysisPlan:
   minMessagesThreshold: 2
   structuredDataPlan:
     enabled: true
+    messages:
+    - content: Extract structured information from this dental clinic conversation
+        according to the schema. Focus on patient details, appointment information,
+        and routing decisions.
+      role: system
+    - content: Extract patient information, call type, appointment details, and transfer
+        routing. Return as JSON matching the schema.
+      role: user
     timeoutSeconds: 15
   summaryPlan:
     enabled: true
+    messages:
+    - content: Summarize this dental clinic conversation focusing on the patient's
+        needs, actions taken, and follow-up requirements.
+      role: system
+    - content: 'Provide a concise summary including: patient request, appointment
+        details, transfer decisions, and any follow-up needed.'
+      role: user
     timeoutSeconds: 15
 description: AI assistant for Vicky Dental clinic operations
 environments:

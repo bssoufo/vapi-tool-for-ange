@@ -642,6 +642,13 @@ class AssistantBuilder:
             elif 'messages' in summary_config:
                 summary_plan_data['messages'] = summary_config['messages']
 
+            # Only include summaryPlan if it has messages when enabled
+            if summary_plan_data.get('enabled', False):
+                if 'messages' not in summary_plan_data or not summary_plan_data['messages']:
+                    # If enabled but no messages, disable it or skip it
+                    print(f"Warning: summaryPlan is enabled but no messages found. Disabling summaryPlan.")
+                    summary_plan_data['enabled'] = False
+
             analysis_plan_data['summaryPlan'] = summary_plan_data
 
         # Build StructuredDataPlan
@@ -678,6 +685,13 @@ class AssistantBuilder:
             # Include schema from schemas/structured_data.yaml if available
             if 'structured_data' in schemas:
                 structured_plan_data['schema'] = schemas['structured_data']
+
+            # Only include structuredDataPlan if it has messages when enabled
+            if structured_plan_data.get('enabled', False):
+                if 'messages' not in structured_plan_data or not structured_plan_data['messages']:
+                    # If enabled but no messages, disable it or skip it
+                    print(f"Warning: structuredDataPlan is enabled but no messages found. Disabling structuredDataPlan.")
+                    structured_plan_data['enabled'] = False
 
             analysis_plan_data['structuredDataPlan'] = structured_plan_data
 

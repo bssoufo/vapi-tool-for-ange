@@ -649,6 +649,7 @@ class AssistantBuilder:
                     print(f"Warning: summaryPlan is enabled but no messages found. Disabling summaryPlan.")
                     summary_plan_data['enabled'] = False
 
+
             analysis_plan_data['summaryPlan'] = summary_plan_data
 
         # Build StructuredDataPlan

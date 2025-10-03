@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vapi-manager"
-version = "1.0.0"
+version = "1.0.1"
 description = "A comprehensive CLI tool for managing VAPI assistants and squads with support for templates, deployments, and team collaboration"
 authors = ["VAPI Manager Team <support@vapi-manager.io>"]
 license = "MIT"

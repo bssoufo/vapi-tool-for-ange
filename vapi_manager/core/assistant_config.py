@@ -643,17 +643,13 @@ class AssistantBuilder:
             elif 'messages' in summary_config:
                 summary_plan_data['messages'] = summary_config['messages']
 
-            # Only include summaryPlan if it has messages when enabled
-            if summary_plan_data.get('enabled', False):
-                if 'messages' not in summary_plan_data or not summary_plan_data['messages']:
-                    # If enabled but no messages, log warning and skip adding it
-                    # This preserves existing summaryPlan in VAPI if prompt files fail to load
-                    print(f"Warning: summaryPlan is enabled but no messages found. Skipping summaryPlan update to preserve existing configuration.")
-                else:
-                    # Only add if we have valid messages
-                    analysis_plan_data['summaryPlan'] = summary_plan_data
-            elif not summary_plan_data.get('enabled', False) and 'messages' in summary_plan_data:
-                # If explicitly disabled but has messages, include it
+            # Only skip summaryPlan if it's enabled but has no messages
+            if summary_plan_data.get('enabled', False) and ('messages' not in summary_plan_data or not summary_plan_data['messages']):
+                # If enabled but no messages, log warning and skip adding it
+                # This preserves existing summaryPlan in VAPI if prompt files fail to load
+                print(f"Warning: summaryPlan is enabled but no messages found. Skipping summaryPlan update to preserve existing configuration.")
+            else:
+                # Include the plan in all other cases (disabled, or enabled with messages)
                 analysis_plan_data['summaryPlan'] = summary_plan_data
 
         # Build StructuredDataPlan
@@ -691,17 +687,13 @@ class AssistantBuilder:
             if 'structured_data' in schemas:
                 structured_plan_data['schema'] = schemas['structured_data']
 
-            # Only include structuredDataPlan if it has messages when enabled
-            if structured_plan_data.get('enabled', False):
-                if 'messages' not in structured_plan_data or not structured_plan_data['messages']:
-                    # If enabled but no messages, log warning and skip adding it
-                    # This preserves existing structuredDataPlan in VAPI if prompt files fail to load
-                    print(f"Warning: structuredDataPlan is enabled but no messages found. Skipping structuredDataPlan update to preserve existing configuration.")
-                else:
-                    # Only add if we have valid messages
-                    analysis_plan_data['structuredDataPlan'] = structured_plan_data
-            elif not structured_plan_data.get('enabled', False) and 'messages' in structured_plan_data:
-                # If explicitly disabled but has messages, include it
+            # Only skip structuredDataPlan if it's enabled but has no messages
+            if structured_plan_data.get('enabled', False) and ('messages' not in structured_plan_data or not structured_plan_data['messages']):
+                # If enabled but no messages, log warning and skip adding it
+                # This preserves existing structuredDataPlan in VAPI if prompt files fail to load
+                print(f"Warning: structuredDataPlan is enabled but no messages found. Skipping structuredDataPlan update to preserve existing configuration.")
+            else:
+                # Include the plan in all other cases (disabled, or enabled with messages)
                 analysis_plan_data['structuredDataPlan'] = structured_plan_data
 
         return analysis_plan_data if analysis_plan_data else None

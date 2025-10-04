@@ -86,13 +86,13 @@ class Server(BaseModel):
 
 
 class SummaryPlan(BaseModel):
-    enabled: bool
+    enabled: bool = Field(default=False)  # Default to False if not provided
     messages: Optional[List[Dict[str, str]]] = None
     timeout_seconds: Optional[int] = Field(None, alias="timeoutSeconds")
 
 
 class StructuredDataPlan(BaseModel):
-    enabled: bool
+    enabled: bool = Field(default=False)  # Default to False if not provided
     schema_: Optional[Dict[str, Any]] = Field(None, alias="schema")
     messages: Optional[List[Dict[str, str]]] = None
     timeout_seconds: Optional[int] = Field(None, alias="timeoutSeconds")

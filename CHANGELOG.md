@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Tool Messages Support**: Configure assistants to speak during function execution stages
+- **Tool Messages Support**: Configure assistants to speak during tool execution stages
   - Support for `request-start`, `request-complete`, `request-failed`, and `request-response-delayed` message types
+  - Works with both function tools and endCall tool
+  - Configure endCall messages via `tools/endcall.yaml` file
   - Simplified YAML format with automatic conversion to VAPI API format
   - Optional `timingMilliseconds` field for delayed messages
   - Full backward compatibility - existing tools without messages continue to work

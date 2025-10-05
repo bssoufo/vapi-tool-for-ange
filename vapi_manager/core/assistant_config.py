@@ -546,8 +546,15 @@ class AssistantBuilder:
 
                     tools.append(vapi_tool)
 
-        # Add standard tools
-        tools.append({"type": "endCall"})
+        # Add endCall tool (check for configuration first)
+        endcall_config = tools_config.get('endcall', {})
+        endcall_tool = {"type": "endCall"}
+
+        # Add messages configuration if present
+        if 'messages' in endcall_config and endcall_config['messages']:
+            endcall_tool['messages'] = AssistantBuilder._build_tool_messages(endcall_config['messages'])
+
+        tools.append(endcall_tool)
 
         return tools
 

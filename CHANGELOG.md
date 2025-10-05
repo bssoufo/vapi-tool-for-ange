@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Tool Messages Support**: Configure assistants to speak during function execution stages
+  - Support for `request-start`, `request-complete`, `request-failed`, and `request-response-delayed` message types
+  - Simplified YAML format with automatic conversion to VAPI API format
+  - Optional `timingMilliseconds` field for delayed messages
+  - Full backward compatibility - existing tools without messages continue to work
+  - Comprehensive documentation in `docs/tool-messages.md`
+- Fixed default values for `analysisPlan.summaryPlan.enabled` and `analysisPlan.structuredDataPlan.enabled` to prevent validation errors
+
+### Changed
+- Enhanced `_build_tools` method to process tool messages configuration
+- Added new Pydantic models: `ToolMessageType`, `ToolMessageContent`, `ToolMessage`
+- Updated `Tool` model to include optional `messages` field
+
+### Fixed
+- Resolved intermittent validation errors for missing `enabled` field in analysisPlan by adding default values
+- Improved error logging for prompt template loading failures
+
 ## [1.0.0] - 2024-01-25
 
 ### Added

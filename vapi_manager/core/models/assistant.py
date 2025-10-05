@@ -33,6 +33,58 @@ class ToolType(str, Enum):
     FUNCTION = "function"
 
 
+class ToolMessageType(str, Enum):
+    """Types of messages that can be spoken during tool execution.
+
+    - REQUEST_START: Spoken when the tool call begins
+    - REQUEST_COMPLETE: Spoken when the tool call completes successfully
+    - REQUEST_FAILED: Spoken when the tool call fails
+    - REQUEST_RESPONSE_DELAYED: Spoken when the tool response is delayed beyond a threshold
+    """
+    REQUEST_START = "request-start"
+    REQUEST_COMPLETE = "request-complete"
+    REQUEST_FAILED = "request-failed"
+    REQUEST_RESPONSE_DELAYED = "request-response-delayed"
+
+
+class ToolMessageContent(BaseModel):
+    """Content structure for tool messages."""
+    type: str = "text"
+    text: str
+    language: Optional[str] = "en"
+
+
+class ToolMessage(BaseModel):
+    """Message configuration for tool execution states.
+
+    Allows the assistant to speak during different stages of tool execution.
+
+    Attributes:
+        type: The message type (request-start, request-complete, etc.)
+        contents: Array of content objects (VAPI API format)
+        content: Simplified string content (YAML format, auto-converted to contents)
+        timing_milliseconds: Delay in milliseconds before speaking this message
+        language: Language code for the message (default: 'en')
+
+    Example YAML:
+        messages:
+          - type: request-start
+            content: "Let me check that for you..."
+          - type: request-complete
+            content: "I found the information!"
+          - type: request-response-delayed
+            content: "Still working on it..."
+            timingMilliseconds: 5000
+    """
+    model_config = ConfigDict(extra="allow")
+
+    type: ToolMessageType
+    contents: Optional[List[ToolMessageContent]] = None
+    content: Optional[str] = None  # Simplified content for YAML
+    timing_milliseconds: Optional[int] = Field(None, alias="timingMilliseconds")
+    language: Optional[str] = None
+
+
 class FirstMessageMode(str, Enum):
     ASSISTANT_SPEAKS_FIRST = "assistant-speaks-first"
     ASSISTANT_SPEAKS_FIRST_WITH_MODEL_GENERATED_MESSAGE = "assistant-speaks-first-with-model-generated-message"
@@ -59,6 +111,7 @@ class Tool(BaseModel):
     destinations: Optional[List[TransferDestination]] = None
     server: Optional[Dict[str, Any]] = None
     function: Optional[Dict[str, Any]] = None
+    messages: Optional[List[ToolMessage]] = None  # Tool execution messages
 
 
 class ModelConfig(BaseModel):

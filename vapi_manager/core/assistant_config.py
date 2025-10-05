@@ -483,6 +483,10 @@ class AssistantBuilder:
                 if 'server' in func and func['server']:
                     tool['server'] = func['server']
 
+                # Add messages configuration if present
+                if 'messages' in func and func['messages']:
+                    tool['messages'] = AssistantBuilder._build_tool_messages(func['messages'])
+
                 tools.append(tool)
 
         # Process transfers
@@ -561,6 +565,58 @@ class AssistantBuilder:
             return os.environ.get(env_var, match.group(0))
 
         return re.sub(pattern, replacer, value)
+
+    @staticmethod
+    def _build_tool_messages(messages_config: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Build tool messages list for VAPI API from configuration.
+
+        Supports both simplified YAML format and full VAPI format.
+
+        Args:
+            messages_config: List of message configurations from YAML
+
+        Returns:
+            List of tool messages formatted for VAPI API
+
+        Example YAML config:
+            messages:
+              - type: request-start
+                content: "Checking availability..."
+              - type: request-complete
+                content: "Found the information."
+              - type: request-failed
+                content: "Unable to check right now."
+              - type: request-response-delayed
+                content: "Still checking, please wait..."
+                timingMilliseconds: 5000
+        """
+        messages = []
+
+        for msg_config in messages_config:
+            message = {
+                "type": msg_config.get("type")
+            }
+
+            # Handle simplified content format (from YAML)
+            if "content" in msg_config:
+                # Convert simple content string to VAPI contents array format
+                message["contents"] = [{
+                    "type": "text",
+                    "text": msg_config["content"],
+                    "language": msg_config.get("language", "en")
+                }]
+            elif "contents" in msg_config:
+                # Already in VAPI format
+                message["contents"] = msg_config["contents"]
+
+            # Add optional fields (only those supported by VAPI API)
+            if "timingMilliseconds" in msg_config:
+                message["timingMilliseconds"] = msg_config["timingMilliseconds"]
+
+            messages.append(message)
+
+        return messages
 
     @staticmethod
     def _load_prompt_template(assistant_path: Path, prompt_name: str) -> Optional[str]:

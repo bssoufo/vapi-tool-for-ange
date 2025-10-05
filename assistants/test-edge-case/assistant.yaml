@@ -1,0 +1,33 @@
+_vapi:
+  current_environment: production
+  environments:
+    development:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    production:
+      deployed_at: '2025-10-05T02:45:00.228102+00:00'
+      deployed_by: sebr5550
+      id: ec80da22-f886-4a34-9991-acbf37bd4fb8
+      version: 1
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-10-05T02:45:32.616780+00:00'
+description: Test edge cases for tool messages
+firstMessageMode: assistant-speaks-first
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0
+name: test-edge-case
+transcriber:
+  language: en-US
+  provider: deepgram
+voice:
+  model: eleven_multilingual_v2
+  provider: 11labs
+  voiceId: E4GQ42zEV1kwul03Bl16

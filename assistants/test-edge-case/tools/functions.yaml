@@ -1,0 +1,20 @@
+functions:
+  - name: test_empty_messages
+    description: Test function with empty messages array
+    parameters:
+      type: object
+      properties:
+        test:
+          type: string
+    messages: []
+
+  - name: test_single_message
+    description: Test function with single message
+    parameters:
+      type: object
+      properties:
+        test:
+          type: string
+    messages:
+      - type: request-start
+        content: "Processing..."

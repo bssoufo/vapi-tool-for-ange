@@ -1,0 +1,8 @@
+functions:
+  - name: test_func_no_msg
+    description: Test function without messages
+    parameters:
+      type: object
+      properties:
+        input:
+          type: string

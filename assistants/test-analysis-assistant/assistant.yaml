@@ -1,0 +1,83 @@
+_vapi:
+  current_environment: production
+  environments:
+    development:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    production:
+      deployed_at: '2025-10-03T01:58:00.142450+00:00'
+      deployed_by: sebr5550
+      id: 83a04b03-3370-4367-bc66-774bf7c373db
+      version: 1
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-10-03T01:58:00.142450+00:00'
+analysisPlan:
+  minMessagesThreshold: 2
+  structuredDataPlan:
+    enabled: true
+    messages:
+    - content: Extract data from the conversation.
+      role: system
+    - content: Extract key information.
+      role: user
+    timeoutSeconds: 15
+  summaryPlan:
+    enabled: true
+    messages:
+    - content: You are an AI assistant.
+      role: system
+    - content: Summarize the conversation.
+      role: user
+    timeoutSeconds: 15
+description: AI assistant for Vicky Dental clinic operations
+environments:
+  development:
+    firstMessageMode: assistant-speaks-first
+    model:
+      model: gpt-3.5-turbo
+      temperature: 0.8
+  production:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    model:
+      model: gpt-4o-mini
+      temperature: 0.4
+  staging:
+    firstMessageMode: wait-for-user
+    voice:
+      voiceId: socialmedia_female_1_v1
+features:
+  enableAnalytics: true
+  enableRecording: true
+  enableTranscription: true
+firstMessageMode: assistant-speaks-first-with-model-generated-message
+metadata:
+  author: Vicky Dental Team
+  tags:
+  - dental-clinic
+  - customer-service
+  - healthcare
+  template: vicky_dental_clinic
+  version: 1.0.0
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0.6
+name: test-analysis-assistant
+server:
+  timeoutSeconds: 20
+  url: https://n8n-2-u19609.vm.elestio.app/webhook/4612e97d-49e8-4a13-8df9-69cef8505f38
+serverMessages:
+- end-of-call-report
+transcriber:
+  language: en
+  model: nova-2
+  provider: deepgram
+voice:
+  provider: minimax
+  voiceId: socialmedia_female_1_v1

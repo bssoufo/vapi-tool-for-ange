@@ -466,7 +466,7 @@ class AssistantBuilder:
         tools = []
 
         # Process functions
-        if 'functions' in tools_config:
+        if 'functions' in tools_config and tools_config['functions']:
             functions = tools_config['functions'].get('functions', [])
             for func in functions:
                 # Create function tool for VAPI API
@@ -485,7 +485,8 @@ class AssistantBuilder:
 
                 # Add messages configuration if present
                 if 'messages' in func and func['messages']:
-                    tool['messages'] = AssistantBuilder._build_tool_messages(func['messages'])
+                    if isinstance(func['messages'], list):
+                        tool['messages'] = AssistantBuilder._build_tool_messages(func['messages'])
 
                 tools.append(tool)
 
@@ -548,11 +549,14 @@ class AssistantBuilder:
 
         # Add endCall tool (check for configuration first)
         endcall_config = tools_config.get('endcall', {})
+        if endcall_config is None:
+            endcall_config = {}
         endcall_tool = {"type": "endCall"}
 
         # Add messages configuration if present
         if 'messages' in endcall_config and endcall_config['messages']:
-            endcall_tool['messages'] = AssistantBuilder._build_tool_messages(endcall_config['messages'])
+            if isinstance(endcall_config['messages'], list):
+                endcall_tool['messages'] = AssistantBuilder._build_tool_messages(endcall_config['messages'])
 
         tools.append(endcall_tool)
 
@@ -601,6 +605,10 @@ class AssistantBuilder:
         messages = []
 
         for msg_config in messages_config:
+            # Skip None entries
+            if msg_config is None:
+                continue
+
             message = {
                 "type": msg_config.get("type")
             }

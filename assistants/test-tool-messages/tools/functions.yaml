@@ -1,0 +1,48 @@
+functions:
+  - name: check_availability
+    description: Check calendar availability for appointment booking
+    parameters:
+      type: object
+      properties:
+        date:
+          type: string
+          description: The date to check availability for
+        time:
+          type: string
+          description: The preferred time
+    messages:
+      - type: request-start
+        content: "Let me check the availability for that date and time..."
+      - type: request-complete
+        content: "I've found the available slots."
+      - type: request-failed
+        content: "I'm having trouble checking availability right now. Let me try again."
+      - type: request-response-delayed
+        content: "Still checking availability, please bear with me..."
+        timingMilliseconds: 5000
+
+  - name: book_appointment
+    description: Book an appointment
+    parameters:
+      type: object
+      properties:
+        date:
+          type: string
+        time:
+          type: string
+        customer_name:
+          type: string
+    messages:
+      - type: request-start
+        content: "Booking your appointment now..."
+      - type: request-complete
+        content: "Your appointment has been successfully booked!"
+
+  - name: cancel_appointment
+    description: Cancel an existing appointment
+    parameters:
+      type: object
+      properties:
+        appointment_id:
+          type: string
+          description: The ID of the appointment to cancel

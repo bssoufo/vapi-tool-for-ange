@@ -1,0 +1,10 @@
+messages:
+  - type: request-start
+    content: "I'll end this call now. Thank you for your time!"
+  - type: request-complete
+    content: "Call ended successfully. Goodbye!"
+  - type: request-failed
+    content: "There was an issue ending the call."
+  - type: request-response-delayed
+    content: "Please hold while I end the call..."
+    timingMilliseconds: 3000

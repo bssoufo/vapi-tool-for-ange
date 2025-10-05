@@ -1,0 +1,79 @@
+functions:
+- name: getCustomerByPhoneNumber
+  description: Retrieves existing customer information (first name, last name, email) from the CRM using their phone number. This should be the first tool used at the start of a call if a phone number is provided, to personalize the greeting and load the customer's context.
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/0b6cc41c-2951-4ee7-9cfe-e30fc4cceb20
+  parameters:
+    type: object
+    required:
+    - phone
+    properties:
+      phone:
+        type: string
+        description: The user's phone number, preferably in E.164 format (e.g., +15811234567).
+
+- name: createOrUpdateCustomer
+  description: Creates a new customer profile or updates an existing one with new information. Use this tool ONLY after confirming the customer does not exist in the CRM (e.g., after `getCustomerByPhoneNumber` finds no match).
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/0b6cc41c-2951-4ee7-9cfe-e30fc4cceb20
+  parameters:
+    type: object
+    required:
+    - firstName
+    - lastName
+    - phone
+    properties:
+      firstName:
+        type: string
+        description: The customer's first name.
+      lastName:
+        type: string
+        description: The customer's last name.
+      phone:
+        type: string
+        description: The customer's validated phone number (e.g., +15811234567).
+      email:
+        type: string
+        description: The customer's email address. Optional.
+
+- name: queryKnowledgeBase
+  description: Queries the real estate knowledge base for general information about the home buying/selling process, agent services, or company policies.
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/0b6cc41c-2951-4ee7-9cfe-e30fc4cceb20 
+  parameters:
+    type: object
+    required:
+    - query
+    properties:
+      query:
+        type: string
+        description: The user's question or information request.
+
+- name: takeMessageForAgent
+  description: Records a detailed message for a human agent. Use this as a fallback for complex/subjective questions, when property details are not found, or when the user wants to speak to a person. You MUST include the full user message, a clear subject line, and any known context like an MLS number or address.
+  server:
+    url: https://n8n-2-u19609.vm.elestio.app/webhook/0b6cc41c-2951-4ee7-9cfe-e30fc4cceb20
+  parameters:
+    type: object
+    required:
+      - subject
+      - userMessage
+    properties:
+      subject:
+        type: string
+        description: "A clear and concise subject line for the message, summarizing the request. MUST NOT exceed 15 words. Example: 'Question about property G1234567' or 'Lead from John Doe'."
+      userMessage:
+        type: string
+        description: "The user's full, verbatim question or message that needs a human response."  
+      mlsNumber:
+        type: string
+        description: "IMPORTANT: If the conversation is about a specific property, include its MLS number here. Example: 'G1234567'"     
+      propertyAddress:
+        type: string
+        description: "IMPORTANT: If the conversation is about a specific property and you know its address, include the full address here. Example: '123 Rue Principale, Gatineau, J8X 1A1'"   
+      userName:
+        type: string
+        description: "The user's name, if they have provided it during the conversation."  
+      userContactInfo:
+        type: string
+        description: "The user's contact information (phone or email), if they have provided it."

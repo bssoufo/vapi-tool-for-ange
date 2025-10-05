@@ -1,0 +1,81 @@
+_vapi:
+  current_environment: production
+  environments:
+    development:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    production:
+      deployed_at: '2025-09-17T13:53:54.343996+00:00'
+      deployed_by: PERSIDE
+      id: 8bc27fdc-d15d-4fe8-bf78-e6ffe837be7f
+      version: 4
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-09-17T13:53:54.344032+00:00'
+analysisPlan:
+  minMessagesThreshold: 2
+  structuredDataPlan:
+    enabled: true
+    timeoutSeconds: 15
+    messages:
+      - role: system
+        content: "Extract structured information from this dental clinic conversation according to the schema. Focus on patient details, appointment information, and routing decisions."
+      - role: user
+        content: "Extract patient information, call type, appointment details, and transfer routing. Return as JSON matching the schema."
+  summaryPlan:
+    enabled: true
+    timeoutSeconds: 15
+    messages:
+      - role: system
+        content: "Summarize this dental clinic conversation focusing on the patient's needs, actions taken, and follow-up requirements."
+      - role: user
+        content: "Provide a concise summary including: patient request, appointment details, transfer decisions, and any follow-up needed."
+description: AI assistant for Vicky Dental clinic operations
+environments:
+  development:
+    firstMessageMode: assistant-speaks-first
+    model:
+      model: gpt-3.5-turbo
+      temperature: 0.8
+  production:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    model:
+      model: gpt-4o-mini
+      temperature: 0.4
+  staging:
+    firstMessageMode: wait-for-user
+    voice:
+      voiceId: socialmedia_female_1_v1
+features:
+  enableAnalytics: true
+  enableRecording: true
+  enableTranscription: true
+firstMessageMode: assistant-speaks-first-with-model-generated-message
+metadata:
+  author: Vicky Dental Team
+  tags:
+  - dental-clinic
+  - customer-service
+  - healthcare
+  template: vicky_dental_clinic
+  version: 1.0.0
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0.6
+name: triage-ange
+server:
+  timeoutSeconds: 20
+  url: ${WEBHOOK_URL}/assistants/triage-ange/webhook
+transcriber:
+  language: en
+  model: nova-2
+  provider: deepgram
+voice:
+  provider: minimax
+  voiceId: socialmedia_female_1_v1

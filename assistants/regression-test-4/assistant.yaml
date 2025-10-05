@@ -1,0 +1,32 @@
+_vapi:
+  current_environment: production
+  environments:
+    development:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    production:
+      deployed_at: '2025-10-05T22:45:24.246291+00:00'
+      deployed_by: sebr5550
+      id: f20f705e-a244-427a-8942-267ef8496fc1
+      version: 1
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-10-05T22:45:24.246291+00:00'
+description: endCall without messages
+firstMessageMode: assistant-speaks-first
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0
+name: regression-test-4
+transcriber:
+  language: en-US
+  provider: deepgram
+voice:
+  provider: 11labs
+  voiceId: E4GQ42zEV1kwul03Bl16

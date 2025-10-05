@@ -1,0 +1,9 @@
+members:
+  - assistant_name: real-estate-triage
+    role: primary_contact
+    priority: 1
+    description: Primary real estate triage assistant
+    destinations:
+      - type: number
+        number: "+15141234567"
+        description: "Emergency support"

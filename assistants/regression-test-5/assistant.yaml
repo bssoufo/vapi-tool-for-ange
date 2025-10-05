@@ -1,0 +1,32 @@
+_vapi:
+  current_environment: production
+  environments:
+    development:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    production:
+      deployed_at: '2025-10-05T22:48:43.970129+00:00'
+      deployed_by: sebr5550
+      id: 8bcdcc18-f37f-4509-8396-ad9b670b167b
+      version: 1
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-10-05T22:48:43.970129+00:00'
+description: Empty files test
+firstMessageMode: assistant-speaks-first
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0
+name: regression-test-5
+transcriber:
+  language: en-US
+  provider: deepgram
+voice:
+  provider: 11labs
+  voiceId: E4GQ42zEV1kwul03Bl16

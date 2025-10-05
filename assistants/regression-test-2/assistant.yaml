@@ -1,0 +1,32 @@
+_vapi:
+  current_environment: production
+  environments:
+    development:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    production:
+      deployed_at: '2025-10-05T22:42:18.256054+00:00'
+      deployed_by: sebr5550
+      id: af3bc0f7-f3e1-497d-9cad-0c7d32c0dd72
+      version: 1
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-10-05T22:42:18.256054+00:00'
+description: Function without messages
+firstMessageMode: assistant-speaks-first
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0
+name: regression-test-2
+transcriber:
+  language: en-US
+  provider: deepgram
+voice:
+  provider: 11labs
+  voiceId: E4GQ42zEV1kwul03Bl16

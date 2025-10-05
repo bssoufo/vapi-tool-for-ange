@@ -1,0 +1,13 @@
+functions:
+  - name: test_function
+    description: Test function with messages
+    parameters:
+      type: object
+      properties:
+        test:
+          type: string
+    messages:
+      - type: request-start
+        content: "Processing your request..."
+      - type: request-complete
+        content: "Done!"

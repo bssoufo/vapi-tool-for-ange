@@ -1,0 +1,33 @@
+_vapi:
+  current_environment: production
+  environments:
+    development:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    production:
+      deployed_at: '2025-10-05T22:00:14.898851+00:00'
+      deployed_by: sebr5550
+      id: 35e0f58b-492c-4548-bd4a-6239e79dcfb7
+      version: 1
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-10-05T22:06:16.662507+00:00'
+description: Test endCall with single message
+firstMessageMode: assistant-speaks-first
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0
+name: test-endcall-single
+transcriber:
+  language: en-US
+  provider: deepgram
+voice:
+  model: eleven_multilingual_v2
+  provider: 11labs
+  voiceId: E4GQ42zEV1kwul03Bl16

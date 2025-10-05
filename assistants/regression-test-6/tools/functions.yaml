@@ -1,0 +1,19 @@
+functions:
+  - name: func_with_msg
+    description: Function with messages
+    parameters:
+      type: object
+      properties:
+        input:
+          type: string
+    messages:
+      - type: request-start
+        content: "Processing with messages..."
+
+  - name: func_no_msg
+    description: Function without messages
+    parameters:
+      type: object
+      properties:
+        input:
+          type: string

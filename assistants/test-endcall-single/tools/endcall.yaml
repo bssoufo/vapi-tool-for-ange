@@ -1,0 +1,3 @@
+messages:
+  - type: request-start
+    content: "Thank you for calling. Goodbye!"

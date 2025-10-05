@@ -1,0 +1,75 @@
+_vapi:
+  current_environment: production
+  environments:
+    development:
+      deployed_at: '2025-10-04T11:36:31.902854+00:00'
+      deployed_by: sebr5550
+      id: 6e544b0e-daee-43eb-900e-1660d326f419
+      version: 50
+    production:
+      deployed_at: '2025-10-04T12:58:12.508831+00:00'
+      deployed_by: sebr5550
+      id: 93e760c5-4a18-47f2-8ddd-474f252a53ae
+      version: 11
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-10-04T12:58:12.508831+00:00'
+analysisPlan:
+  minMessagesThreshold: 2
+  structuredDataPlan:
+    enabled: true
+    timeoutSeconds: 15
+  summaryPlan:
+    enabled: true
+    timeoutSeconds: 15
+description: AI assistant for handling user inquiries
+environments:
+  development:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    model:
+      model: gpt-4o-mini
+      temperature: 0
+    voice:
+      model: eleven_multilingual_v2
+      provider: 11labs
+      voiceId: E4GQ42zEV1kwul03Bl16
+  production:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    model:
+      model: gpt-4o-mini
+      temperature: 0
+  staging:
+    firstMessageMode: assistant-speaks-first-with-model-generated-message
+    voice:
+      voiceId: business_female_1_v1
+features:
+  enableAnalytics: true
+  enableRecording: true
+  enableTranscription: true
+firstMessageMode: assistant-speaks-first-with-model-generated-message
+metadata:
+  author: Squad Template Creator
+  tags:
+  - auto-generated
+  template: auto_created
+  version: 1.0.0
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0
+name: bs-re-triage-manager
+server:
+  timeoutSeconds: 20
+  url: https://n8n-2-u19609.vm.elestio.app/webhook/0b6cc41c-2951-4ee7-9cfe-e30fc4cceb20
+serverMessages:
+- end-of-call-report
+transcriber:
+  language: fr-CA
+  provider: azure
+voice:
+  model: eleven_multilingual_v2
+  provider: 11labs
+  voiceId: E4GQ42zEV1kwul03Bl16

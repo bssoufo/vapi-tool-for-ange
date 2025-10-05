@@ -1,0 +1,13 @@
+type: object
+required:
+  - test_field
+properties:
+  test_field:
+    type: string
+    description: Test field for validation
+  loaded_from:
+    type: string
+    description: Indicates where schema was loaded from
+    enum:
+      - yaml_file
+      - inline_config

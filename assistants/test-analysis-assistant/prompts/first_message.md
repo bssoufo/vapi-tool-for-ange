@@ -1,0 +1,1 @@
+Hi there! Thank you for calling Vicky Dental. This is Sarah... how can I help you today?

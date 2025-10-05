@@ -1,0 +1,41 @@
+_vapi:
+  current_environment: development
+  environments:
+    development:
+      deployed_at: '2025-10-01T16:20:00.033063+00:00'
+      deployed_by: sebr5550
+      id: d0852a7b-a2b9-4788-b980-ec43bdb1fb67
+      version: 1
+    production:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-10-01T16:20:00.033063+00:00'
+analysisPlan:
+  minMessagesThreshold: 1
+  structuredDataPlan:
+    enabled: true
+    timeoutSeconds: 10
+  summaryPlan:
+    enabled: true
+    timeoutSeconds: 10
+description: Test assistant to verify markdown prompt loading
+firstMessageMode: assistant-speaks-first
+model:
+  model: gpt-3.5-turbo
+  provider: openai
+  temperature: 0.7
+name: test-markdown-assistant
+transcriber:
+  language: en
+  model: nova-2
+  provider: deepgram
+voice:
+  provider: minimax
+  voiceId: business_female_1_v1

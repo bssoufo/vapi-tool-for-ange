@@ -1,0 +1,420 @@
+# Real Estate Squad - Call Data Extraction Schema
+# Based on triage.md, booking.md, and property.md prompts
+
+type: object
+required:
+  - call_type
+  - customer_status
+  - call_outcome
+  - sentiment_analysis
+
+properties:
+  # Customer Information
+  customer_info:
+    type: object
+    required:
+      - validated_phone
+    properties:
+      validated_phone:
+        type: string
+        description: "Validated phone number from customer"
+        pattern: "^\\d{3}-\\d{3}-\\d{4}$"
+
+      first_name:
+        type: string
+        description: "Customer's first name"
+
+      last_name:
+        type: string
+        description: "Customer's last name"
+
+      email:
+        type: string
+        format: email
+        description: "Customer's email address if provided"
+
+      customer_known:
+        type: boolean
+        description: "Whether customer was found in database"
+
+      customer_title:
+        type: string
+        enum: ["Monsieur", "Madame", null]
+        description: "Customer title if known"
+
+  # Call Classification
+  call_type:
+    type: string
+    enum:
+      - property_inquiry_specific
+      - property_inquiry_beginner
+      - appointment_booking
+      - appointment_modification
+      - appointment_cancellation
+      - message_for_broker
+      - general_question
+      - seller_inquiry
+    description: "Primary purpose of the call"
+
+  # Customer Journey Stage
+  customer_status:
+    type: string
+    enum:
+      - first_time_buyer
+      - beginner_buyer
+      - informed_buyer
+      - existing_client
+      - seller
+      - browsing_only
+    description: "Stage in real estate journey"
+
+  # Transfer Routing
+  transfer_info:
+    type: object
+    properties:
+      transferred_to:
+        type: string
+        enum:
+          - re-property-manager
+          - re-booking-manager
+          - bs-re-triage-manager
+          - broker_direct
+          - none
+        description: "Where the call was transferred"
+
+      transfer_reason:
+        type: string
+        description: "Reason for transfer"
+
+      silent_transfer:
+        type: boolean
+        description: "Whether transfer was done silently"
+
+  # Property Details
+  property_details:
+    type: object
+    properties:
+      property_address:
+        type: string
+        description: "Address of property discussed"
+
+      property_type:
+        type: string
+        enum:
+          - house
+          - condo
+          - duplex
+          - triplex
+          - land
+          - commercial
+          - not_specified
+        description: "Type of property"
+
+      mls_number:
+        type: string
+        description: "MLS listing number if mentioned"
+
+      price_range:
+        type: object
+        properties:
+          min:
+            type: number
+            description: "Minimum price in CAD"
+          max:
+            type: number
+            description: "Maximum price in CAD"
+
+      bedrooms:
+        type: integer
+        minimum: 0
+        description: "Number of bedrooms requested"
+
+      bathrooms:
+        type: number
+        minimum: 0
+        description: "Number of bathrooms"
+
+      search_sector:
+        type: string
+        description: "Area/sector customer is searching in"
+
+      property_features:
+        type: array
+        items:
+          type: string
+        description: "Specific features mentioned"
+
+  # Appointment Information
+  appointment_details:
+    type: object
+    properties:
+      appointment_type:
+        type: string
+        enum:
+          - property_showing
+          - discovery_call
+          - consultation
+          - evaluation
+          - not_specified
+        description: "Type of appointment"
+
+      appointment_date:
+        type: string
+        format: date
+        description: "Scheduled date (YYYY-MM-DD)"
+
+      appointment_time:
+        type: string
+        pattern: "^\\d{2}:\\d{2}$"
+        description: "Scheduled time in 24h format (HH:MM)"
+
+      appointment_status:
+        type: string
+        enum:
+          - scheduled
+          - modified
+          - cancelled
+          - pending
+        description: "Current status of appointment"
+
+      appointment_id:
+        type: string
+        description: "System appointment ID if created"
+
+      previous_appointment:
+        type: object
+        properties:
+          date:
+            type: string
+            format: date
+          time:
+            type: string
+        description: "Previous appointment details if modified"
+
+  # Call Outcome
+  call_outcome:
+    type: string
+    enum:
+      - appointment_booked
+      - appointment_modified
+      - appointment_cancelled
+      - information_provided
+      - message_taken
+      - follow_up_scheduled
+      - transferred_successfully
+      - customer_will_callback
+      - no_action_needed
+    description: "Final outcome of the call"
+
+  # Sentiment Analysis
+  sentiment_analysis:
+    type: object
+    required:
+      - overall_sentiment
+      - urgency_level
+    properties:
+      overall_sentiment:
+        type: string
+        enum:
+          - very_positive
+          - positive
+          - neutral
+          - negative
+          - frustrated
+        description: "Customer's overall emotional tone"
+
+      urgency_level:
+        type: string
+        enum:
+          - immediate
+          - high
+          - medium
+          - low
+          - browsing
+        description: "Level of urgency expressed"
+
+      readiness_to_act:
+        type: string
+        enum:
+          - ready_to_buy
+          - actively_searching
+          - exploring_options
+          - just_browsing
+          - not_ready
+        description: "Customer's readiness to take action"
+
+      hesitation_factors:
+        type: array
+        items:
+          type: string
+        description: "Concerns or hesitations mentioned"
+
+  # Lead Scoring
+  lead_quality:
+    type: object
+    properties:
+      score:
+        type: string
+        enum:
+          - hot
+          - warm
+          - cool
+          - cold
+        description: "Lead quality assessment"
+
+      scoring_factors:
+        type: array
+        items:
+          type: string
+        description: "Factors contributing to lead score"
+
+      timeline:
+        type: string
+        enum:
+          - immediate
+          - within_week
+          - within_month
+          - within_3_months
+          - over_3_months
+          - undecided
+        description: "Expected timeline for action"
+
+  # Discovery Call Data (for beginner buyers)
+  discovery_pitch:
+    type: object
+    properties:
+      pitch_made:
+        type: boolean
+        description: "Whether discovery call pitch was made"
+
+      customer_response:
+        type: string
+        enum:
+          - accepted_immediately
+          - wants_property_info_first
+          - hesitant_but_interested
+          - declined
+        description: "Response to discovery call pitch"
+
+      discovery_scheduled:
+        type: boolean
+        description: "Whether discovery call was scheduled"
+
+  # Message Details
+  message_info:
+    type: object
+    properties:
+      message_taken:
+        type: boolean
+        description: "Whether a message was taken for broker"
+
+      message_content:
+        type: string
+        description: "Content of message for broker"
+
+      callback_requested:
+        type: boolean
+        description: "Whether customer requested callback"
+
+      preferred_callback_time:
+        type: string
+        description: "Preferred time for callback"
+
+  # System Interactions
+  system_actions:
+    type: object
+    properties:
+      tools_triggered:
+        type: array
+        items:
+          type: string
+        description: "List of tools/functions called during conversation"
+
+      customer_created:
+        type: boolean
+        description: "Whether new customer record was created"
+
+      customer_updated:
+        type: boolean
+        description: "Whether existing customer record was updated"
+
+      calendar_checked:
+        type: boolean
+        description: "Whether agent availability was checked"
+
+  # Call Metadata
+  call_metadata:
+    type: object
+    properties:
+      call_source:
+        type: string
+        enum:
+          - phone_call
+          - web_call
+          - unknown
+        description: "Source of the call"
+
+      call_duration:
+        type: integer
+        description: "Duration in seconds"
+
+      assistant_path:
+        type: array
+        items:
+          type: string
+        description: "Sequence of assistants involved (e.g., ['Alex', 'Sophie', 'Alex'])"
+
+      language:
+        type: string
+        enum: ["french", "english"]
+        default: "french"
+        description: "Language of conversation"
+
+  # Follow-up Actions
+  follow_up_required:
+    type: boolean
+    description: "Whether follow-up is needed"
+
+  follow_up_actions:
+    type: array
+    items:
+      type: object
+      properties:
+        action_type:
+          type: string
+          enum:
+            - send_listings
+            - broker_callback
+            - send_evaluation
+            - schedule_showing
+            - send_market_info
+          description: "Type of follow-up action"
+
+        priority:
+          type: string
+          enum: ["high", "medium", "low"]
+
+        notes:
+          type: string
+          description: "Additional notes for follow-up"
+
+  # Additional Notes
+  notes:
+    type: string
+    description: "Any additional observations or important details from the conversation"
+
+  # Validation Flags
+  data_validation:
+    type: object
+    properties:
+      phone_validated:
+        type: boolean
+        description: "Whether phone number was explicitly validated"
+
+      address_confirmed:
+        type: boolean
+        description: "Whether property address was confirmed"
+
+      appointment_confirmed:
+        type: boolean
+        description: "Whether appointment details were confirmed"

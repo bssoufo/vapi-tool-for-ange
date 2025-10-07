@@ -1,0 +1,2 @@
+name: test-override-precedence
+description: Test squad to verify assistant config precedence over squad overrides

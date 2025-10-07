@@ -1,0 +1,9 @@
+# These overrides should be IGNORED because regression-test-3 has its own voice and transcriber
+voice:
+  provider: playht
+  voiceId: different_voice_123
+transcriber:
+  provider: talkscriber
+  language: es-ES
+# This should work because regression-test-3 doesn't define recordingEnabled
+recordingEnabled: true

@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, ConfigDict
 class SquadMember(BaseModel):
     assistant_id: str = Field(..., alias="assistantId")
     assistant_destinations: Optional[List[Dict[str, Any]]] = Field(None, alias="assistantDestinations")
+    assistant_overrides: Optional[Dict[str, Any]] = Field(None, alias="assistantOverrides")
 
 
 class Squad(BaseModel):

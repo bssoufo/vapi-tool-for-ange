@@ -14,6 +14,7 @@ from dataclasses import dataclass
 
 from ..core.models import SquadCreateRequest, SquadMember
 from ..core.deployment_state import DeploymentStateManager
+from ..core.assistant_config import AssistantConfigLoader
 
 
 @dataclass
@@ -173,6 +174,7 @@ class SquadBuilder:
     def __init__(self, assistants_dir: str = "assistants"):
         self.assistants_dir = Path(assistants_dir)
         self.deployment_state = DeploymentStateManager(assistants_dir)
+        self.assistant_loader = AssistantConfigLoader(assistants_dir)
 
     def build_from_config(self, config: SquadConfig, environment: str = "development") -> SquadCreateRequest:
         """
@@ -224,7 +226,7 @@ class SquadBuilder:
             destinations = self._build_destinations(member_config.get('destinations', []), environment)
 
             # Build assistant overrides
-            assistant_overrides = self._build_assistant_overrides(member_config, overrides)
+            assistant_overrides = self._build_assistant_overrides(member_config, overrides, assistant_name, environment)
 
             # Create base member data
             member_data = {
@@ -290,8 +292,24 @@ class SquadBuilder:
 
         return destinations
 
-    def _build_assistant_overrides(self, member_config: Dict[str, Any], global_overrides: Dict[str, Any]) -> Dict[str, Any]:
-        """Build assistant overrides for the squad member."""
+    def _build_assistant_overrides(self, member_config: Dict[str, Any], global_overrides: Dict[str, Any],
+                                   assistant_name: str, environment: str) -> Dict[str, Any]:
+        """
+        Build assistant overrides for the squad member.
+
+        IMPORTANT: Assistant's own configuration takes precedence over squad overrides.
+        This method explicitly copies the assistant's voice, transcriber, and model settings
+        into assistantOverrides to make them visible and guaranteed.
+
+        Args:
+            member_config: Member-specific configuration from members.yaml
+            global_overrides: Global overrides from squad's overrides/ directory
+            assistant_name: Name of the assistant
+            environment: Environment to load assistant config for
+
+        Returns:
+            Dictionary of overrides with assistant's own settings explicitly included
+        """
         overrides = {}
 
         # Start with global default overrides
@@ -301,6 +319,37 @@ class SquadBuilder:
         # Apply member-specific overrides
         if 'overrides' in member_config:
             overrides.update(member_config['overrides'])
+
+        # Load the assistant's own configuration
+        try:
+            assistant_config = self.assistant_loader.load_assistant(assistant_name, environment)
+            assistant_settings = assistant_config.config
+
+            # Critical properties that should be explicitly set from assistant config
+            # These ensure the assistant uses its own settings, making them visible in the squad payload
+            critical_properties = ['model', 'voice', 'transcriber']
+
+            for key in critical_properties:
+                # If assistant has this property defined, use assistant's value (override squad defaults)
+                if key in assistant_settings and assistant_settings[key] is not None:
+                    overrides[key] = assistant_settings[key]
+
+            # Other properties where squad overrides apply only if assistant doesn't define them
+            optional_properties = ['firstMessage', 'firstMessageMode', 'recordingEnabled',
+                                  'endCallMessage', 'endCallPhrases', 'metadata',
+                                  'serverUrl', 'serverMessages']
+
+            for key in optional_properties:
+                # If assistant has this property defined, use assistant's value
+                if key in assistant_settings and assistant_settings[key] is not None:
+                    overrides[key] = assistant_settings[key]
+
+        except FileNotFoundError:
+            # Assistant not found - keep all overrides as-is
+            pass
+        except Exception:
+            # Any other error loading assistant - keep overrides as-is to avoid breaking
+            pass
 
         return overrides
 

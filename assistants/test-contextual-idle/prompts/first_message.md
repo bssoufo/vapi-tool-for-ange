@@ -1,0 +1,1 @@
+Hi! I'm here to demonstrate contextual idle messages. Ask me about anything - booking appointments, product information, or just chat. If you go silent, I'll check in with context-aware messages based on our conversation.

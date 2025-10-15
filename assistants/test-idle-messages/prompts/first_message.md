@@ -1,0 +1,1 @@
+Hello! I'm here to test the idle message feature. You can ask me anything, or stay silent to see the idle message trigger after 20 seconds.

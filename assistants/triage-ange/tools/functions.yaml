@@ -13,3 +13,34 @@ functions:
         query:
           type: string
           description: "The user's question or information request"
+
+  - name: setCustomerContext
+    description: "Store customer information (name, phone, intent) to make it available throughout the call. Call this BEFORE transferring to preserve customer data."
+    server:
+      url: "https://n8n-2-u19609.vm.elestio.app/webhook/set-customer-context"
+    parameters:
+      type: object
+      required:
+        - intent
+      properties:
+        intent:
+          type: string
+          enum:
+            - "new_appointment"
+            - "modify_appointment"
+            - "cancel_appointment"
+            - "emergency"
+            - "general_inquiry"
+          description: "The user's primary intent or reason for calling"
+        customer_first_name:
+          type: string
+          description: "Customer's first name if provided during the conversation"
+        customer_last_name:
+          type: string
+          description: "Customer's last name if provided during the conversation"
+        customer_phone:
+          type: string
+          description: "Customer's phone number if provided (E.164 format preferred)"
+        notes:
+          type: string
+          description: "Any additional context or notes to pass to the next assistant"

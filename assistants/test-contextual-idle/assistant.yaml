@@ -1,0 +1,43 @@
+# Test Assistant with Contextual Idle Messages
+# This demonstrates model-generated idle messages using the prompt field
+
+name: "Test Contextual Idle Messages"
+
+# Voice Configuration
+voice:
+  provider: minimax
+  voiceId: socialmedia_female_1_v1
+
+# Model Configuration
+model:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.7  # Higher temperature for more natural contextual responses
+
+# Transcriber Configuration
+transcriber:
+  provider: deepgram
+  model: nova-2
+  language: en
+
+# Hooks with model-generated contextual messages
+hooks:
+  # First idle check - exact message
+  - "on": customer.speech.timeout
+    options:
+      timeoutSeconds: 20
+      triggerMaxCount: 1
+      triggerResetMode: onUserSpeech
+    do:
+      - type: say
+        exact: "I'm still here whenever you're ready to continue."
+
+  # Second idle check - contextual message
+  - "on": customer.speech.timeout
+    options:
+      timeoutSeconds: 40
+      triggerMaxCount: 2
+      triggerResetMode: onUserSpeech
+    do:
+      - type: say
+        prompt: "Generate a friendly and helpful message to check on the user. Reference what we were just discussing and offer specific help related to that topic. Keep it natural and conversational."

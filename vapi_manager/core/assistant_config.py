@@ -438,6 +438,11 @@ class AssistantBuilder:
         if 'analysisPlan' in assistant_config:
             analysis_plan = AssistantBuilder._build_analysis_plan(assistant_config['analysisPlan'], config.schemas, config.base_path)
 
+        # Build Hooks if present in configuration
+        hooks = None
+        if 'hooks' in assistant_config:
+            hooks = AssistantBuilder._build_hooks(assistant_config['hooks'])
+
         # Create the assistant request
         # Build the request data as a dictionary first to use aliases properly
         request_data = {
@@ -449,6 +454,7 @@ class AssistantBuilder:
             'firstMessageMode': first_message_mode_value,  # Use the original string value with alias
             'serverMessages': server_messages,  # Add server messages support
             'analysisPlan': analysis_plan,  # Add analysis plan support
+            'hooks': hooks,  # Add hooks support
             'server': server
         }
 
@@ -768,3 +774,98 @@ class AssistantBuilder:
                 analysis_plan_data['structuredDataPlan'] = structured_plan_data
 
         return analysis_plan_data if analysis_plan_data else None
+
+    @staticmethod
+    def _build_hooks(hooks_config: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Build hooks list from configuration.
+
+        Args:
+            hooks_config: List of hook configurations from YAML
+
+        Returns:
+            List of hooks formatted for VAPI API
+
+        Example YAML config:
+            hooks:
+              # Static message
+              - "on": customer.speech.timeout
+                options:
+                  timeoutSeconds: 30
+                  triggerMaxCount: 3
+                  triggerResetMode: onUserSpeech
+                do:
+                  - type: say
+                    exact: "Are you still there?"
+
+              # Model-generated contextual message
+              - "on": customer.speech.timeout
+                options:
+                  timeoutSeconds: 45
+                do:
+                  - type: say
+                    prompt: "Generate a friendly message checking if the user needs help, considering our conversation context."
+        """
+        if not hooks_config:
+            return None
+
+        hooks = []
+
+        for hook_config in hooks_config:
+            if not isinstance(hook_config, dict):
+                continue
+
+            # Skip hooks without required 'on' field
+            if "on" not in hook_config or not hook_config["on"]:
+                continue
+
+            hook = {
+                "on": hook_config["on"]
+            }
+
+            # Build options if present
+            if "options" in hook_config and hook_config["options"]:
+                options_config = hook_config["options"]
+                options = {}
+
+                if "timeoutSeconds" in options_config:
+                    options["timeoutSeconds"] = options_config["timeoutSeconds"]
+                if "triggerMaxCount" in options_config:
+                    options["triggerMaxCount"] = options_config["triggerMaxCount"]
+                if "triggerResetMode" in options_config:
+                    options["triggerResetMode"] = options_config["triggerResetMode"]
+
+                if options:
+                    hook["options"] = options
+
+            # Build actions if present
+            if "do" in hook_config and hook_config["do"]:
+                actions = []
+                for action_config in hook_config["do"]:
+                    if not isinstance(action_config, dict):
+                        continue
+
+                    # Skip actions without required 'type' field
+                    if "type" not in action_config or not action_config["type"]:
+                        continue
+
+                    action = {
+                        "type": action_config["type"]
+                    }
+
+                    # Add exact message if present (static)
+                    if "exact" in action_config:
+                        action["exact"] = action_config["exact"]
+
+                    # Add prompt if present (model-generated)
+                    if "prompt" in action_config:
+                        action["prompt"] = action_config["prompt"]
+
+                    actions.append(action)
+
+                if actions:
+                    hook["do"] = actions
+
+            hooks.append(hook)
+
+        return hooks if hooks else None

@@ -159,6 +159,33 @@ class AnalysisPlan(BaseModel):
     structured_data_plan: Optional[StructuredDataPlan] = Field(None, alias="structuredDataPlan")
 
 
+class HookAction(BaseModel):
+    """Action to perform when a hook is triggered."""
+    model_config = ConfigDict(extra="allow")
+
+    type: str  # e.g., "say"
+    exact: Optional[str] = None  # Exact message to say (static)
+    prompt: Optional[str] = None  # Prompt for model-generated message (contextual)
+
+
+class HookOptions(BaseModel):
+    """Options for hook configuration."""
+    model_config = ConfigDict(extra="allow")
+
+    timeout_seconds: Optional[int] = Field(None, alias="timeoutSeconds")
+    trigger_max_count: Optional[int] = Field(None, alias="triggerMaxCount")
+    trigger_reset_mode: Optional[str] = Field(None, alias="triggerResetMode")
+
+
+class Hook(BaseModel):
+    """Hook configuration for event-driven actions like idle messages."""
+    model_config = ConfigDict(extra="allow")
+
+    on: str  # Event name, e.g., "customer.speech.timeout"
+    options: Optional[HookOptions] = None
+    do: Optional[List[HookAction]] = None
+
+
 class Assistant(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -172,6 +199,7 @@ class Assistant(BaseModel):
     first_message_mode: Optional[FirstMessageMode] = Field(None, alias="firstMessageMode")
     server_messages: Optional[List[str]] = Field(None, alias="serverMessages")
     analysis_plan: Optional[AnalysisPlan] = Field(None, alias="analysisPlan")
+    hooks: Optional[List[Hook]] = None
     server: Optional[Server] = None
     is_server_url_secret_set: Optional[bool] = Field(None, alias="isServerUrlSecretSet")
     created_at: Optional[datetime] = Field(None, alias="createdAt")
@@ -187,6 +215,7 @@ class AssistantCreateRequest(BaseModel):
     first_message_mode: Optional[FirstMessageMode] = Field(None, alias="firstMessageMode")
     server_messages: Optional[List[str]] = Field(None, alias="serverMessages")
     analysis_plan: Optional[AnalysisPlan] = Field(None, alias="analysisPlan")
+    hooks: Optional[List[Hook]] = None
     server: Optional[Server] = None
 
 
@@ -199,4 +228,5 @@ class AssistantUpdateRequest(BaseModel):
     first_message_mode: Optional[FirstMessageMode] = Field(None, alias="firstMessageMode")
     server_messages: Optional[List[str]] = Field(None, alias="serverMessages")
     analysis_plan: Optional[AnalysisPlan] = Field(None, alias="analysisPlan")
+    hooks: Optional[List[Hook]] = None
     server: Optional[Server] = None

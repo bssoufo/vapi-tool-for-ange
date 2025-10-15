@@ -1,0 +1,32 @@
+# Test Assistant with Idle Messages
+# This assistant demonstrates the idle messages feature using hooks
+
+name: "Test Idle Messages Assistant"
+
+# Voice Configuration
+voice:
+  provider: minimax
+  voiceId: socialmedia_female_1_v1
+
+# Model Configuration - Lower temperature for consistent idle messages
+model:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.4
+
+# Transcriber Configuration
+transcriber:
+  provider: deepgram
+  model: nova-2
+  language: en
+
+# Hooks configuration for idle messages
+hooks:
+  - "on": customer.speech.timeout
+    options:
+      timeoutSeconds: 20
+      triggerMaxCount: 3
+      triggerResetMode: onUserSpeech
+    do:
+      - type: say
+        exact: "Are you still there? I'm here to help whenever you're ready."

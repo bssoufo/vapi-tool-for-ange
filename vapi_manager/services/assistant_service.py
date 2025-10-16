@@ -7,8 +7,8 @@ from .vapi_client import VAPIClient
 class AssistantService:
     """Service for managing VAPI assistants."""
 
-    def __init__(self, client: Optional[VAPIClient] = None):
-        self.client = client or VAPIClient()
+    def __init__(self, client: Optional[VAPIClient] = None, verbose: bool = False):
+        self.client = client or VAPIClient(verbose=verbose)
 
     async def create_assistant(self, request: AssistantCreateRequest) -> Assistant:
         """Create a new assistant."""

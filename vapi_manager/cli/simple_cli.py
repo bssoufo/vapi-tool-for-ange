@@ -452,7 +452,7 @@ def list_file_squads(directory="squads"):
             console.print(f"  [red]Error reading squad: {e}[/red]\n")
 
 
-async def create_squad(squad_name, environment="development", force=False, auto_deploy_assistants=False, directory="squads", assistants_directory="assistants"):
+async def create_squad(squad_name, environment="development", force=False, auto_deploy_assistants=False, directory="squads", assistants_directory="assistants", verbose=False):
     """Create a squad in VAPI and track its ID."""
     squad_state_manager = SquadDeploymentStateManager(directory)
 
@@ -510,7 +510,7 @@ async def create_squad(squad_name, environment="development", force=False, auto_
             return
 
         # Create squad via VAPI
-        service = SquadService()
+        service = SquadService(verbose=verbose)
         squad = await service.create_squad(squad_request)
 
         # Track deployment state
@@ -634,7 +634,7 @@ async def add_member_to_squad(squad_name, assistant_name, environment="developme
         traceback.print_exc()
 
 
-async def update_squad(squad_name, environment="development", dry_run=False, force=False, directory="squads"):
+async def update_squad(squad_name, environment="development", dry_run=False, force=False, directory="squads", verbose=False):
     """Update an existing squad with comprehensive validation and change detection."""
     console.print(f"[cyan]Updating squad:[/cyan] {squad_name}")
     console.print(f"[cyan]Environment:[/cyan] {environment}")
@@ -1801,7 +1801,7 @@ def show_template_info(template_name):
     manager.show_template_info(template_name)
 
 
-async def create_assistant(assistant_name, environment="production", force=False, directory="assistants"):
+async def create_assistant(assistant_name, environment="production", force=False, directory="assistants", verbose=False):
     """Create a new assistant in VAPI and track its ID."""
     state_manager = DeploymentStateManager(directory)
     loader = AssistantConfigLoader(directory)
@@ -1847,7 +1847,7 @@ async def create_assistant(assistant_name, environment="production", force=False
 
             # Try to delete old assistant
             try:
-                service = AssistantService()
+                service = AssistantService(verbose=verbose)
                 await service.delete_assistant(old_deployment.id)
                 console.print("[green]Old assistant deleted successfully[/green]")
             except Exception as e:
@@ -1855,7 +1855,7 @@ async def create_assistant(assistant_name, environment="production", force=False
                 console.print("[yellow]Proceeding with creation anyway[/yellow]")
 
         # Create new assistant
-        service = AssistantService()
+        service = AssistantService(verbose=verbose)
         assistant = await service.create_assistant(request)
 
         # Track the deployment
@@ -2665,6 +2665,7 @@ def main():
     assistant_create_parser.add_argument("--env", default="production", choices=["development", "staging", "production"], help="Environment to deploy to")
     assistant_create_parser.add_argument("--force", action="store_true", help="Force recreation if already deployed")
     assistant_create_parser.add_argument("--dir", default="assistants", help="Directory containing assistants")
+    assistant_create_parser.add_argument("--verbose", action="store_true", help="Show detailed API request/response")
 
     assistant_delete_parser = assistant_subparsers.add_parser("delete", help="Delete an assistant from VAPI")
     assistant_delete_parser.add_argument("name", help="Assistant name to delete")
@@ -2680,6 +2681,7 @@ def main():
     assistant_update_parser.add_argument("--no-backup", action="store_true", help="Skip backup creation")
     assistant_update_parser.add_argument("--force", action="store_true", help="Force update even if no changes detected")
     assistant_update_parser.add_argument("--dir", default="assistants", help="Directory containing assistants")
+    assistant_update_parser.add_argument("--verbose", action="store_true", help="Show detailed API request/response")
 
     # Add direct backup/restore commands at assistant level
     assistant_backup_parser = assistant_subparsers.add_parser("backup", help="Create a backup of assistants")
@@ -2730,6 +2732,7 @@ def main():
     squad_create_parser.add_argument("--auto-deploy-assistants", action="store_true", help="Automatically deploy missing assistants")
     squad_create_parser.add_argument("--dir", default="squads", help="Directory containing squads")
     squad_create_parser.add_argument("--assistants-dir", default="assistants", help="Directory containing assistants")
+    squad_create_parser.add_argument("--verbose", action="store_true", help="Show detailed API request/response")
 
     squad_file_list_parser = squad_subparsers.add_parser("file-list", help="List file-based squads")
     squad_file_list_parser.add_argument("--dir", default="squads", help="Directory containing squads")
@@ -2768,6 +2771,7 @@ def main():
     squad_update_parser.add_argument("--force", action="store_true", help="Force update even if no changes detected")
     squad_update_parser.add_argument("--update-assistants", action="store_true", default=True, help="Also update all assistants in the squad (default: True)")
     squad_update_parser.add_argument("--dir", default="squads", help="Directory containing squads")
+    squad_update_parser.add_argument("--verbose", action="store_true", help="Show detailed API request/response")
 
     squad_status_parser = squad_subparsers.add_parser("status", help="Show squad deployment status")
     squad_status_parser.add_argument("name", nargs="?", help="Squad name (optional, shows all if omitted)")
@@ -2937,6 +2941,7 @@ def main():
     file_create_parser.add_argument("--env", default="production", choices=["development", "staging", "production"], help="Environment to deploy to")
     file_create_parser.add_argument("--force", action="store_true", help="Force recreation if already deployed")
     file_create_parser.add_argument("--dir", default="assistants", help="Directory containing assistants")
+    file_create_parser.add_argument("--verbose", action="store_true", help="Show detailed API request/response")
 
     file_status_parser = file_subparsers.add_parser("status", help="Show deployment status")
     file_status_parser.add_argument("name", nargs="?", help="Assistant name (optional, shows all if omitted)")
@@ -3020,7 +3025,7 @@ def main():
             elif args.assistant_command == "init":
                 init_assistant(args.name, args.template, args.force)
             elif args.assistant_command == "create":
-                asyncio.run(create_assistant(args.name, args.env, args.force, args.dir))
+                asyncio.run(create_assistant(args.name, args.env, args.force, args.dir, args.verbose))
             elif args.assistant_command == "delete":
                 asyncio.run(delete_assistant(args.name, args.env, args.force, args.dir))
             elif args.assistant_command == "update":
@@ -3076,7 +3081,8 @@ def main():
                     args.force,
                     args.auto_deploy_assistants,
                     args.dir,
-                    args.assistants_dir
+                    args.assistants_dir,
+                    args.verbose
                 ))
             elif args.squad_command == "file-list":
                 list_file_squads(args.dir)
@@ -3100,7 +3106,7 @@ def main():
                     validate_strict=args.validate_strict
                 )
             elif args.squad_command == "update":
-                asyncio.run(update_squad(args.name, args.env, args.dry_run, args.force, args.dir))
+                asyncio.run(update_squad(args.name, args.env, args.dry_run, args.force, args.dir, args.verbose))
             elif args.squad_command == "status":
                 asyncio.run(show_squad_status(args.name, args.dir))
             elif args.squad_command == "delete":
@@ -3210,7 +3216,7 @@ def main():
             elif args.file_command == "template-info":
                 show_template_info(args.template)
             elif args.file_command == "create":
-                asyncio.run(create_assistant(args.name, args.env, args.force, args.dir))
+                asyncio.run(create_assistant(args.name, args.env, args.force, args.dir, args.verbose))
             elif args.file_command == "status":
                 show_assistant_status(args.name, args.dir)
             elif args.file_command == "update":

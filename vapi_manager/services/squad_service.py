@@ -7,8 +7,8 @@ from .vapi_client import VAPIClient
 class SquadService:
     """Service for managing VAPI squads."""
 
-    def __init__(self, client: Optional[VAPIClient] = None):
-        self.client = client or VAPIClient()
+    def __init__(self, client: Optional[VAPIClient] = None, verbose: bool = False):
+        self.client = client or VAPIClient(verbose=verbose)
 
     async def create_squad(self, request: SquadCreateRequest) -> Squad:
         """Create a new squad."""

@@ -35,12 +35,12 @@ model:
 hooks:
   - "on": customer.speech.timeout
     options:
-      timeoutSeconds: 30        # Trigger after 30 seconds of silence
+      timeoutSeconds: 7        # Trigger after 30 seconds of silence
       triggerMaxCount: 3        # Maximum 3 times per call
       triggerResetMode: onUserSpeech  # Reset counter when user speaks
     do:
       - type: say
-        exact: "Are you still there?"
+        prompt: "Generate a friendly message in french to check if the user is still there. Consider what we were discussing and offer relevant help. {{transcript}}"
 ```
 
 **Important YAML Note:** The `on` key must be quoted (`"on":`) because `on` is a reserved word in YAML (boolean value). Without quotes, the YAML parser will interpret it incorrectly.

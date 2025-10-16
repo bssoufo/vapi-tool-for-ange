@@ -1,32 +1,40 @@
-# Test Assistant with Idle Messages
-# This assistant demonstrates the idle messages feature using hooks
-
-name: "Test Idle Messages Assistant"
-
-# Voice Configuration
+_vapi:
+  current_environment: production
+  environments:
+    development:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+    production:
+      deployed_at: '2025-10-16T01:00:48.454839+00:00'
+      deployed_by: sebr5550
+      id: 738c6ccd-96db-42eb-afcb-979c169850e9
+      version: 2
+    staging:
+      deployed_at: null
+      deployed_by: null
+      id: null
+      version: 0
+  last_sync: '2025-10-16T01:00:48.454839+00:00'
+hooks:
+- do:
+  - exact: Are you still there? I'm here to help whenever you're ready.
+    type: say
+  'on': customer.speech.timeout
+  options:
+    timeoutSeconds: 20
+    triggerMaxCount: 3
+    triggerResetMode: onUserSpeech
+model:
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0.4
+name: Test Idle Messages Assistant
+transcriber:
+  language: en
+  model: nova-2
+  provider: deepgram
 voice:
   provider: minimax
   voiceId: socialmedia_female_1_v1
-
-# Model Configuration - Lower temperature for consistent idle messages
-model:
-  provider: openai
-  model: gpt-4o-mini
-  temperature: 0.4
-
-# Transcriber Configuration
-transcriber:
-  provider: deepgram
-  model: nova-2
-  language: en
-
-# Hooks configuration for idle messages
-hooks:
-  - "on": customer.speech.timeout
-    options:
-      timeoutSeconds: 20
-      triggerMaxCount: 3
-      triggerResetMode: onUserSpeech
-    do:
-      - type: say
-        exact: "Are you still there? I'm here to help whenever you're ready."

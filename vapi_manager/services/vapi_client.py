@@ -1,4 +1,5 @@
 import httpx
+import json
 from typing import List, Dict, Any, Optional
 from ..config.settings import settings
 from ..core.exceptions.vapi_exceptions import VAPIAPIError
@@ -7,10 +8,11 @@ from ..core.exceptions.vapi_exceptions import VAPIAPIError
 class VAPIClient:
     """HTTP client for VAPI API interactions."""
 
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, verbose: bool = False):
         self.api_key = api_key or settings.vapi_api_key
         self.base_url = base_url or settings.vapi_base_url
         self.timeout = settings.timeout
+        self.verbose = verbose
 
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -27,6 +29,19 @@ class VAPIClient:
         """Make HTTP request to VAPI API."""
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
 
+        # Verbose logging
+        if self.verbose:
+            print("\n" + "=" * 80)
+            print(f"[VAPI REQUEST] {method} {url}")
+            print("=" * 80)
+            if params:
+                print("\n[QUERY PARAMS]")
+                print(json.dumps(params, indent=2))
+            if data:
+                print("\n[REQUEST PAYLOAD]")
+                print(json.dumps(data, indent=2))
+            print("\n" + "=" * 80)
+
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             try:
                 response = await client.request(
@@ -36,10 +51,25 @@ class VAPIClient:
                     json=data,
                     params=params
                 )
+
+                # Verbose logging for response
+                if self.verbose:
+                    print(f"\n[RESPONSE] Status: {response.status_code}")
+                    try:
+                        print(json.dumps(response.json(), indent=2))
+                    except:
+                        print(response.text)
+                    print("=" * 80 + "\n")
+
                 response.raise_for_status()
                 return response.json()
 
             except httpx.HTTPStatusError as e:
+                if self.verbose:
+                    print(f"\n[ERROR RESPONSE] Status: {e.response.status_code}")
+                    print(e.response.text)
+                    print("=" * 80 + "\n")
+
                 raise VAPIAPIError(
                     message=f"VAPI API error: {e.response.text}",
                     status_code=e.response.status_code,
@@ -47,6 +77,10 @@ class VAPIClient:
                 ) from e
 
             except httpx.RequestError as e:
+                if self.verbose:
+                    print(f"\n[REQUEST ERROR] {str(e)}")
+                    print("=" * 80 + "\n")
+
                 raise VAPIAPIError(f"Request failed: {str(e)}") from e
 
     async def get(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:

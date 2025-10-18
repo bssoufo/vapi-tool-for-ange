@@ -8,7 +8,11 @@ from .assistant import (
     Transcriber,
     AnalysisPlan,
     Server,
-    FirstMessageMode
+    FirstMessageMode,
+    PronunciationDictionary,
+    PhonemeRule,
+    AliasRule,
+    PhonemeAlphabet
 )
 from .squad import (
     Squad,
@@ -33,6 +37,10 @@ __all__ = [
     "AnalysisPlan",
     "Server",
     "FirstMessageMode",
+    "PronunciationDictionary",
+    "PhonemeRule",
+    "AliasRule",
+    "PhonemeAlphabet",
     "Squad",
     "SquadCreateRequest",
     "SquadUpdateRequest",

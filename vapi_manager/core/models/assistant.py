@@ -91,11 +91,73 @@ class FirstMessageMode(str, Enum):
     WAIT_FOR_USER = "wait-for-user"
 
 
+class PhonemeAlphabet(str, Enum):
+    """Phonetic alphabets supported for pronunciation rules."""
+    IPA = "ipa"
+    CMU = "cmu"
+
+
+class PronunciationRuleType(str, Enum):
+    """Types of pronunciation rules."""
+    PHONEME = "phoneme"
+    ALIAS = "alias"
+
+
+class PhonemeRule(BaseModel):
+    """Phoneme-based pronunciation rule.
+
+    Specifies exact pronunciation using phonetic alphabets (IPA or CMU Arpabet).
+    Provides precise control over pronunciation.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    type: str = "phoneme"
+    string: str = Field(..., description="The word or phrase to replace")
+    phoneme: str = Field(..., description="Phonetic pronunciation (e.g., 'ænˈθɹɑpɪk' for Anthropic)")
+    alphabet: PhonemeAlphabet = Field(PhonemeAlphabet.IPA, description="Phonetic alphabet (ipa or cmu)")
+
+
+class AliasRule(BaseModel):
+    """Alias-based pronunciation rule.
+
+    Replaces words with alternative spellings or phrases.
+    Useful for acronyms (e.g., "UN" → "United Nations").
+    Works with all ElevenLabs models.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    type: str = "alias"
+    string: str = Field(..., description="The word or phrase to replace")
+    alias: str = Field(..., description="The replacement text")
+
+
+class PronunciationDictionary(BaseModel):
+    """Pronunciation dictionary configuration.
+
+    Provider-specific (currently ElevenLabs only). Contains custom pronunciation rules.
+    Must be created via API first, then referenced by ID in voice configuration.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    id: Optional[str] = None
+    org_id: Optional[str] = Field(None, alias="orgId")
+    name: str = Field(..., description="Dictionary name")
+    description: Optional[str] = Field(None, description="Dictionary description")
+    rules: List[Union[PhonemeRule, AliasRule]] = Field(default_factory=list, description="Pronunciation rules")
+    created_at: Optional[datetime] = Field(None, alias="createdAt")
+    updated_at: Optional[datetime] = Field(None, alias="updatedAt")
+
+
 class Voice(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     voice_id: Optional[str] = Field(None, alias="voiceId")
     provider: str
+    pronunciation_dictionary_ids: Optional[List[str]] = Field(
+        None,
+        alias="pronunciationDictionaryIds",
+        description="List of pronunciation dictionary IDs (ElevenLabs only)"
+    )
 
 
 class TransferDestination(BaseModel):

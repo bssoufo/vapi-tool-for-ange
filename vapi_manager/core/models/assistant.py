@@ -159,6 +159,75 @@ class AnalysisPlan(BaseModel):
     structured_data_plan: Optional[StructuredDataPlan] = Field(None, alias="structuredDataPlan")
 
 
+class SmartDenoisingPlan(BaseModel):
+    """AI-powered smart denoising configuration.
+
+    Uses machine learning to intelligently detect and remove background noise
+    while preserving speech quality.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = Field(default=False, description="Enable smart denoising")
+
+
+class FourierDenoisingPlan(BaseModel):
+    """Fourier-based denoising configuration with advanced controls.
+
+    Uses frequency domain analysis to remove background noise with fine-grained control.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    enabled: bool = Field(default=False, description="Enable Fourier denoising")
+    media_detection_enabled: Optional[bool] = Field(
+        True,
+        alias="mediaDetectionEnabled",
+        description="Automatically detect and preserve media (music, TV, etc.)"
+    )
+    static_threshold: Optional[int] = Field(
+        -35,
+        alias="staticThreshold",
+        description="Noise floor threshold in dB (default: -35)"
+    )
+    baseline_offset_db: Optional[int] = Field(
+        -15,
+        alias="baselineOffsetDb",
+        description="Offset from baseline noise level in dB (default: -15)"
+    )
+    window_size_ms: Optional[int] = Field(
+        3000,
+        alias="windowSizeMs",
+        description="Analysis window size in milliseconds (default: 3000)"
+    )
+    baseline_percentile: Optional[int] = Field(
+        85,
+        alias="baselinePercentile",
+        description="Percentile for baseline noise calculation (default: 85)"
+    )
+
+
+class BackgroundSpeechDenoisingPlan(BaseModel):
+    """Background speech denoising configuration.
+
+    Supports two denoising methods:
+    1. Smart Denoising: AI-powered, recommended for most use cases
+    2. Fourier Denoising: Advanced frequency-based denoising with fine-grained control
+
+    You can enable both methods simultaneously or choose one.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    smart_denoising_plan: Optional[SmartDenoisingPlan] = Field(
+        None,
+        alias="smartDenoisingPlan",
+        description="AI-powered smart denoising configuration"
+    )
+    fourier_denoising_plan: Optional[FourierDenoisingPlan] = Field(
+        None,
+        alias="fourierDenoisingPlan",
+        description="Fourier-based denoising configuration"
+    )
+
+
 class HookAction(BaseModel):
     """Action to perform when a hook is triggered."""
     model_config = ConfigDict(extra="allow")
@@ -199,6 +268,11 @@ class Assistant(BaseModel):
     first_message_mode: Optional[FirstMessageMode] = Field(None, alias="firstMessageMode")
     server_messages: Optional[List[str]] = Field(None, alias="serverMessages")
     analysis_plan: Optional[AnalysisPlan] = Field(None, alias="analysisPlan")
+    background_speech_denoising_plan: Optional[BackgroundSpeechDenoisingPlan] = Field(
+        None,
+        alias="backgroundSpeechDenoisingPlan",
+        description="Background speech denoising configuration"
+    )
     hooks: Optional[List[Hook]] = None
     server: Optional[Server] = None
     is_server_url_secret_set: Optional[bool] = Field(None, alias="isServerUrlSecretSet")
@@ -215,6 +289,11 @@ class AssistantCreateRequest(BaseModel):
     first_message_mode: Optional[FirstMessageMode] = Field(None, alias="firstMessageMode")
     server_messages: Optional[List[str]] = Field(None, alias="serverMessages")
     analysis_plan: Optional[AnalysisPlan] = Field(None, alias="analysisPlan")
+    background_speech_denoising_plan: Optional[BackgroundSpeechDenoisingPlan] = Field(
+        None,
+        alias="backgroundSpeechDenoisingPlan",
+        description="Background speech denoising configuration"
+    )
     hooks: Optional[List[Hook]] = None
     server: Optional[Server] = None
 
@@ -228,5 +307,10 @@ class AssistantUpdateRequest(BaseModel):
     first_message_mode: Optional[FirstMessageMode] = Field(None, alias="firstMessageMode")
     server_messages: Optional[List[str]] = Field(None, alias="serverMessages")
     analysis_plan: Optional[AnalysisPlan] = Field(None, alias="analysisPlan")
+    background_speech_denoising_plan: Optional[BackgroundSpeechDenoisingPlan] = Field(
+        None,
+        alias="backgroundSpeechDenoisingPlan",
+        description="Background speech denoising configuration"
+    )
     hooks: Optional[List[Hook]] = None
     server: Optional[Server] = None

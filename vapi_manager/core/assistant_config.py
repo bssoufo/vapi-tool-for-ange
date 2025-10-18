@@ -443,6 +443,11 @@ class AssistantBuilder:
         if 'hooks' in assistant_config:
             hooks = AssistantBuilder._build_hooks(assistant_config['hooks'])
 
+        # Build BackgroundSpeechDenoisingPlan if present in configuration
+        background_speech_denoising_plan = None
+        if 'backgroundSpeechDenoisingPlan' in assistant_config:
+            background_speech_denoising_plan = assistant_config['backgroundSpeechDenoisingPlan']
+
         # Create the assistant request
         # Build the request data as a dictionary first to use aliases properly
         request_data = {
@@ -454,6 +459,7 @@ class AssistantBuilder:
             'firstMessageMode': first_message_mode_value,  # Use the original string value with alias
             'serverMessages': server_messages,  # Add server messages support
             'analysisPlan': analysis_plan,  # Add analysis plan support
+            'backgroundSpeechDenoisingPlan': background_speech_denoising_plan,  # Add background speech denoising support
             'hooks': hooks,  # Add hooks support
             'server': server
         }
